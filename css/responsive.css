@@ -1,0 +1,197 @@
+/* =========================================
+   TABLETS (1024px and below)
+========================================= */
+
+@media (max-width:1024px){
+
+.hero h1{
+    font-size:56px;
+}
+
+.hero p{
+    font-size:18px;
+}
+
+.hero-content{
+    gap:40px;
+}
+
+.grid{
+    grid-template-columns:repeat(2,1fr);
+}
+
+section h2{
+    font-size:40px;
+}
+
+}
+
+/* =========================================
+   MOBILE (768px and below)
+========================================= */
+
+@media (max-width:768px){
+
+.navbar{
+
+    flex-direction:column;
+
+    gap:20px;
+
+    text-align:center;
+
+}
+
+.nav-links{
+
+    width:100%;
+
+    justify-content:center;
+
+    flex-wrap:wrap;
+
+}
+
+.hero{
+
+    min-height:auto;
+
+    padding-bottom:60px;
+
+}
+
+.hero-content{
+
+    flex-direction:column-reverse;
+
+    text-align:center;
+
+    padding:40px 20px;
+
+}
+
+.hero-left{
+
+    width:100%;
+
+}
+
+.hero-right{
+
+    width:100%;
+
+}
+
+.hero-right img{
+
+    width:100%;
+
+    max-width:380px;
+
+    margin:auto;
+
+}
+
+.hero h1{
+
+    font-size:42px;
+
+}
+
+.hero p{
+
+    margin:auto;
+
+    font-size:17px;
+
+}
+
+.hero-buttons{
+
+    justify-content:center;
+
+}
+
+.grid{
+
+    grid-template-columns:1fr;
+
+}
+
+.card{
+
+    padding:30px 20px;
+
+}
+
+section{
+
+    padding:70px 20px;
+
+}
+
+section h2{
+
+    font-size:34px;
+
+}
+
+.btn{
+
+    width:100%;
+
+    text-align:center;
+
+}
+
+}
+
+/* =========================================
+   SMALL MOBILE (480px and below)
+========================================= */
+
+@media (max-width:480px){
+
+.logo{
+
+    font-size:24px;
+
+}
+
+.badge{
+
+    font-size:13px;
+
+}
+
+.hero h1{
+
+    font-size:34px;
+
+}
+
+.hero p{
+
+    font-size:16px;
+
+}
+
+.card h3{
+
+    font-size:22px;
+
+}
+
+.card{
+
+    border-radius:16px;
+
+}
+
+section h2{
+
+    font-size:30px;
+
+}
+
+}
