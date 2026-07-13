@@ -1,0 +1,364 @@
+/* ===========================
+   GOOGLE FONT
+=========================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* ===========================
+   RESET
+=========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:#070707;
+    color:#fff;
+    overflow-x:hidden;
+}
+
+/* ===========================
+   VARIABLES
+=========================== */
+
+:root{
+
+    --primary:#ff8a00;
+    --primary-light:#ffb347;
+    --dark:#070707;
+    --card:#151515;
+    --border:#262626;
+    --text:#ffffff;
+    --text-light:#bdbdbd;
+
+}
+
+/* ===========================
+   LINKS
+=========================== */
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+/* ===========================
+   IMAGES
+=========================== */
+
+img{
+    width:100%;
+    display:block;
+}
+
+/* ===========================
+   HERO
+=========================== */
+
+.hero{
+
+    min-height:100vh;
+
+    background:
+    linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,.85)),
+    url("../images/hero.webp") center/cover no-repeat;
+
+}
+
+/* ===========================
+   NAVBAR
+=========================== */
+
+.navbar{
+
+    width:100%;
+
+    max-width:1300px;
+
+    margin:auto;
+
+    padding:25px 30px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.logo{
+
+    font-size:28px;
+
+    font-weight:800;
+
+    color:var(--primary);
+
+}
+
+.nav-links{
+
+    display:flex;
+
+    gap:15px;
+
+}
+
+/* ===========================
+   BUTTONS
+=========================== */
+
+.btn{
+
+    padding:14px 28px;
+
+    border-radius:50px;
+
+    transition:.3s;
+
+    font-weight:600;
+
+}
+
+.primary{
+
+    background:var(--primary);
+
+    color:#fff;
+
+}
+
+.primary:hover{
+
+    transform:translateY(-3px);
+
+}
+
+.secondary{
+
+    border:2px solid #fff;
+
+}
+
+.secondary:hover{
+
+    background:#fff;
+
+    color:#000;
+
+}
+
+/* ===========================
+   HERO CONTENT
+=========================== */
+
+.hero-content{
+
+    max-width:1300px;
+
+    margin:auto;
+
+    min-height:85vh;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:60px;
+
+    padding:30px;
+
+}
+
+.hero-left{
+
+    flex:1;
+
+}
+
+.hero-right{
+
+    flex:1;
+
+}
+
+.hero-right img{
+
+    max-width:550px;
+
+    margin:auto;
+
+}
+
+.badge{
+
+    display:inline-block;
+
+    background:rgba(255,138,0,.15);
+
+    color:var(--primary);
+
+    border:1px solid rgba(255,138,0,.4);
+
+    padding:10px 18px;
+
+    border-radius:50px;
+
+    margin-bottom:25px;
+
+}
+
+.hero h1{
+
+    font-size:70px;
+
+    line-height:1.05;
+
+    margin-bottom:20px;
+
+}
+
+.hero h1 span{
+
+    color:var(--primary);
+
+}
+
+.hero p{
+
+    max-width:600px;
+
+    color:var(--text-light);
+
+    font-size:20px;
+
+    line-height:1.8;
+
+}
+
+.hero-buttons{
+
+    margin-top:40px;
+
+    display:flex;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+}
+
+/* ===========================
+   SECTIONS
+=========================== */
+
+section{
+
+    max-width:1300px;
+
+    margin:auto;
+
+    padding:100px 30px;
+
+}
+
+section h2{
+
+    text-align:center;
+
+    font-size:48px;
+
+    margin-bottom:60px;
+
+}
+
+/* ===========================
+   GRID
+=========================== */
+
+.grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:30px;
+
+}
+
+/* ===========================
+   CARD
+=========================== */
+
+.card{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:20px;
+
+    padding:40px 30px;
+
+    text-align:center;
+
+    transition:.3s;
+
+}
+
+.card:hover{
+
+    transform:translateY(-10px);
+
+    border-color:var(--primary);
+
+}
+
+.card{
+
+    font-size:50px;
+
+}
+
+.card h3{
+
+    margin:20px 0;
+
+    font-size:26px;
+
+}
+
+.card p{
+
+    color:var(--text-light);
+
+    line-height:1.8;
+
+}
+
+/* ===========================
+   FOOTER
+=========================== */
+
+footer{
+
+    border-top:1px solid #222;
+
+    text-align:center;
+
+    padding:35px;
+
+    color:#999;
+
+}
