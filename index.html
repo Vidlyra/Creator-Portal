@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Vidlyra Creator Portal</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#050505;
+color:white;
+}
+
+header{
+background:#111;
+padding:18px 8%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:1px solid #222;
+position:sticky;
+top:0;
+z-index:100;
+}
+
+.logo{
+font-size:28px;
+font-weight:700;
+color:#ff7a00;
+}
+
+nav a{
+text-decoration:none;
+color:white;
+margin-left:25px;
+transition:.3s;
+}
+
+nav a:hover{
+color:#ff7a00;
+}
+
+.hero{
+
+padding:90px 8%;
+display:flex;
+flex-wrap:wrap;
+align-items:center;
+justify-content:space-between;
+gap:50px;
+
+}
+
+.left{
+flex:1;
+min-width:300px;
+}
+
+.left h1{
+font-size:55px;
+line-height:1.1;
+margin-bottom:20px;
+}
+
+.left h1 span{
+color:#ff7a00;
+}
+
+.left p{
+color:#bbb;
+line-height:1.8;
+margin-bottom:35px;
+}
+
+.buttons{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+}
+
+.btn{
+padding:14px 30px;
+background:#ff7a00;
+color:white;
+text-decoration:none;
+border-radius:50px;
+font-weight:600;
+transition:.3s;
+}
+
+.btn:hover{
+background:#ff9200;
+}
+
+.btn2{
+background:#222;
+}
+
+.right{
+flex:1;
+min-width:280px;
+display:flex;
+justify-content:center;
+}
+
+.card{
+
+width:100%;
+max-width:420px;
+
+background:#111;
+border:1px solid #222;
+padding:40px;
+border-radius:20px;
+
+}
+
+.card h2{
+
+margin-bottom:20px;
+color:#ff7a00;
+
+}
+
+.card ul{
+
+list-style:none;
+
+}
+
+.card li{
+
+padding:12px 0;
+border-bottom:1px solid #222;
+
+}
+
+.features{
+
+padding:80px 8%;
+
+}
+
+.title{
+
+text-align:center;
+font-size:38px;
+margin-bottom:60px;
+
+}
+
+.grid{
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:30px;
+
+}
+
+.box{
+
+background:#111;
+padding:30px;
+border-radius:15px;
+border:1px solid #222;
+transition:.3s;
+
+}
+
+.box:hover{
+
+transform:translateY(-8px);
+border-color:#ff7a00;
+
+}
+
+.box h3{
+
+color:#ff7a00;
+margin-bottom:15px;
+
+}
+
+footer{
+
+padding:40px;
+text-align:center;
+color:#888;
+border-top:1px solid #222;
+margin-top:80px;
+
+}
+
+@media(max-width:768px){
+
+.left h1{
+
+font-size:40px;
+
+}
+
+header{
+
+flex-direction:column;
+gap:15px;
+
+}
+
+nav a{
+
+margin:10px;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+VIDLYRA
+</div>
+
+<nav>
+
+<a href="#">Home</a>
+<a href="upload.html">Upload</a>
+<a href="dashboard.html">Dashboard</a>
+<a href="login.html">Login</a>
+
+</nav>
+
+</header>
+
+<section class="hero">
+
+<div class="left">
+
+<h1>
+Creator <span>Portal</span>
+</h1>
+
+<p>
+
+Welcome to the official Vidlyra Creator Portal.
+
+Upload your animations, artwork, podcasts, videos, music, stories, and creative projects. Share your imagination with the Vidlyra community.
+
+</p>
+
+<div class="buttons">
+
+<a href="login.html" class="btn">
+Login
+</a>
+
+<a href="signup.html" class="btn btn2">
+Create Account
+</a>
+
+</div>
+
+</div>
+
+<div class="right">
+
+<div class="card">
+
+<h2>Portal Features</h2>
+
+<ul>
+
+<li>🎬 Upload Anime Videos</li>
+
+<li>🎨 Upload Artwork</li>
+
+<li>🎵 Upload Music</li>
+
+<li>📖 Publish Stories</li>
+
+<li>👤 Official Avatar System</li>
+
+<li>⭐ Creator Dashboard</li>
+
+<li>🛡 Secure Cloud Storage</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="features">
+
+<h2 class="title">
+Why Join Vidlyra?
+</h2>
+
+<div class="grid">
+
+<div class="box">
+
+<h3>Unlimited Creativity</h3>
+
+<p>Create and publish original content for the community.</p>
+
+</div>
+
+<div class="box">
+
+<h3>Creator Profile</h3>
+
+<p>Customize your creator page with official Vidlyra avatars.</p>
+
+</div>
+
+<div class="box">
+
+<h3>Community</h3>
+
+<p>Discover creators, collaborate, and grow together.</p>
+
+</div>
+
+<div class="box">
+
+<h3>Secure Platform</h3>
+
+<p>Protected authentication powered by Supabase.</p>
+
+</div>
+
+</div>
+
+</section>
+
+<footer>
+
+© 2026 Vidlyra Creator Portal
+
+</footer>
+
+</body>
+</html>
