@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Upload Project</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="js/supabase.js"></script>
+</head>
+
+<body>
+
+<div class="upload-container">
+
+<h1>Upload Your Project</h1>
+
+<input type="text"
+id="title"
+placeholder="Project Title">
+
+<textarea
+id="description"
+placeholder="Description"></textarea>
+
+<select id="category">
+
+<option>Anime</option>
+
+<option>Manga</option>
+
+<option>Short Film</option>
+
+<option>Music</option>
+
+<option>Artwork</option>
+
+</select>
+
+<input
+type="file"
+id="thumbnail"
+accept="image/*">
+
+<button onclick="uploadProject()">
+
+Upload
+
+</button>
+
+</div>
+
+<script src="js/upload.js"></script>
+
+</body>
+</html>
