@@ -18,7 +18,7 @@ return;
 
 const filename=Date.now()+"-"+file.name;
 
-const {data,error}=await supabase.storage
+const {data,error}=await sb.storage
 
 .from("thumbnails")
 
@@ -42,7 +42,7 @@ const imageUrl=supabase.storage
 
 const user=(await supabase.auth.getUser()).data.user;
 
-await supabase
+await sb
 
 .from("projects")
 
