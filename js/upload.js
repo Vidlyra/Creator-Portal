@@ -57,3 +57,6 @@ async function uploadProject() {
 
     window.location.href = "dashboard.html";
 }
+const { error: uploadError } = await sb.storage
+    .from("thumbnails")
+    .upload(filename, file);
