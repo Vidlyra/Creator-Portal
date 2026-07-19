@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login | Vidlyra Creator Portal</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+
+background:#050505;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+padding:20px;
+
+}
+
+.login-card{
+
+width:100%;
+max-width:420px;
+
+background:#111;
+
+border:1px solid #222;
+
+border-radius:18px;
+
+padding:35px;
+
+box-shadow:0 0 25px rgba(255,122,0,.15);
+
+}
+
+.logo{
+
+text-align:center;
+
+font-size:34px;
+
+font-weight:700;
+
+color:#ff7a00;
+
+margin-bottom:10px;
+
+}
+
+.subtitle{
+
+text-align:center;
+
+color:#aaa;
+
+margin-bottom:30px;
+
+}
+
+input{
+
+width:100%;
+
+padding:14px;
+
+margin-bottom:15px;
+
+background:#1a1a1a;
+
+border:1px solid #333;
+
+border-radius:10px;
+
+color:white;
+
+font-size:15px;
+
+outline:none;
+
+}
+
+input:focus{
+
+border-color:#ff7a00;
+
+}
+
+.password-box{
+
+position:relative;
+
+}
+
+.password-box span{
+
+position:absolute;
+
+right:15px;
+
+top:50%;
+
+transform:translateY(-50%);
+
+cursor:pointer;
+
+color:#aaa;
+
+user-select:none;
+
+}
+
+.options{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+font-size:14px;
+
+margin-bottom:20px;
+
+color:#aaa;
+
+}
+
+.options a{
+
+color:#ff7a00;
+
+text-decoration:none;
+
+}
+
+button{
+
+width:100%;
+
+padding:15px;
+
+background:#ff7a00;
+
+border:none;
+
+border-radius:10px;
+
+color:white;
+
+font-size:16px;
+
+font-weight:600;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+button:hover{
+
+background:#ff9500;
+
+}
+
+.signup{
+
+text-align:center;
+
+margin-top:20px;
+
+color:#aaa;
+
+}
+
+.signup a{
+
+color:#ff7a00;
+
+text-decoration:none;
+
+font-weight:600;
+
+}
+
+.error{
+
+margin-top:15px;
+
+text-align:center;
+
+color:#ff5555;
+
+font-size:14px;
+
+}
+
+@media(max-width:500px){
+
+.login-card{
+
+padding:25px;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="login-card">
+
+<div class="logo">
+
+VIDLYRA
+
+</div>
+
+<p class="subtitle">
+
+Creator Portal Login
+
+</p>
+
+<input
+type="email"
+id="email"
+placeholder="Email Address">
+
+<div class="password-box">
+
+<input
+type="password"
+id="password"
+placeholder="Password">
+
+<span onclick="togglePassword()">👁</span>
+
+</div>
+
+<div class="options">
+
+<label>
+
+<input
+type="checkbox"
+id="remember">
+
+ Remember Me
+
+</label>
+
+<a href="#">
+
+Forgot Password?
+
+</a>
+
+</div>
+
+<button onclick="login()">
+
+Login
+
+</button>
+
+<div class="error" id="error"></div>
+
+<div class="signup">
+
+Don't have an account?
+
+<a href="signup.html">
+
+Create Account
+
+</a>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/config.js"></script>
+
+<script src="js/auth.js"></script>
+
+<script>
+
+function togglePassword(){
+
+const input=document.getElementById("password");
+
+input.type=input.type==="password"?"text":"password";
+
+}
+
+</script>
+
+</body>
+
+</html>
