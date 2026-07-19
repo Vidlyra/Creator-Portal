@@ -44,37 +44,35 @@ async function signup() {
     alert("Account created successfully!");
     window.location.href = "dashboard.html";
 }
-async function login(){
+async function login() {
 
-const email=document.getElementById("email").value.trim();
-const password=document.getElementById("password").value;
-const errorBox=document.getElementById("error");
+    console.log("1. Login button clicked");
 
-errorBox.textContent="";
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-if(!email || !password){
+    console.log("2. Email:", email);
 
-errorBox.textContent="Please enter your email and password.";
+    if (!email || !password) {
+        alert("Please enter email and password");
+        return;
+    }
 
-return;
+    console.log("3. Attempting login...");
 
-}
+    const { data, error } = await sb.auth.signInWithPassword({
+        email,
+        password
+    });
 
-const { error } = await sb.auth.signInWithPassword({
+    console.log("4. Response:", data, error);
 
-email,
-password
+    if (error) {
+        alert(error.message);
+        return;
+    }
 
-});
+    alert("Login successful!");
 
-if(error){
-
-errorBox.textContent=error.message;
-
-return;
-
-}
-
-window.location.href="dashboard.html";
-
+    window.location.href = "dashboard.html";
 }
