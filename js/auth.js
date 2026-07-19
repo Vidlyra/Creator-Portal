@@ -43,3 +43,37 @@ async function signup() {
     alert("Account created successfully!");
     window.location.href = "dashboard.html";
 }
+async function login(){
+
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value;
+const errorBox=document.getElementById("error");
+
+errorBox.textContent="";
+
+if(!email || !password){
+
+errorBox.textContent="Please enter your email and password.";
+
+return;
+
+}
+
+const { error } = await sb.auth.signInWithPassword({
+
+email,
+password
+
+});
+
+if(error){
+
+errorBox.textContent=error.message;
+
+return;
+
+}
+
+window.location.href="dashboard.html";
+
+}
