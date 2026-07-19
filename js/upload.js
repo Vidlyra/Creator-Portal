@@ -1,69 +1,59 @@
-async function uploadProject(){
+async function uploadProject() {
 
-const title=document.getElementById("title").value;
+    const title = document.getElementById("title").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const category = document.getElementById("category").value;
+    const file = document.getElementById("thumbnail").files[0];
 
-const description=document.getElementById("description").value;
+    if (!title || !description || !file) {
+        alert("Please fill all fields.");
+        return;
+    }
 
-const category=document.getElementById("category").value;
+    const {
+        data: { user }
+    } = await sb.auth.getUser();
 
-const file=document.getElementById("thumbnail").files[0];
+    if (!user) {
+        alert("Please login first.");
+        window.location.href = "login.html";
+        return;
+    }
 
-if(!file){
+    const filename = `${Date.now()}-${file.name}`;
 
-alert("Choose Thumbnail");
+    const { error: uploadError } = await sb.storage
+        .from("thumbnails")
+        .upload(filename, file);
 
-return;
+    if (uploadError) {
+        alert(uploadError.message);
+        return;
+    }
 
-}
+    const imageUrl = sb.storage
+        .from("thumbnails")
+        .getPublicUrl(filename).data.publicUrl;
 
-const filename=Date.now()+"-"+file.name;
+    const { error: dbError } = await sb
+        .from("projects")
+        .insert([
+            {
+                user_id: user.id,
+                title,
+                description,
+                category,
+                thumbnail: imageUrl,
+                status: "Pending"
+            }
+        ]);
 
-const {data,error}=await sb.storage
+    if (dbError) {
+        alert(dbError.message);
+        return;
+    }
 
-.from("thumbnails")
+    alert("Project uploaded successfully!");
 
-.upload(filename,file);
-
-if(error){
-
-alert(error.message);
-
-return;
-
-}
-
-const imageUrl=supabase.storage
-
-.from("thumbnails")
-
-.getPublicUrl(filename)
-
-.data.publicUrl;
-
-const user=(await supabase.auth.getUser()).data.user;
-
-await sb
-
-.from("projects")
-
-.insert({
-
-user_id:user.id,
-
-title,
-
-description,
-
-category,
-
-thumbnail:imageUrl,
-
-status:"Pending"
-
-});
-
-alert("Uploaded Successfully");
-
-location.href="dashboard.html";
-
+    window.location.href = "dashboard.html";
 }
