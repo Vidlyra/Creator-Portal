@@ -1223,3 +1223,74 @@ font-size:13px;
 color:#ffb15a;
 
 }
+/*=========================
+WATCH PAGE
+=========================*/
+
+.watch-page{
+
+padding:120px 8%;
+
+}
+
+.video-player video{
+
+width:100%;
+
+border-radius:20px;
+
+background:black;
+
+}
+
+.video-info{
+
+margin-top:30px;
+
+}
+
+.video-info h1{
+
+font-size:40px;
+
+margin-bottom:15px;
+
+}
+
+.video-buttons{
+
+display:flex;
+
+gap:15px;
+
+margin:25px 0;
+
+flex-wrap:wrap;
+
+}
+
+.video-buttons button{
+
+padding:14px 22px;
+
+border:none;
+
+background:#ff7a00;
+
+color:white;
+
+border-radius:30px;
+
+cursor:pointer;
+
+font-weight:600;
+
+transition:.3s;
+
+}
+
+.video-buttons button:hover{
+
+background:#ff9830;
+
+}
