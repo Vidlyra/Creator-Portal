@@ -157,3 +157,35 @@ behavior:"smooth"
 });
 
 });
+/*==========================
+Episode Slider
+===========================*/
+
+const episodeCarousel =
+document.getElementById("episodeCarousel");
+
+document.querySelector(".episode-next")
+.addEventListener("click",()=>{
+
+episodeCarousel.scrollBy({
+
+left:450,
+
+behavior:"smooth"
+
+});
+
+});
+
+document.querySelector(".episode-prev")
+.addEventListener("click",()=>{
+
+episodeCarousel.scrollBy({
+
+left:-450,
+
+behavior:"smooth"
+
+});
+
+});
