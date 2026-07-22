@@ -102,50 +102,56 @@ nav a:hover{
 }
 
 /* ===============================
-   HERO
-==================================*/
+HERO
+===============================*/
 
 .hero{
-    height:100vh;
 
-    background:
-    linear-gradient(to top,#0B0B0B 5%,rgba(0,0,0,.2)),
-    url("../assets/hero.webp") center center/cover;
+height:100vh;
 
-    display:flex;
-    align-items:center;
+position:relative;
 
-    padding:0 8%;
+display:flex;
 
-    position:relative;
+align-items:center;
+
+padding:0 8%;
+
+background-size:cover;
+
+background-position:center;
+
+transition:1s ease-in-out;
+
+overflow:hidden;
+
 }
 
 .overlay{
-    position:absolute;
-    inset:0;
-    background:linear-gradient(to right,rgba(0,0,0,.8),transparent);
+
+position:absolute;
+
+inset:0;
+
+background:
+linear-gradient(to right,
+rgba(0,0,0,.85),
+rgba(0,0,0,.45),
+transparent),
+
+linear-gradient(to top,
+#0b0b0b,
+transparent);
+
 }
 
 .hero-content{
-    max-width:620px;
-    z-index:2;
-}
 
-.badge{
+position:relative;
 
-display:inline-block;
+z-index:2;
 
-background:#ff7a00;
-
-padding:8px 18px;
-
-border-radius:30px;
-
-font-size:14px;
-
-font-weight:600;
-
-margin-bottom:20px;
+max-width:650px;
 
 }
 
@@ -153,9 +159,9 @@ margin-bottom:20px;
 
 font-size:72px;
 
-font-weight:800;
+margin:20px 0;
 
-margin-bottom:20px;
+font-weight:800;
 
 }
 
@@ -163,11 +169,11 @@ margin-bottom:20px;
 
 font-size:18px;
 
-color:#ddd;
-
 line-height:1.8;
 
-margin-bottom:35px;
+color:#ddd;
+
+max-width:550px;
 
 }
 
