@@ -195,3 +195,28 @@ behavior:"smooth"
 });
 
 }
+/*==========================
+SEARCH
+==========================*/
+
+const searchInput=document.querySelector(".search-box input");
+
+if(searchInput){
+
+searchInput.addEventListener("keyup",()=>{
+
+const value=searchInput.value.toLowerCase();
+
+document.querySelectorAll(".search-card").forEach(card=>{
+
+const title=card.innerText.toLowerCase();
+
+card.style.display=
+title.includes(value)
+?"block":"none";
+
+});
+
+});
+
+}
