@@ -142,3 +142,18 @@ footer{
 }
 
 }
+@media(max-width:992px){
+
+.news-grid{
+
+grid-template-columns:1fr;
+
+}
+
+.featured-news{
+
+height:350px;
+
+}
+
+}
