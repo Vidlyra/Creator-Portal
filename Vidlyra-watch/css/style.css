@@ -1,0 +1,381 @@
+/* ===============================
+   VIDLYRA WATCH
+   Main Stylesheet
+==================================*/
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:#0B0B0B;
+    color:#fff;
+    overflow-x:hidden;
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-track{
+    background:#111;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#ff7a00;
+    border-radius:20px;
+}
+
+/* ===============================
+   HEADER
+==================================*/
+
+header{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:75px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 8%;
+
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(16px);
+
+    z-index:1000;
+}
+
+.logo img{
+    width:170px;
+}
+
+/* ===============================
+   NAVIGATION
+==================================*/
+
+nav{
+    display:flex;
+    gap:35px;
+}
+
+nav a{
+    color:white;
+    text-decoration:none;
+    font-weight:500;
+    transition:.3s;
+}
+
+nav a:hover{
+    color:#ff7a00;
+}
+
+/* ===============================
+   RIGHT ICONS
+==================================*/
+
+.nav-right{
+    display:flex;
+    gap:25px;
+}
+
+.nav-right i{
+    font-size:20px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.nav-right i:hover{
+    color:#ff7a00;
+}
+
+/* ===============================
+   HERO
+==================================*/
+
+.hero{
+    height:100vh;
+
+    background:
+    linear-gradient(to top,#0B0B0B 5%,rgba(0,0,0,.2)),
+    url("../assets/hero.webp") center center/cover;
+
+    display:flex;
+    align-items:center;
+
+    padding:0 8%;
+
+    position:relative;
+}
+
+.overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(to right,rgba(0,0,0,.8),transparent);
+}
+
+.hero-content{
+    max-width:620px;
+    z-index:2;
+}
+
+.badge{
+
+display:inline-block;
+
+background:#ff7a00;
+
+padding:8px 18px;
+
+border-radius:30px;
+
+font-size:14px;
+
+font-weight:600;
+
+margin-bottom:20px;
+
+}
+
+.hero h1{
+
+font-size:72px;
+
+font-weight:800;
+
+margin-bottom:20px;
+
+}
+
+.hero p{
+
+font-size:18px;
+
+color:#ddd;
+
+line-height:1.8;
+
+margin-bottom:35px;
+
+}
+
+/* ===============================
+   BUTTONS
+==================================*/
+
+.buttons{
+
+display:flex;
+
+gap:20px;
+
+}
+
+.watch-btn{
+
+background:#ff7a00;
+
+padding:15px 34px;
+
+border-radius:50px;
+
+text-decoration:none;
+
+color:white;
+
+font-weight:600;
+
+transition:.3s;
+
+}
+
+.watch-btn:hover{
+
+background:#ff962d;
+
+transform:translateY(-3px);
+
+}
+
+.info-btn{
+
+padding:15px 34px;
+
+border-radius:50px;
+
+border:2px solid #ff7a00;
+
+text-decoration:none;
+
+color:white;
+
+transition:.3s;
+
+}
+
+.info-btn:hover{
+
+background:#ff7a00;
+
+}
+
+/* ===============================
+   CONTENT SECTION
+==================================*/
+
+.section{
+
+padding:80px 8%;
+
+}
+
+.section h2{
+
+margin-bottom:30px;
+
+font-size:32px;
+
+}
+
+/* ===============================
+   CARDS
+==================================*/
+
+.row{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+gap:25px;
+
+}
+
+.card{
+
+background:#171717;
+
+border-radius:18px;
+
+overflow:hidden;
+
+transition:.35s;
+
+cursor:pointer;
+
+}
+
+.card:hover{
+
+transform:translateY(-10px);
+
+box-shadow:0 20px 40px rgba(255,122,0,.25);
+
+}
+
+.card img{
+
+width:100%;
+
+height:350px;
+
+object-fit:cover;
+
+display:block;
+
+}
+
+.card h3{
+
+padding:18px;
+
+font-size:18px;
+
+}
+
+/* ===============================
+   FOOTER
+==================================*/
+
+footer{
+
+margin-top:70px;
+
+padding:60px 8%;
+
+background:#111;
+
+text-align:center;
+
+}
+
+.footer-logo{
+
+width:170px;
+
+margin-bottom:20px;
+
+}
+
+footer p{
+
+color:#aaa;
+
+margin-top:10px;
+
+}
+
+/* ===============================
+   ANIMATIONS
+==================================*/
+
+.card{
+
+animation:fadeUp .8s ease;
+
+}
+
+@keyframes fadeUp{
+
+from{
+
+opacity:0;
+
+transform:translateY(40px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+}
+
+.watch-btn,
+.info-btn{
+
+transition:.35s;
+
+}
+
+header{
+
+transition:.35s;
+
+}
