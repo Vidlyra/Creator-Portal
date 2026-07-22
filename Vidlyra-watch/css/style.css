@@ -514,3 +514,55 @@ font-weight:600;
 background:#ff962d;
 
 }
+/* ===========================
+Carousel Buttons
+===========================*/
+
+.carousel-buttons{
+
+display:flex;
+gap:10px;
+
+}
+
+.carousel-buttons button{
+
+width:45px;
+height:45px;
+
+border:none;
+border-radius:50%;
+
+background:#202020;
+
+color:white;
+
+font-size:18px;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.carousel-buttons button:hover{
+
+background:#ff7a00;
+
+transform:scale(1.1);
+
+}
+
+/* Hide scrollbar */
+
+.carousel{
+
+scrollbar-width:none;
+
+}
+
+.carousel::-webkit-scrollbar{
+
+display:none;
+
+}
