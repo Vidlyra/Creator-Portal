@@ -1,0 +1,144 @@
+/* ==========================================
+   VIDLYRA WATCH - RESPONSIVE CSS
+==========================================*/
+
+/* ---------- Large Tablets ---------- */
+
+@media (max-width:1200px){
+
+header{
+    padding:0 5%;
+}
+
+.hero{
+    padding:0 5%;
+}
+
+.section{
+    padding:70px 5%;
+}
+
+.hero h1{
+    font-size:60px;
+}
+
+}
+
+/* ---------- Tablets ---------- */
+
+@media (max-width:992px){
+
+nav{
+    display:none;
+}
+
+.hero{
+    justify-content:center;
+    text-align:center;
+}
+
+.hero-content{
+    max-width:700px;
+}
+
+.hero h1{
+    font-size:52px;
+}
+
+.hero p{
+    font-size:17px;
+}
+
+.buttons{
+    justify-content:center;
+}
+
+.row{
+    grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width:768px){
+
+header{
+    height:70px;
+    padding:0 20px;
+}
+
+.logo img{
+    width:140px;
+}
+
+.hero{
+    height:90vh;
+    padding:0 20px;
+}
+
+.hero h1{
+    font-size:42px;
+}
+
+.hero p{
+    font-size:15px;
+}
+
+.section{
+    padding:60px 20px;
+}
+
+.section h2{
+    font-size:26px;
+}
+
+.row{
+    grid-template-columns:1fr;
+}
+
+.card img{
+    height:420px;
+}
+
+.buttons{
+    flex-direction:column;
+}
+
+.watch-btn,
+.info-btn{
+    width:100%;
+    text-align:center;
+}
+
+}
+
+/* ---------- Small Mobile ---------- */
+
+@media (max-width:480px){
+
+.hero h1{
+    font-size:34px;
+}
+
+.hero p{
+    font-size:14px;
+}
+
+.badge{
+    font-size:12px;
+}
+
+.card img{
+    height:360px;
+}
+
+footer{
+    padding:40px 20px;
+}
+
+.footer-logo{
+    width:130px;
+}
+
+}
