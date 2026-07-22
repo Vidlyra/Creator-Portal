@@ -46,7 +46,7 @@ title:"UNEXPECTED",
 
 description:"A mysterious event changes the destiny of an entire world.",
 
-image:"assets/images/hero-banner.webp"
+image:"assets/images/Unexpected.png"
 },
 
 {
@@ -54,7 +54,7 @@ title:"HOLLOW FREQUENCY",
 
 description:"The signal has returned. Humanity must decide whether to answer.",
 
-image:"assets/images/featured-banner.webp"
+image:"assets/images/hollow frequency code zero.png"
 },
 
 {
@@ -62,7 +62,7 @@ title:"CRIMSON VELOCITY",
 
 description:"Speed alone cannot save the future.",
 
-image:"assets/images/news-banner.webp"
+image:"assets/images/Crimson velocity.png"
 }
 
 ];
