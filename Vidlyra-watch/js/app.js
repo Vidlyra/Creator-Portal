@@ -29,3 +29,67 @@ behavior:"smooth"
 });
 
 });
+/* ===========================
+Dynamic Hero Banner
+===========================*/
+
+const hero = document.getElementById("hero");
+
+const heroTitle = document.getElementById("heroTitle");
+
+const heroDescription = document.getElementById("heroDescription");
+
+const featured = [
+
+{
+title:"UNEXPECTED",
+
+description:"A mysterious event changes the destiny of an entire world.",
+
+image:"assets/images/hero-banner.webp"
+},
+
+{
+title:"HOLLOW FREQUENCY",
+
+description:"The signal has returned. Humanity must decide whether to answer.",
+
+image:"assets/images/featured-banner.webp"
+},
+
+{
+title:"CRIMSON VELOCITY",
+
+description:"Speed alone cannot save the future.",
+
+image:"assets/images/news-banner.webp"
+}
+
+];
+
+let current = 0;
+
+function changeHero(){
+
+hero.style.backgroundImage =
+`url(${featured[current].image})`;
+
+heroTitle.textContent =
+featured[current].title;
+
+heroDescription.textContent =
+featured[current].description;
+
+current++;
+
+if(current >= featured.length){
+
+current = 0;
+
+}
+
+}
+
+changeHero();
+
+setInterval(changeHero,6000);
