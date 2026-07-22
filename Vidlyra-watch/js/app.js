@@ -93,3 +93,35 @@ current = 0;
 changeHero();
 
 setInterval(changeHero,6000);
+/*============================
+Continue Watching Slider
+=============================*/
+
+const continueCarousel =
+document.getElementById("continueCarousel");
+
+document.querySelector(".continue-next")
+.addEventListener("click",()=>{
+
+continueCarousel.scrollBy({
+
+left:380,
+
+behavior:"smooth"
+
+});
+
+});
+
+document.querySelector(".continue-prev")
+.addEventListener("click",()=>{
+
+continueCarousel.scrollBy({
+
+left:-380,
+
+behavior:"smooth"
+
+});
+
+});
