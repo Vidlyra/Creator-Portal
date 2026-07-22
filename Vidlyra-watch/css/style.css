@@ -985,3 +985,74 @@ font-weight:600;
 background:#ff9630;
 
 }
+/*==========================
+GENRES
+==========================*/
+
+.genre-grid{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+
+gap:25px;
+
+}
+
+.genre-card{
+
+background:#171717;
+
+border-radius:20px;
+
+padding:30px 20px;
+
+text-align:center;
+
+text-decoration:none;
+
+color:white;
+
+transition:.35s;
+
+border:1px solid transparent;
+
+}
+
+.genre-card:hover{
+
+transform:translateY(-8px);
+
+border-color:#ff7a00;
+
+box-shadow:0 15px 35px rgba(255,122,0,.18);
+
+}
+
+.genre-card img{
+
+width:80px;
+
+height:80px;
+
+object-fit:contain;
+
+margin-bottom:20px;
+
+transition:.35s;
+
+}
+
+.genre-card:hover img{
+
+transform:scale(1.1);
+
+}
+
+.genre-card h3{
+
+font-size:18px;
+
+font-weight:600;
+
+}
