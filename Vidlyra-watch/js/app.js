@@ -125,3 +125,35 @@ behavior:"smooth"
 });
 
 });
+/*=============================
+Original Slider
+==============================*/
+
+const originalCarousel =
+document.getElementById("originalCarousel");
+
+document.querySelector(".original-next")
+.addEventListener("click",()=>{
+
+originalCarousel.scrollBy({
+
+left:360,
+
+behavior:"smooth"
+
+});
+
+});
+
+document.querySelector(".original-prev")
+.addEventListener("click",()=>{
+
+originalCarousel.scrollBy({
+
+left:-360,
+
+behavior:"smooth"
+
+});
+
+});
