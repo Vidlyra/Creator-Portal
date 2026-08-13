@@ -1,58 +1,545 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Upload Project</title>
 
-<link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="js/config.js"></script>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Upload Project | Vidlyra Creator Portal</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #050505;
+            color: white;
+        }
+
+        header {
+            height: 70px;
+            padding: 0 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            background: #111;
+            border-bottom: 1px solid #252525;
+        }
+
+        .logo {
+            color: #ff7a00;
+            font-size: 25px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .back-btn {
+            padding: 9px 16px;
+
+            background: transparent;
+            border: 1px solid #333;
+            border-radius: 8px;
+
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            border-color: #ff7a00;
+            color: #ff7a00;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .upload-card {
+            background: #111;
+
+            border: 1px solid #252525;
+            border-radius: 18px;
+
+            padding: 35px;
+
+            box-shadow:
+                0 0 30px rgba(255, 122, 0, 0.10);
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #999;
+            margin-bottom: 30px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+
+            color: #ccc;
+            font-size: 14px;
+
+            margin-bottom: 8px;
+        }
+
+        input,
+        textarea,
+        select {
+
+            width: 100%;
+
+            padding: 14px;
+
+            background: #1a1a1a;
+
+            border: 1px solid #333;
+            border-radius: 10px;
+
+            color: white;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #ff7a00;
+        }
+
+        textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        input[type="file"] {
+            padding: 11px;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: #ff7a00;
+            border: none;
+
+            color: white;
+
+            padding: 9px 13px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            margin-right: 10px;
+        }
+
+        .preview {
+            display: none;
+
+            margin-top: 15px;
+
+            border: 1px solid #333;
+            border-radius: 10px;
+
+            overflow: hidden;
+        }
+
+        .preview img {
+            display: block;
+
+            width: 100%;
+            max-height: 300px;
+
+            object-fit: cover;
+        }
+
+        .upload-btn {
+            width: 100%;
+
+            padding: 15px;
+
+            background: #ff7a00;
+
+            border: none;
+            border-radius: 10px;
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+        .upload-btn:hover {
+            background: #ff9500;
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            min-height: 24px;
+
+            margin-top: 18px;
+
+            text-align: center;
+
+            font-size: 14px;
+        }
+
+        .hint {
+            color: #777;
+
+            font-size: 12px;
+
+            margin-top: 7px;
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 0 18px;
+            }
+
+            .container {
+                margin-top: 30px;
+            }
+
+            .upload-card {
+                padding: 25px;
+            }
+
+        }
+
+    </style>
+
 </head>
 
 <body>
 
-<div class="upload-container">
 
-<h1>Upload Your Project</h1>
+<header>
 
-<input type="text"
-id="title"
-placeholder="Project Title">
+    <div class="logo">
+        VIDLYRA
+    </div>
 
-<textarea
-id="description"
-placeholder="Description"></textarea>
+    <button
+        type="button"
+        class="back-btn"
+        onclick="window.location.href='dashboard.html'"
+    >
+        ← Dashboard
+    </button>
 
-<select id="category">
+</header>
 
-<option>Anime</option>
 
-<option>Manga</option>
+<main class="container">
 
-<option>Short Film</option>
+    <div class="upload-card">
 
-<option>Music</option>
+        <h1>
+            Upload Your Project
+        </h1>
 
-<option>Artwork</option>
+        <p class="subtitle">
+            Submit your work to the Vidlyra Creator Portal.
+        </p>
 
-</select>
 
-<input
-type="file"
-id="thumbnail"
-accept="image/*">
+        <form id="uploadForm">
 
-<button onclick="uploadProject()">
 
-Upload
+            <!-- Project Title -->
 
-</button>
+            <div class="field">
 
-</div>
+                <label for="title">
+                    Project Title
+                </label>
+
+                <input
+                    type="text"
+                    id="title"
+                    placeholder="Enter project title"
+                    maxlength="100"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Description -->
+
+            <div class="field">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <textarea
+                    id="description"
+                    placeholder="Tell us about your project..."
+                    maxlength="1000"
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <!-- Category -->
+
+            <div class="field">
+
+                <label for="category">
+                    Category
+                </label>
+
+                <select
+                    id="category"
+                    required
+                >
+
+                    <option value="">
+                        Select category
+                    </option>
+
+                    <option value="Anime">
+                        Anime
+                    </option>
+
+                    <option value="Manga">
+                        Manga
+                    </option>
+
+                    <option value="Short Film">
+                        Short Film
+                    </option>
+
+                    <option value="Music">
+                        Music
+                    </option>
+
+                    <option value="Artwork">
+                        Artwork
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Thumbnail -->
+
+            <div class="field">
+
+                <label for="thumbnail">
+                    Project Thumbnail
+                </label>
+
+                <input
+                    type="file"
+                    id="thumbnail"
+                    accept="image/jpeg,image/png,image/webp"
+                    required
+                >
+
+                <p class="hint">
+                    JPG, PNG or WebP image.
+                </p>
+
+
+                <div
+                    class="preview"
+                    id="preview"
+                >
+
+                    <img
+                        id="previewImage"
+                        alt="Thumbnail preview"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- Upload -->
+
+            <button
+                type="submit"
+                class="upload-btn"
+                id="uploadButton"
+            >
+                Upload Project
+            </button>
+
+
+        </form>
+
+
+        <div
+            class="message"
+            id="message"
+        ></div>
+
+
+    </div>
+
+</main>
+
+
+<!-- Supabase -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<!-- Configuration -->
+
+<script src="js/config.js"></script>
+
+
+<!-- Upload Logic -->
 
 <script src="js/upload.js"></script>
 
+
+<script>
+
+    // ==========================================
+    // CHECK USER
+    // ==========================================
+
+    async function checkLogin() {
+
+        const {
+            data,
+            error
+        } = await sb.auth.getUser();
+
+
+        if (error || !data.user) {
+
+            window.location.href =
+                "login.html";
+
+        }
+
+    }
+
+
+    // ==========================================
+    // IMAGE PREVIEW
+    // ==========================================
+
+    document
+        .getElementById("thumbnail")
+        .addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            const preview =
+                document.getElementById("preview");
+
+            const image =
+                document.getElementById("previewImage");
+
+
+            if (!file) {
+
+                preview.style.display =
+                    "none";
+
+                return;
+
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload = function (event) {
+
+                image.src =
+                    event.target.result;
+
+                preview.style.display =
+                    "block";
+
+            };
+
+
+            reader.readAsDataURL(file);
+
+        });
+
+
+    // ==========================================
+    // FORM SUBMIT
+    // ==========================================
+
+    document
+        .getElementById("uploadForm")
+        .addEventListener("submit", function (event) {
+
+            event.preventDefault();
+
+            uploadProject();
+
+        });
+
+
+    // ==========================================
+    // START
+    // ==========================================
+
+    checkLogin();
+
+</script>
+
+
 </body>
+
 </html>
