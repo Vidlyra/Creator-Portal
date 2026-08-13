@@ -3,178 +3,726 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>Creator Dashboard | Vidlyra</title>
+<title>Creator Dashboard | Vidlyra</title>
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+<link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+>
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+<style>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
 
-    <style>
+body {
+    min-height: 100vh;
+    background: #050505;
+    color: white;
+}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
 
-        body {
-            min-height: 100vh;
-            background: #050505;
-            color: white;
-        }
+/* ==========================================
+   HEADER
+========================================== */
 
-        header {
-            height: 70px;
-            padding: 0 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #111;
-            border-bottom: 1px solid #252525;
-        }
+header {
 
-        .logo {
-            color: #ff7a00;
-            font-size: 25px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
+    height: 70px;
 
-        .logout-btn {
-            padding: 10px 18px;
-            background: transparent;
-            border: 1px solid #ff7a00;
-            border-radius: 8px;
-            color: #ff7a00;
-            cursor: pointer;
-            font-weight: 600;
-        }
+    padding: 0 30px;
 
-        .logout-btn:hover {
-            background: #ff7a00;
-            color: white;
-        }
+    display: flex;
 
-        main {
-            max-width: 1100px;
-            margin: auto;
-            padding: 40px 25px;
-        }
+    align-items: center;
 
-        .welcome {
-            margin-bottom: 30px;
-        }
+    justify-content: space-between;
 
-        .welcome h1 {
-            font-size: 30px;
-            margin-bottom: 8px;
-        }
+    background: #111;
 
-        .welcome p {
-            color: #999;
-        }
+    border-bottom: 1px solid #252525;
 
-        .email {
-            color: #ff7a00;
-            margin-top: 5px;
-        }
+}
 
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
+.logo {
 
-        .card {
-            background: #111;
-            border: 1px solid #252525;
-            border-radius: 15px;
-            padding: 25px;
-        }
+    color: #ff7a00;
 
-        .card h2 {
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
+    font-size: 25px;
 
-        .card p {
-            color: #999;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
+    font-weight: 700;
 
-        .card button {
-            padding: 11px 18px;
-            background: #ff7a00;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-        }
+    letter-spacing: 1px;
 
-        .card button:hover {
-            background: #ff9500;
-        }
+}
 
-        .status {
-            margin-top: 30px;
-            padding: 20px;
-            background: #111;
-            border: 1px solid #252525;
-            border-radius: 15px;
-        }
+.header-right {
 
-        .status h2 {
-            margin-bottom: 10px;
-        }
+    display: flex;
 
-        #userStatus {
-            color: #55dd77;
-        }
+    align-items: center;
 
-        @media (max-width: 700px) {
+    gap: 15px;
 
-            header {
-                padding: 0 18px;
-            }
+}
 
-            main {
-                padding: 30px 18px;
-            }
+.profile-mini {
 
-            .cards {
-                grid-template-columns: 1fr;
-            }
+    display: flex;
 
-        }
+    align-items: center;
 
-    </style>
+    gap: 10px;
+
+    color: #ccc;
+
+    font-size: 13px;
+
+}
+
+.profile-mini img {
+
+    width: 38px;
+
+    height: 38px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 2px solid #ff7a00;
+
+}
+
+.logout-btn {
+
+    padding: 8px 14px;
+
+    background: transparent;
+
+    border: 1px solid #333;
+
+    border-radius: 8px;
+
+    color: #aaa;
+
+    cursor: pointer;
+
+}
+
+.logout-btn:hover {
+
+    border-color: #ff5555;
+
+    color: #ff5555;
+
+}
+
+
+/* ==========================================
+   MAIN
+========================================== */
+
+.container {
+
+    width: 100%;
+
+    max-width: 1150px;
+
+    margin: 40px auto;
+
+    padding: 0 20px;
+
+}
+
+
+/* ==========================================
+   WELCOME
+========================================== */
+
+.welcome {
+
+    margin-bottom: 25px;
+
+}
+
+.welcome h1 {
+
+    font-size: 30px;
+
+}
+
+.welcome h1 span {
+
+    color: #ff7a00;
+
+}
+
+.welcome p {
+
+    margin-top: 6px;
+
+    color: #888;
+
+}
+
+
+/* ==========================================
+   PROFILE LEVEL CARD
+========================================== */
+
+.level-card {
+
+    background: #111;
+
+    border: 1px solid #292929;
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 0 30px rgba(255,122,0,.08);
+
+}
+
+.level-top {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+}
+
+.level-title {
+
+    color: #777;
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+}
+
+.rank {
+
+    margin-top: 4px;
+
+    color: #ff7a00;
+
+    font-size: 20px;
+
+    font-weight: 600;
+
+}
+
+.level-number {
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+}
+
+
+/* ==========================================
+   PROGRESS
+========================================== */
+
+.progress-info {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-top: 20px;
+
+    color: #aaa;
+
+    font-size: 13px;
+
+}
+
+.progress-bar {
+
+    width: 100%;
+
+    height: 9px;
+
+    margin-top: 8px;
+
+    background: #252525;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+}
+
+.progress-fill {
+
+    width: 0%;
+
+    height: 100%;
+
+    background: #ff7a00;
+
+    border-radius: 20px;
+
+    transition: width .5s ease;
+
+}
+
+.next-level {
+
+    margin-top: 8px;
+
+    color: #777;
+
+    font-size: 12px;
+
+}
+
+
+/* ==========================================
+   QUICK ACTIONS
+========================================== */
+
+.section-title {
+
+    margin-bottom: 15px;
+
+    font-size: 20px;
+
+}
+
+.quick-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 15px;
+
+    margin-bottom: 30px;
+
+}
+
+.action-card {
+
+    min-height: 145px;
+
+    padding: 22px;
+
+    background: #111;
+
+    border: 1px solid #292929;
+
+    border-radius: 16px;
+
+    color: white;
+
+    text-decoration: none;
+
+    transition: .2s;
+
+}
+
+.action-card:hover {
+
+    transform: translateY(-4px);
+
+    border-color: #ff7a00;
+
+    box-shadow:
+        0 0 20px rgba(255,122,0,.10);
+
+}
+
+.action-icon {
+
+    font-size: 30px;
+
+}
+
+.action-title {
+
+    margin-top: 13px;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+}
+
+.action-description {
+
+    margin-top: 5px;
+
+    color: #777;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ==========================================
+   PROJECT STATS
+========================================== */
+
+.stats-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+
+    margin-bottom: 30px;
+
+}
+
+.stat-card {
+
+    padding: 22px;
+
+    background: #111;
+
+    border: 1px solid #292929;
+
+    border-radius: 15px;
+
+}
+
+.stat-label {
+
+    color: #777;
+
+    font-size: 12px;
+
+}
+
+.stat-number {
+
+    margin-top: 5px;
+
+    color: #ff7a00;
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+}
+
+
+/* ==========================================
+   CREATOR AREA
+========================================== */
+
+.creator-card {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 25px;
+
+    background: #111;
+
+    border: 1px solid #292929;
+
+    border-radius: 18px;
+
+    margin-bottom: 30px;
+
+}
+
+.creator-info {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+}
+
+.creator-avatar {
+
+    width: 85px;
+
+    height: 85px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 2px solid #ff7a00;
+
+}
+
+.creator-text h3 {
+
+    font-size: 18px;
+
+}
+
+.creator-text p {
+
+    margin-top: 5px;
+
+    color: #777;
+
+    font-size: 13px;
+
+}
+
+.creator-button {
+
+    padding: 11px 17px;
+
+    background: #ff7a00;
+
+    border: none;
+
+    border-radius: 9px;
+
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+.creator-button:hover {
+
+    background: #ff9500;
+
+}
+
+
+/* ==========================================
+   UPLOAD GUIDE
+========================================== */
+
+.guide {
+
+    padding: 25px;
+
+    background: #111;
+
+    border: 1px solid #292929;
+
+    border-radius: 18px;
+
+}
+
+.guide-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    gap: 12px;
+
+}
+
+.guide-item {
+
+    padding: 15px;
+
+    background: #191919;
+
+    border-radius: 10px;
+
+    text-align: center;
+
+}
+
+.guide-icon {
+
+    font-size: 25px;
+
+}
+
+.guide-name {
+
+    margin-top: 7px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+.guide-type {
+
+    margin-top: 4px;
+
+    color: #777;
+
+    font-size: 10px;
+
+}
+
+
+/* ==========================================
+   LOADING
+========================================== */
+
+.loading {
+
+    padding: 60px;
+
+    text-align: center;
+
+    color: #777;
+
+}
+
+
+/* ==========================================
+   ERROR
+========================================== */
+
+.error {
+
+    display: none;
+
+    padding: 25px;
+
+    text-align: center;
+
+    color: #ff5555;
+
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media(max-width:900px) {
+
+    .quick-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+    .guide-grid {
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+    }
+
+}
+
+@media(max-width:600px) {
+
+    header {
+
+        padding: 0 18px;
+
+    }
+
+    .profile-mini span {
+
+        display: none;
+
+    }
+
+    .container {
+
+        margin-top: 25px;
+
+    }
+
+    .welcome h1 {
+
+        font-size: 25px;
+
+    }
+
+    .quick-grid {
+
+        grid-template-columns: 1fr 1fr;
+
+    }
+
+    .stats-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .guide-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+    .creator-card {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+    }
+
+    .creator-button {
+
+        width: 100%;
+
+        text-align: center;
+
+    }
+
+}
+
+</style>
 
 </head>
 
+
 <body>
 
+
+<!-- ==========================================
+     HEADER
+========================================== -->
 
 <header>
 
@@ -182,235 +730,519 @@
         VIDLYRA
     </div>
 
-    <button
-        class="logout-btn"
-        id="logoutButton"
-    >
-        Logout
-    </button>
+
+    <div class="header-right">
+
+        <a
+            href="profile.html"
+            class="profile-mini"
+        >
+
+            <img
+                id="headerAvatar"
+                src="assets/creator-avatars/creator1.png"
+                alt="Creator"
+            >
+
+            <span id="headerName">
+                Creator
+            </span>
+
+        </a>
+
+
+        <button
+            type="button"
+            class="logout-btn"
+            onclick="logout()"
+        >
+            Logout
+        </button>
+
+    </div>
 
 </header>
 
 
-<main>
 
-    <section class="welcome">
-
-        <h1>
-            Creator Dashboard
-        </h1>
-
-        <p>
-            Welcome to the Vidlyra Creator Portal.
-        </p>
-
-        <p
-            class="email"
-            id="userEmail"
-        >
-            Loading account...
-        </p>
-
-    </section>
+<main class="container">
 
 
-    <section class="cards">
+    <!-- ======================================
+         LOADING
+    ======================================= -->
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        Loading creator dashboard...
+    </div>
 
 
-        <div class="card">
+    <!-- ======================================
+         ERROR
+    ======================================= -->
 
-            <h2>
-                Upload Project
-            </h2>
-
-            <p>
-                Submit your anime, manga, music,
-                artwork or short film.
-            </p>
-
-            <button
-                onclick="window.location.href='upload.html'"
-            >
-                Upload
-            </button>
-
-        </div>
+    <div
+        id="error"
+        class="error"
+    ></div>
 
 
-        <div class="card">
+    <!-- ======================================
+         DASHBOARD
+    ======================================= -->
 
-            <h2>
-                My Projects
-            </h2>
+    <div
+        id="dashboardContent"
+        style="display:none;"
+    >
+
+
+        <!-- WELCOME -->
+
+        <section class="welcome">
+
+            <h1>
+                Welcome,
+                <span id="welcomeName">
+                    Creator
+                </span>
+                👋
+            </h1>
 
             <p>
-                View projects you have submitted
-                to Vidlyra.
+                Manage your projects and continue your Vidlyra creator journey.
             </p>
 
-            <button
-                onclick="viewProjects()"
+        </section>
+
+
+
+        <!-- ==================================
+             LEVEL CARD
+        =================================== -->
+
+        <section class="level-card">
+
+            <div class="level-top">
+
+                <div>
+
+                    <div class="level-title">
+                        CREATOR LEVEL
+                    </div>
+
+                    <div
+                        id="creatorRank"
+                        class="rank"
+                    >
+                        New Creator
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="creatorLevel"
+                    class="level-number"
+                >
+                    LEVEL 1
+                </div>
+
+            </div>
+
+
+            <div class="progress-info">
+
+                <span>
+                    Approved Projects
+                </span>
+
+                <span>
+
+                    <span id="approvedProjects">
+                        0
+                    </span>
+
+                    /
+
+                    <span id="nextLevelTarget">
+                        3
+                    </span>
+
+                </span>
+
+            </div>
+
+
+            <div class="progress-bar">
+
+                <div
+                    id="levelProgress"
+                    class="progress-fill"
+                ></div>
+
+            </div>
+
+
+            <div
+                id="nextLevelText"
+                class="next-level"
             >
-                View Projects
-            </button>
+                3 approved projects needed for the next level.
+            </div>
 
-        </div>
-
-
-        <div class="card">
-
-            <h2>
-                Creator Profile
-            </h2>
-
-            <p>
-                Manage your creator information.
-            </p>
-
-            <button
-                onclick="profileComingSoon()"
-            >
-                Profile
-            </button>
-
-        </div>
+        </section>
 
 
-    </section>
 
+        <!-- ==================================
+             QUICK ACTIONS
+        =================================== -->
 
-    <section class="status">
-
-        <h2>
-            Account Status
+        <h2 class="section-title">
+            Creator Tools
         </h2>
 
-        <p id="userStatus">
-            Checking authentication...
-        </p>
 
-    </section>
+        <section class="quick-grid">
+
+
+            <a
+                href="upload.html"
+                class="action-card"
+            >
+
+                <div class="action-icon">
+                    ⬆️
+                </div>
+
+                <div class="action-title">
+                    Upload Project
+                </div>
+
+                <div class="action-description">
+                    Submit anime, manga, music, artwork or short films.
+                </div>
+
+            </a>
+
+
+
+            <a
+                href="projects.html"
+                class="action-card"
+            >
+
+                <div class="action-icon">
+                    📁
+                </div>
+
+                <div class="action-title">
+                    My Projects
+                </div>
+
+                <div class="action-description">
+                    View and manage your submitted projects.
+                </div>
+
+            </a>
+
+
+
+            <a
+                href="creator-avatars.html"
+                class="action-card"
+            >
+
+                <div class="action-icon">
+                    🎨
+                </div>
+
+                <div class="action-title">
+                    Creator Avatars
+                </div>
+
+                <div class="action-description">
+                    Unlock special avatars as your creator level increases.
+                </div>
+
+            </a>
+
+
+
+            <a
+                href="avatars.html"
+                class="action-card"
+            >
+
+                <div class="action-icon">
+                    ✨
+                </div>
+
+                <div class="action-title">
+                    Frequency Avatars
+                </div>
+
+                <div class="action-description">
+                    Choose your regular Vidlyra Frequency Avatar.
+                </div>
+
+            </a>
+
+
+        </section>
+
+
+
+        <!-- ==================================
+             PROJECT STATS
+        =================================== -->
+
+        <h2 class="section-title">
+            Your Activity
+        </h2>
+
+
+        <section class="stats-grid">
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    TOTAL PROJECTS
+                </div>
+
+                <div
+                    id="totalProjects"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    APPROVED
+                </div>
+
+                <div
+                    id="approvedCount"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    PENDING
+                </div>
+
+                <div
+                    id="pendingCount"
+                    class="stat-number"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ==================================
+             CREATOR PROFILE
+        =================================== -->
+
+        <h2 class="section-title">
+            Creator Profile
+        </h2>
+
+
+        <section class="creator-card">
+
+
+            <div class="creator-info">
+
+
+                <img
+                    id="creatorAvatar"
+                    class="creator-avatar"
+                    src="assets/creator-avatars/creator1.png"
+                    alt="Creator Avatar"
+                >
+
+
+                <div class="creator-text">
+
+                    <h3 id="creatorProfileName">
+                        Creator
+                    </h3>
+
+                    <p id="creatorProfileRank">
+                        New Creator • Level 1
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <a
+                href="profile.html"
+                class="creator-button"
+            >
+                View Profile
+            </a>
+
+
+        </section>
+
+
+
+        <!-- ==================================
+             UPLOAD GUIDE
+        =================================== -->
+
+        <h2 class="section-title">
+            Upload Guide
+        </h2>
+
+
+        <section class="guide">
+
+
+            <div class="guide-grid">
+
+
+                <div class="guide-item">
+
+                    <div class="guide-icon">
+                        🎬
+                    </div>
+
+                    <div class="guide-name">
+                        Anime
+                    </div>
+
+                    <div class="guide-type">
+                        Video / Project
+                    </div>
+
+                </div>
+
+
+                <div class="guide-item">
+
+                    <div class="guide-icon">
+                        📖
+                    </div>
+
+                    <div class="guide-name">
+                        Manga
+                    </div>
+
+                    <div class="guide-type">
+                        PDF
+                    </div>
+
+                </div>
+
+
+                <div class="guide-item">
+
+                    <div class="guide-icon">
+                        🎥
+                    </div>
+
+                    <div class="guide-name">
+                        Short Film
+                    </div>
+
+                    <div class="guide-type">
+                        MP4
+                    </div>
+
+                </div>
+
+
+                <div class="guide-item">
+
+                    <div class="guide-icon">
+                        🎵
+                    </div>
+
+                    <div class="guide-name">
+                        Music
+                    </div>
+
+                    <div class="guide-type">
+                        MP3
+                    </div>
+
+                </div>
+
+
+                <div class="guide-item">
+
+                    <div class="guide-icon">
+                        🖼️
+                    </div>
+
+                    <div class="guide-name">
+                        Artwork
+                    </div>
+
+                    <div class="guide-type">
+                        PNG / JPG / WebP
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </div>
+
 
 </main>
 
 
-<!-- Supabase -->
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- ==========================================
+     SUPABASE
+========================================== -->
 
-<!-- Configuration -->
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<!-- CONFIG -->
 
 <script src="js/config.js"></script>
 
 
-<script>
+<!-- DASHBOARD JS -->
 
-    // ==========================================
-    // CHECK LOGIN
-    // ==========================================
+<script src="js/dashboard.js"></script>
 
-    async function checkUser() {
-
-        const {
-            data,
-            error
-        } = await sb.auth.getUser();
-
-
-        if (error || !data.user) {
-
-            console.log("No authenticated user.");
-
-            window.location.href =
-                "login.html";
-
-            return;
-        }
-
-
-        const user = data.user;
-
-
-        console.log(
-            "Authenticated user:",
-            user
-        );
-
-
-        document
-            .getElementById("userEmail")
-            .textContent =
-            user.email;
-
-
-        document
-            .getElementById("userStatus")
-            .textContent =
-            "✓ You are logged in successfully.";
-
-    }
-
-
-    // ==========================================
-    // LOGOUT
-    // ==========================================
-
-    document
-        .getElementById("logoutButton")
-        .addEventListener("click", async function () {
-
-            const {
-                error
-            } = await sb.auth.signOut();
-
-
-            if (error) {
-
-                alert(error.message);
-
-                return;
-            }
-
-
-            window.location.href =
-                "login.html";
-
-        });
-
-
-    // ==========================================
-    // PROJECTS
-    // ==========================================
-
-    function viewProjects() {
-
-        alert(
-            "My Projects will be added next."
-        );
-
-    }
-
-
-    // ==========================================
-    // PROFILE
-    // ==========================================
-
-    function profileComingSoon() {
-
-        alert(
-            "Creator Profile will be added next."
-        );
-
-    }
-
-
-    // ==========================================
-    // START
-    // ==========================================
-
-    checkUser();
-
-</script>
 
 </body>
 
