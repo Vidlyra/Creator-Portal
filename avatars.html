@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Frequency Avatars | Vidlyra</title>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Poppins, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: #050505;
+    color: white;
+}
+
+header {
+    height: 70px;
+    padding: 0 30px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: #111;
+    border-bottom: 1px solid #252525;
+}
+
+.logo {
+    color: #ff7a00;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.back-btn {
+    padding: 9px 16px;
+
+    background: transparent;
+    border: 1px solid #333;
+    border-radius: 8px;
+
+    color: #ccc;
+    cursor: pointer;
+}
+
+.back-btn:hover {
+    border-color: #ff7a00;
+    color: #ff7a00;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.title {
+    text-align: center;
+    font-size: 30px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #888;
+    margin: 8px 0 35px;
+}
+
+.tier {
+    margin-bottom: 35px;
+}
+
+.tier-title {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.avatar-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(150px, 1fr));
+
+    gap: 15px;
+}
+
+.avatar-card {
+    background: #111;
+
+    border: 1px solid #292929;
+
+    border-radius: 14px;
+
+    padding: 15px;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.avatar-card:hover {
+    border-color: #ff7a00;
+    transform: translateY(-3px);
+}
+
+.avatar-card.selected {
+    border-color: #ff7a00;
+
+    box-shadow:
+        0 0 20px rgba(255,122,0,.2);
+}
+
+.avatar-image {
+    width: 100px;
+    height: 100px;
+
+    margin: auto;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    background: #1a1a1a;
+
+    border: 2px solid #333;
+}
+
+.avatar-name {
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.avatar-number {
+    color: #777;
+    font-size: 11px;
+    margin-top: 3px;
+}
+
+.save-btn {
+    display: block;
+
+    width: 100%;
+
+    max-width: 400px;
+
+    margin: 30px auto;
+
+    padding: 15px;
+
+    background: #ff7a00;
+
+    border: none;
+
+    border-radius: 10px;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.save-btn:hover {
+    background: #ff9500;
+}
+
+.save-btn:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.message {
+    min-height: 25px;
+
+    text-align: center;
+
+    margin-top: 15px;
+
+    color: #aaa;
+}
+
+.loading {
+    text-align: center;
+    color: #888;
+    padding: 30px;
+}
+
+@media(max-width:600px) {
+
+    header {
+        padding: 0 18px;
+    }
+
+    .avatar-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+        VIDLYRA
+    </div>
+
+    <button
+        class="back-btn"
+        onclick="window.location.href='profile.html'"
+    >
+        ← Profile
+    </button>
+
+</header>
+
+
+<main class="container">
+
+    <h1 class="title">
+        Frequency Avatars
+    </h1>
+
+    <p class="subtitle">
+        Choose your official Vidlyra creator avatar.
+    </p>
+
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        Loading avatars...
+    </div>
+
+
+    <div
+        id="avatarContent"
+        style="display:none;"
+    >
+
+
+        <!-- BASIC -->
+
+        <section class="tier">
+
+            <h2 class="tier-title">
+                ⭐ Basic — 12 Avatars
+            </h2>
+
+            <div
+                class="avatar-grid"
+                id="basicGrid"
+            ></div>
+
+        </section>
+
+
+        <!-- PREMIUM -->
+
+        <section class="tier">
+
+            <h2 class="tier-title">
+                💎 Premium — 30 Avatars
+            </h2>
+
+            <div
+                class="avatar-grid"
+                id="premiumGrid"
+            ></div>
+
+        </section>
+
+
+        <!-- VIP -->
+
+        <section class="tier">
+
+            <h2 class="tier-title">
+                👑 VIP — Legendary Avatars
+            </h2>
+
+            <div
+                class="avatar-grid"
+                id="vipGrid"
+            ></div>
+
+        </section>
+
+
+        <button
+            class="save-btn"
+            id="saveButton"
+            onclick="saveAvatar()"
+        >
+            Save Selected Avatar
+        </button>
+
+
+        <div
+            class="message"
+            id="message"
+        ></div>
+
+
+    </div>
+
+</main>
+
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+<script src="js/config.js"></script>
+
+<script src="js/avatar.js"></script>
+
+
+</body>
+
+</html>
