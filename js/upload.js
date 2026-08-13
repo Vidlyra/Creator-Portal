@@ -1,9 +1,85 @@
 // ==========================================
 // VIDLYRA CREATOR PORTAL
-// PROJECT UPLOAD
+// MULTI-FORMAT PROJECT UPLOAD
 // ==========================================
 
 console.log("Upload system loaded");
+
+
+// ==========================================
+// CATEGORY SETTINGS
+// ==========================================
+
+const uploadSettings = {
+
+    "Anime": {
+        bucket: "anime",
+        type: "video/mp4",
+        extensions: [".mp4"],
+        maxSize: 500 * 1024 * 1024
+    },
+
+    "Manga": {
+        bucket: "manga",
+        type: "application/pdf",
+        extensions: [".pdf"],
+        maxSize: 20 * 1024 * 1024
+    },
+
+    "Story": {
+        bucket: "stories",
+        type: "application/pdf",
+        extensions: [".pdf"],
+        maxSize: 20 * 1024 * 1024
+    },
+
+    "Short Film": {
+        bucket: "shortfilms",
+        type: "video/mp4",
+        extensions: [".mp4"],
+        maxSize: 500 * 1024 * 1024
+    },
+
+    "Music": {
+        bucket: "music",
+        type: "audio/mpeg",
+        extensions: [".mp3"],
+        maxSize: 50 * 1024 * 1024
+    },
+
+    "Artwork": {
+        bucket: "artwork",
+        type: "image",
+        extensions: [
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".webp"
+        ],
+        maxSize: 10 * 1024 * 1024
+    }
+
+};
+
+
+// ==========================================
+// GET FILE EXTENSION
+// ==========================================
+
+function getExtension(filename) {
+
+    const lastDot =
+        filename.lastIndexOf(".");
+
+    if (lastDot === -1) {
+        return "";
+    }
+
+    return filename
+        .substring(lastDot)
+        .toLowerCase();
+
+}
 
 
 // ==========================================
@@ -26,7 +102,11 @@ async function uploadProject() {
         document.getElementById("category")
             .value;
 
-    const file =
+    const mainFile =
+        document.getElementById("mainFile")
+            .files[0];
+
+    const thumbnail =
         document.getElementById("thumbnail")
             .files[0];
 
@@ -42,43 +122,148 @@ async function uploadProject() {
 
 
     // ==========================================
-    // VALIDATION
+    // BASIC VALIDATION
     // ==========================================
 
-    if (!title || !description || !category || !file) {
+    if (!title) {
 
         message.textContent =
-            "Please complete all fields.";
+            "Please enter a project title.";
+
+        return;
+    }
+
+
+    if (!description) {
+
+        message.textContent =
+            "Please enter a description.";
+
+        return;
+    }
+
+
+    if (!category) {
+
+        message.textContent =
+            "Please select a category.";
+
+        return;
+    }
+
+
+    if (!mainFile) {
+
+        message.textContent =
+            "Please select your project file.";
+
+        return;
+    }
+
+
+    if (!thumbnail) {
+
+        message.textContent =
+            "Please select a thumbnail.";
 
         return;
     }
 
 
     // ==========================================
-    // FILE VALIDATION
+    // CATEGORY SETTINGS
     // ==========================================
 
-    const allowedTypes = [
+    const settings =
+        uploadSettings[category];
+
+
+    if (!settings) {
+
+        message.textContent =
+            "Invalid project category.";
+
+        return;
+    }
+
+
+    // ==========================================
+    // FILE EXTENSION CHECK
+    // ==========================================
+
+    const extension =
+        getExtension(mainFile.name);
+
+
+    if (!settings.extensions.includes(extension)) {
+
+        message.textContent =
+            `Invalid file format. ${category} requires ${settings.extensions.join(", ")}.`;
+
+        return;
+    }
+
+
+    // ==========================================
+    // MIME TYPE CHECK
+    // ==========================================
+
+    if (
+        settings.type !== "image" &&
+        mainFile.type !== settings.type
+    ) {
+
+        message.textContent =
+            `Invalid file type. Please upload a valid ${category} file.`;
+
+        return;
+    }
+
+
+    // ==========================================
+    // FILE SIZE CHECK
+    // ==========================================
+
+    if (mainFile.size > settings.maxSize) {
+
+        const maxMB =
+            Math.round(
+                settings.maxSize /
+                (1024 * 1024)
+            );
+
+        message.textContent =
+            `File is too large. Maximum size is ${maxMB} MB.`;
+
+        return;
+    }
+
+
+    // ==========================================
+    // THUMBNAIL VALIDATION
+    // ==========================================
+
+    const thumbnailTypes = [
         "image/jpeg",
         "image/png",
         "image/webp"
     ];
 
-    if (!allowedTypes.includes(file.type)) {
+
+    if (!thumbnailTypes.includes(thumbnail.type)) {
 
         message.textContent =
-            "Please select a JPG, PNG or WebP image.";
+            "Thumbnail must be JPG, PNG or WebP.";
 
         return;
     }
 
 
-    // 5 MB maximum
-
-    const maxSize =
+    const thumbnailMaxSize =
         5 * 1024 * 1024;
 
-    if (file.size > maxSize) {
+
+    if (thumbnail.size > thumbnailMaxSize) {
 
         message.textContent =
             "Thumbnail must be smaller than 5 MB.";
@@ -88,7 +273,7 @@ async function uploadProject() {
 
 
     // ==========================================
-    // CHECK LOGIN
+    // CHECK AUTHENTICATION
     // ==========================================
 
     const {
@@ -97,25 +282,7 @@ async function uploadProject() {
     } = await sb.auth.getUser();
 
 
-    if (userError) {
-
-        console.error(
-            "User error:",
-            userError
-        );
-
-        message.textContent =
-            "Unable to verify your account.";
-
-        return;
-    }
-
-
-    const user =
-        userData.user;
-
-
-    if (!user) {
+    if (userError || !userData.user) {
 
         message.textContent =
             "Please login first.";
@@ -131,8 +298,12 @@ async function uploadProject() {
     }
 
 
+    const user =
+        userData.user;
+
+
     console.log(
-        "Uploading for user:",
+        "Uploading for:",
         user.id
     );
 
@@ -151,26 +322,89 @@ async function uploadProject() {
 
 
         // ======================================
-        // SAFE FILE NAME
+        // SAFE FILENAMES
         // ======================================
 
-        const safeName =
-            file.name
+        const safeMainName =
+            mainFile.name
                 .replace(
                     /[^a-zA-Z0-9._-]/g,
                     "_"
                 );
 
 
-        // Store files inside user's folder
+        const safeThumbnailName =
+            thumbnail.name
+                .replace(
+                    /[^a-zA-Z0-9._-]/g,
+                    "_"
+                );
 
-        const filePath =
-            `${user.id}/${Date.now()}-${safeName}`;
+
+        const timestamp =
+            Date.now();
+
+
+        // ======================================
+        // MAIN FILE PATH
+        // ======================================
+
+        const mainPath =
+            `${user.id}/${timestamp}-${safeMainName}`;
+
+
+        // ======================================
+        // THUMBNAIL PATH
+        // ======================================
+
+        const thumbnailPath =
+            `${user.id}/${timestamp}-thumbnail-${safeThumbnailName}`;
+
+
+        // ======================================
+        // UPLOAD MAIN FILE
+        // ======================================
+
+        console.log(
+            "Uploading main file to:",
+            settings.bucket
+        );
+
+
+        const {
+            data: mainUploadData,
+            error: mainUploadError
+        } = await sb.storage
+            .from(settings.bucket)
+            .upload(
+                mainPath,
+                mainFile,
+                {
+                    cacheControl: "3600",
+                    upsert: false,
+                    contentType: mainFile.type
+                }
+            );
+
+
+        if (mainUploadError) {
+
+            console.error(
+                "Main upload error:",
+                mainUploadError
+            );
+
+            message.textContent =
+                "Project file upload failed: " +
+                mainUploadError.message;
+
+            return;
+        }
 
 
         console.log(
-            "Storage path:",
-            filePath
+            "Main file uploaded:",
+            mainUploadData
         );
 
 
@@ -179,64 +413,54 @@ async function uploadProject() {
         // ======================================
 
         const {
-            data: storageData,
-            error: storageError
+            data: thumbnailData,
+            error: thumbnailError
         } = await sb.storage
             .from("thumbnails")
             .upload(
-                filePath,
-                file,
+                thumbnailPath,
+                thumbnail,
                 {
                     cacheControl: "3600",
-                    upsert: false
+                    upsert: false,
+                    contentType: thumbnail.type
                 }
             );
 
 
-        if (storageError) {
+        if (thumbnailError) {
 
             console.error(
-                "Storage error:",
-                storageError
+                "Thumbnail error:",
+                thumbnailError
             );
+
+
+            // Remove main file if thumbnail fails
+
+            await sb.storage
+                .from(settings.bucket)
+                .remove([
+                    mainPath
+                ]);
+
 
             message.textContent =
                 "Thumbnail upload failed: " +
-                storageError.message;
+                thumbnailError.message;
 
             return;
         }
 
 
         console.log(
-            "Storage upload successful:",
-            storageData
+            "Thumbnail uploaded:",
+            thumbnailData
         );
 
 
         // ======================================
-        // GET PUBLIC URL
-        // ======================================
-
-        const {
-            data: publicUrlData
-        } = sb.storage
-            .from("thumbnails")
-            .getPublicUrl(filePath);
-
-
-        const imageUrl =
-            publicUrlData.publicUrl;
-
-
-        console.log(
-            "Thumbnail URL:",
-            imageUrl
-        );
-
-
-        // ======================================
-        // SAVE PROJECT
+        // SAVE PROJECT DATABASE RECORD
         // ======================================
 
         const {
@@ -254,7 +478,7 @@ async function uploadProject() {
 
                 category: category,
 
-                thumbnail: imageUrl,
+                thumbnail: thumbnailPath,
 
                 status: "Pending"
 
@@ -271,13 +495,19 @@ async function uploadProject() {
             );
 
 
-            // Remove uploaded image if
-            // database insert failed
+            // Cleanup uploaded files
+
+            await sb.storage
+                .from(settings.bucket)
+                .remove([
+                    mainPath
+                ]);
+
 
             await sb.storage
                 .from("thumbnails")
                 .remove([
-                    filePath
+                    thumbnailPath
                 ]);
 
 
@@ -290,9 +520,53 @@ async function uploadProject() {
 
 
         console.log(
-            "Project created:",
+            "Project saved:",
             projectData
         );
+
+
+        // ======================================
+        // STORY RECORD
+        // ======================================
+
+        if (category === "Story") {
+
+            const {
+                error: storyError
+            } = await sb
+                .from("stories")
+                .insert({
+
+                    user_id: user.id,
+
+                    title: title,
+
+                    description: description,
+
+                    category: "Story",
+
+                    pdf_path: mainPath,
+
+                    status: "Pending"
+
+                });
+
+
+            if (storyError) {
+
+                console.error(
+                    "Story database error:",
+                    storyError
+                );
+
+                message.textContent =
+                    "Story uploaded, but story record failed: " +
+                    storyError.message;
+
+                return;
+            }
+
+        }
 
 
         // ======================================
@@ -303,7 +577,7 @@ async function uploadProject() {
             "#55dd77";
 
         message.textContent =
-            "Project uploaded successfully!";
+            `${category} uploaded successfully!`;
 
 
         setTimeout(() => {
@@ -311,13 +585,13 @@ async function uploadProject() {
             window.location.href =
                 "dashboard.html";
 
-        }, 1000);
+        }, 1200);
 
 
     } catch (error) {
 
         console.error(
-            "Upload error:",
+            "Unexpected upload error:",
             error
         );
 
