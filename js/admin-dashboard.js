@@ -29,6 +29,7 @@ const errorBox =
 function showError(message) {
 
     errorBox.textContent = message;
+
     errorBox.style.display = "block";
 
 }
@@ -108,6 +109,7 @@ async function checkAdmin() {
 
         return user;
 
+
     } catch (error) {
 
         console.error(
@@ -169,7 +171,7 @@ async function loadProjects() {
 
             .eq(
                 "status",
-                "pending"
+                "Pending"
             )
 
             .order(
@@ -338,7 +340,7 @@ function renderProject(project) {
                                 class="approve"
                                 onclick="
                                     viewProjectFile(
-                                        '${project.file_path}'
+                                        '${escapeAttribute(project.file_path)}'
                                     )
                                 "
                             >
@@ -403,28 +405,35 @@ async function viewProjectFile(
     }
 
 
-    /*
-     * file_path is assumed to be
-     * the path inside Supabase Storage.
-     *
-     * Change "projects" below if your
-     * Storage bucket has another name.
-     */
+    try {
 
-    const {
-        data,
-        error
-    } = await sb.storage
+        const {
+            data,
+            error
+        } = await sb.storage
 
-        .from("projects")
+            .from("projects")
 
-        .createSignedUrl(
-            filePath,
-            3600
+            .createSignedUrl(
+                filePath,
+                3600
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        window.open(
+            data.signedUrl,
+            "_blank"
         );
 
 
-    if (error) {
+    } catch (error) {
 
         console.error(
             "File URL error:",
@@ -436,15 +445,7 @@ async function viewProjectFile(
             error.message
         );
 
-        return;
-
     }
-
-
-    window.open(
-        data.signedUrl,
-        "_blank"
-    );
 
 }
 
@@ -473,11 +474,15 @@ async function approveProject(
     try {
 
         const {
-            data: authData
+            data: authData,
+            error: authError
         } = await sb.auth.getUser();
 
 
-        if (!authData.user) {
+        if (
+            authError ||
+            !authData.user
+        ) {
 
             window.location.href =
                 "login.html";
@@ -495,7 +500,7 @@ async function approveProject(
 
             .update({
 
-                status: "approved",
+                status: "Approved",
 
                 reviewed_at:
                     new Date().toISOString(),
@@ -524,6 +529,7 @@ async function approveProject(
 
 
         await loadProjects();
+
 
     } catch (error) {
 
@@ -566,11 +572,15 @@ async function rejectProject(
     try {
 
         const {
-            data: authData
+            data: authData,
+            error: authError
         } = await sb.auth.getUser();
 
 
-        if (!authData.user) {
+        if (
+            authError ||
+            !authData.user
+        ) {
 
             window.location.href =
                 "login.html";
@@ -588,7 +598,7 @@ async function rejectProject(
 
             .update({
 
-                status: "rejected",
+                status: "Rejected",
 
                 admin_note:
                     note.trim(),
@@ -620,6 +630,7 @@ async function rejectProject(
 
 
         await loadProjects();
+
 
     } catch (error) {
 
@@ -670,21 +681,21 @@ async function loadStats() {
         const pending =
             list.filter(
                 p =>
-                    p.status === "pending"
+                    p.status === "Pending"
             ).length;
 
 
         const approved =
             list.filter(
                 p =>
-                    p.status === "approved"
+                    p.status === "Approved"
             ).length;
 
 
         const rejected =
             list.filter(
                 p =>
-                    p.status === "rejected"
+                    p.status === "Rejected"
             ).length;
 
 
@@ -749,6 +760,27 @@ function escapeHTML(value) {
         .replace(
             /'/g,
             "&#039;"
+        );
+
+}
+
+
+// ==========================================
+// ESCAPE ATTRIBUTE
+// ==========================================
+
+function escapeAttribute(value) {
+
+    return String(value)
+
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+
+        .replace(
+            /'/g,
+            "\\'"
         );
 
 }
