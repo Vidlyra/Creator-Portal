@@ -3,449 +3,558 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>Creator Profile | Vidlyra</title>
+<title>Creator Profile | Vidlyra</title>
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
+<link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+>
 
-    <style>
+<link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
 
+<style>
 
-        body {
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
 
-            min-height: 100vh;
 
-            background: #050505;
+body {
 
-            color: white;
+    min-height: 100vh;
 
-        }
+    background: #050505;
 
+    color: white;
 
-        /* =====================================
-           HEADER
-        ===================================== */
+}
 
-        header {
 
-            height: 70px;
+/* ==========================================
+   HEADER
+========================================== */
 
-            padding: 0 30px;
+header {
 
-            display: flex;
+    height: 70px;
 
-            align-items: center;
+    padding: 0 30px;
 
-            justify-content: space-between;
+    display: flex;
 
-            background: #111;
+    justify-content: space-between;
 
-            border-bottom: 1px solid #252525;
+    align-items: center;
 
-        }
+    background: #111;
 
+    border-bottom: 1px solid #252525;
 
-        .logo {
+}
 
-            color: #ff7a00;
 
-            font-size: 25px;
+.logo {
 
-            font-weight: 700;
+    color: #ff7a00;
 
-            letter-spacing: 1px;
+    font-size: 25px;
 
-        }
+    font-weight: 700;
 
+    letter-spacing: 1px;
 
-        .back-btn {
+}
 
-            padding: 9px 16px;
 
-            background: transparent;
+.back-btn {
 
-            border: 1px solid #333;
+    padding: 9px 16px;
 
-            border-radius: 8px;
+    background: transparent;
 
-            color: #ccc;
+    border: 1px solid #333;
 
-            cursor: pointer;
+    border-radius: 8px;
 
-        }
+    color: #ccc;
 
+    cursor: pointer;
 
-        .back-btn:hover {
+}
 
-            border-color: #ff7a00;
 
-            color: #ff7a00;
+.back-btn:hover {
 
-        }
+    border-color: #ff7a00;
 
+    color: #ff7a00;
 
-        /* =====================================
-           CONTAINER
-        ===================================== */
+}
 
-        .container {
 
-            width: 100%;
+/* ==========================================
+   CONTAINER
+========================================== */
 
-            max-width: 650px;
+.container {
 
-            margin: 50px auto;
+    width: 100%;
 
-            padding: 0 20px;
+    max-width: 700px;
 
-        }
+    margin: 45px auto;
 
+    padding: 0 20px;
 
-        /* =====================================
-           PROFILE CARD
-        ===================================== */
+}
 
-        .profile-card {
 
-            background: #111;
+/* ==========================================
+   PROFILE CARD
+========================================== */
 
-            border: 1px solid #252525;
+.profile-card {
 
-            border-radius: 20px;
+    background: #111;
 
-            padding: 40px;
+    border: 1px solid #252525;
 
-            box-shadow:
-                0 0 30px rgba(255, 122, 0, 0.10);
+    border-radius: 18px;
 
-        }
+    padding: 35px;
 
+    box-shadow:
+        0 0 30px rgba(255,122,0,.10);
 
-        .title {
+}
 
-            text-align: center;
 
-            font-size: 28px;
+/* ==========================================
+   AVATAR
+========================================== */
 
-            margin-bottom: 8px;
+.avatar-section {
 
-        }
+    text-align: center;
 
+}
 
-        .subtitle {
 
-            text-align: center;
+.avatar-image {
 
-            color: #888;
+    width: 130px;
 
-            margin-bottom: 35px;
+    height: 130px;
 
-        }
+    border-radius: 50%;
 
+    object-fit: cover;
 
-        /* =====================================
-           AVATAR
-        ===================================== */
+    background: #1a1a1a;
 
-        .avatar-section {
+    border: 3px solid #ff7a00;
 
-            text-align: center;
+    box-shadow:
+        0 0 25px rgba(255,122,0,.20);
 
-            margin-bottom: 30px;
+}
 
-        }
 
+.creator-name {
 
-        .avatar {
+    margin-top: 15px;
 
-            width: 130px;
+    font-size: 25px;
 
-            height: 130px;
+    font-weight: 600;
 
-            margin: 0 auto 15px;
+}
 
-            border-radius: 50%;
 
-            background: #1a1a1a;
+.creator-email {
 
-            border: 3px solid #ff7a00;
+    color: #888;
 
-            display: flex;
+    font-size: 14px;
 
-            align-items: center;
+    margin-top: 4px;
 
-            justify-content: center;
+}
 
-            overflow: hidden;
 
-        }
+.avatar-number {
 
+    color: #ff7a00;
 
-        .avatar img {
+    font-size: 13px;
 
-            width: 100%;
+    margin-top: 8px;
 
-            height: 100%;
+}
 
-            object-fit: cover;
 
-        }
+/* ==========================================
+   CREATOR LEVEL
+========================================== */
 
+.creator-level-card {
 
-        .avatar-number {
+    margin-top: 30px;
 
-            color: #ff7a00;
+    padding: 22px;
 
-            font-size: 14px;
+    background: #0d0d0d;
 
-        }
+    border: 1px solid #292929;
 
+    border-radius: 15px;
 
-        /* =====================================
-           PROFILE INFORMATION
-        ===================================== */
+    box-shadow:
+        0 0 25px rgba(255,122,0,.08);
 
-        .info {
+}
 
-            margin-top: 20px;
 
-        }
+.level-header {
 
+    display: flex;
 
-        .info-box {
+    justify-content: space-between;
 
-            background: #181818;
+    align-items: center;
 
-            border: 1px solid #292929;
+    gap: 15px;
 
-            border-radius: 10px;
+}
 
-            padding: 15px;
 
-            margin-bottom: 15px;
+.level-label {
 
-        }
+    color: #777;
 
+    font-size: 11px;
 
-        .info-label {
+    letter-spacing: 1px;
 
-            display: block;
+}
 
-            color: #777;
 
-            font-size: 12px;
+.creator-rank {
 
-            margin-bottom: 5px;
+    margin-top: 4px;
 
-        }
+    color: #ff7a00;
 
+    font-size: 20px;
 
-        .info-value {
+    font-weight: 600;
 
-            color: white;
+}
 
-            font-size: 15px;
 
-            word-break: break-word;
+.creator-level {
 
-        }
+    color: white;
 
+    font-size: 18px;
 
-        /* =====================================
-           STATUS
-        ===================================== */
+    font-weight: 700;
 
-        .status {
+}
 
-            margin-top: 20px;
 
-            padding: 13px;
+/* ==========================================
+   PROGRESS
+========================================== */
 
-            border-radius: 9px;
+.progress-info {
 
-            background: #181818;
+    display: flex;
 
-            border-left: 3px solid #ff7a00;
+    justify-content: space-between;
 
-            color: #aaa;
+    margin-top: 20px;
 
-            font-size: 13px;
+    color: #aaa;
 
-            text-align: center;
+    font-size: 13px;
 
-        }
+}
 
 
-        /* =====================================
-           BUTTONS
-        ===================================== */
+.progress-bar {
 
-        .buttons {
+    width: 100%;
 
-            display: flex;
+    height: 9px;
 
-            gap: 12px;
+    margin-top: 8px;
 
-            margin-top: 25px;
+    background: #252525;
 
-        }
+    border-radius: 20px;
 
+    overflow: hidden;
 
-        .btn {
+}
 
-            flex: 1;
 
-            padding: 13px;
+.progress-fill {
 
-            border-radius: 9px;
+    width: 0%;
 
-            cursor: pointer;
+    height: 100%;
 
-            font-size: 14px;
+    background: #ff7a00;
 
-            font-weight: 600;
+    border-radius: 20px;
 
-        }
+    transition: width .5s ease;
 
+}
 
-        .dashboard-btn {
 
-            background: #ff7a00;
+.next-level {
 
-            border: none;
+    margin-top: 9px;
 
-            color: white;
+    color: #777;
 
-        }
+    font-size: 12px;
 
+}
 
-        .dashboard-btn:hover {
 
-            background: #ff9500;
+/* ==========================================
+   ACCOUNT INFORMATION
+========================================== */
 
-        }
+.info-section {
 
+    margin-top: 30px;
 
-        .logout-btn {
+}
 
-            background: transparent;
 
-            border: 1px solid #444;
+.info-row {
 
-            color: #ccc;
+    display: flex;
 
-        }
+    justify-content: space-between;
 
+    gap: 15px;
 
-        .logout-btn:hover {
+    padding: 14px 0;
 
-            border-color: #ff5555;
+    border-bottom: 1px solid #222;
 
-            color: #ff5555;
+}
 
-        }
 
+.info-label {
 
-        /* =====================================
-           LOADING
-        ===================================== */
+    color: #777;
 
-        .loading {
+    font-size: 13px;
 
-            text-align: center;
+}
 
-            color: #888;
 
-            padding: 30px;
+.info-value {
 
-        }
+    color: #ddd;
 
+    font-size: 13px;
 
-        /* =====================================
-           ERROR
-        ===================================== */
+    text-align: right;
 
-        .error {
+    word-break: break-all;
 
-            display: none;
+}
 
-            text-align: center;
 
-            color: #ff5555;
+/* ==========================================
+   BUTTONS
+========================================== */
 
-            background: #1a1010;
+.actions {
 
-            border: 1px solid #3a2020;
+    margin-top: 30px;
 
-            padding: 15px;
+    display: grid;
 
-            border-radius: 9px;
+    grid-template-columns:
+        repeat(2, 1fr);
 
-            margin-top: 20px;
+    gap: 12px;
 
-        }
+}
 
 
-        /* =====================================
-           MOBILE
-        ===================================== */
+.action-btn {
 
-        @media (max-width: 600px) {
+    display: flex;
 
-            header {
+    justify-content: center;
 
-                padding: 0 18px;
+    align-items: center;
 
-            }
+    padding: 13px;
 
-            .container {
+    background: #191919;
 
-                margin-top: 30px;
+    border: 1px solid #333;
 
-            }
+    border-radius: 10px;
 
-            .profile-card {
+    color: #ddd;
 
-                padding: 25px;
+    text-decoration: none;
 
-            }
+    cursor: pointer;
 
-            .buttons {
+    font-size: 14px;
 
-                flex-direction: column;
+}
 
-            }
 
-        }
+.action-btn:hover {
 
-    </style>
+    border-color: #ff7a00;
+
+    color: #ff7a00;
+
+}
+
+
+.logout-btn {
+
+    width: 100%;
+
+    margin-top: 15px;
+
+    padding: 13px;
+
+    background: transparent;
+
+    border: 1px solid #552222;
+
+    border-radius: 10px;
+
+    color: #ff6666;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+}
+
+
+.logout-btn:hover {
+
+    background: #241010;
+
+    border-color: #ff5555;
+
+}
+
+
+/* ==========================================
+   LOADING
+========================================== */
+
+.loading {
+
+    text-align: center;
+
+    color: #888;
+
+    padding: 50px;
+
+}
+
+
+/* ==========================================
+   ERROR
+========================================== */
+
+.error {
+
+    display: none;
+
+    padding: 20px;
+
+    text-align: center;
+
+    color: #ff5555;
+
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media(max-width:600px) {
+
+    header {
+
+        padding: 0 18px;
+
+    }
+
+
+    .container {
+
+        margin-top: 25px;
+
+    }
+
+
+    .profile-card {
+
+        padding: 25px;
+
+    }
+
+
+    .actions {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .level-header {
+
+        align-items: flex-start;
+
+    }
+
+}
+
+</style>
 
 </head>
 
@@ -465,16 +574,15 @@
 
 
     <button
-        class="back-btn"
         type="button"
+        class="back-btn"
         onclick="window.location.href='dashboard.html'"
     >
-
         ← Dashboard
-
     </button>
 
 </header>
+
 
 
 <!-- ==========================================
@@ -484,169 +592,205 @@
 <main class="container">
 
 
-    <section class="profile-card">
+    <!-- LOADING -->
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        Loading creator profile...
+    </div>
 
 
-        <h1 class="title">
-            Creator Profile
-        </h1>
+
+    <!-- ERROR -->
+
+    <div
+        id="error"
+        class="error"
+    ></div>
 
 
-        <p class="subtitle">
-            Your Vidlyra creator information
-        </p>
+
+    <!-- PROFILE -->
+
+    <div
+        id="profileContent"
+        class="profile-card"
+        style="display:none;"
+    >
 
 
-        <!-- LOADING -->
+        <!-- ==================================
+             AVATAR
+        =================================== -->
 
-        <div
-            class="loading"
-            id="loading"
-        >
+        <div class="avatar-section">
 
-            Loading profile...
+
+            <img
+                id="avatarImage"
+                class="avatar-image"
+                src="assets/avatars/avatar1.png"
+                alt="Creator Avatar"
+            >
+
+
+            <div
+                id="creatorName"
+                class="creator-name"
+            >
+                Creator
+            </div>
+
+
+            <div
+                id="creatorEmail"
+                class="creator-email"
+            >
+                creator@email.com
+            </div>
+
+
+            <div
+                id="avatarNumber"
+                class="avatar-number"
+            >
+                Avatar #1
+            </div>
+
 
         </div>
 
 
-        <!-- PROFILE CONTENT -->
 
-        <div
-            id="profileContent"
-            style="display:none;"
-        >
+        <!-- ==================================
+             CREATOR LEVEL
+        =================================== -->
+
+        <div class="creator-level-card">
 
 
-            <!-- AVATAR -->
+            <div class="level-header">
 
-            <div class="avatar-section">
 
-                <div class="avatar">
+                <div>
 
-                    <img
-                        id="avatarImage"
-                        src=""
-                        alt="Creator Avatar"
+                    <div class="level-label">
+                        CREATOR LEVEL
+                    </div>
+
+
+                    <div
+                        id="creatorRank"
+                        class="creator-rank"
                     >
+                        New Creator
+                    </div>
 
                 </div>
 
 
                 <div
-                    class="avatar-number"
-                    id="avatarNumber"
+                    id="creatorLevel"
+                    class="creator-level"
                 >
-                    Avatar #1
-                </div>
-
-            </div>
-
-
-            <!-- INFORMATION -->
-
-            <div class="info">
-
-
-                <div class="info-box">
-
-                    <span class="info-label">
-                        Creator Name
-                    </span>
-
-                    <div
-                        class="info-value"
-                        id="creatorName"
-                    >
-                        —
-                    </div>
-
-                </div>
-
-
-                <div class="info-box">
-
-                    <span class="info-label">
-                        Email
-                    </span>
-
-                    <div
-                        class="info-value"
-                        id="creatorEmail"
-                    >
-                        —
-                    </div>
-
-                </div>
-
-
-                <div class="info-box">
-
-                    <span class="info-label">
-                        User ID
-                    </span>
-
-                    <div
-                        class="info-value"
-                        id="userId"
-                    >
-                        —
-                    </div>
-
-                </div>
-
-
-                <div class="info-box">
-
-                    <span class="info-label">
-                        Account Created
-                    </span>
-
-                    <div
-                        class="info-value"
-                        id="createdAt"
-                    >
-                        —
-                    </div>
-
+                    LEVEL 1
                 </div>
 
 
             </div>
 
 
-            <!-- STATUS -->
 
-            <div class="status">
+            <!-- PROGRESS -->
 
-                🟢 Creator account active
+            <div class="progress-info">
+
+                <span>
+                    Approved Projects
+                </span>
+
+
+                <span>
+
+                    <span id="approvedProjects">
+                        0
+                    </span>
+
+                    /
+
+                    <span id="nextLevelTarget">
+                        3
+                    </span>
+
+                </span>
 
             </div>
 
 
-            <!-- BUTTONS -->
 
-            <div class="buttons">
+            <div class="progress-bar">
 
-                <button
-                    type="button"
-                    class="btn dashboard-btn"
-                    onclick="window.location.href='dashboard.html'"
+                <div
+                    id="levelProgress"
+                    class="progress-fill"
+                ></div>
+
+            </div>
+
+
+
+            <div
+                id="nextLevelText"
+                class="next-level"
+            >
+                3 approved projects needed for Level 2
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ==================================
+             ACCOUNT INFORMATION
+        =================================== -->
+
+        <div class="info-section">
+
+
+            <div class="info-row">
+
+                <span class="info-label">
+                    User ID
+                </span>
+
+
+                <span
+                    id="userId"
+                    class="info-value"
                 >
+                    —
+                </span>
 
-                    Dashboard
-
-                </button>
+            </div>
 
 
-                <button
-                    type="button"
-                    class="btn logout-btn"
-                    onclick="logout()"
+
+            <div class="info-row">
+
+                <span class="info-label">
+                    Account Created
+                </span>
+
+
+                <span
+                    id="createdAt"
+                    class="info-value"
                 >
-
-                    Logout
-
-                </button>
+                    —
+                </span>
 
             </div>
 
@@ -654,18 +798,67 @@
         </div>
 
 
-        <!-- ERROR -->
 
-        <div
-            class="error"
-            id="error"
-        ></div>
+        <!-- ==================================
+             ACTIONS
+        =================================== -->
+
+        <div class="actions">
 
 
-    </section>
+            <a
+                href="avatars.html"
+                class="action-btn"
+            >
+                🎨 Change Avatar
+            </a>
 
+
+            <a
+                href="projects.html"
+                class="action-btn"
+            >
+                📁 My Projects
+            </a>
+
+
+            <a
+                href="upload.html"
+                class="action-btn"
+            >
+                ⬆️ Upload Project
+            </a>
+
+
+            <a
+                href="dashboard.html"
+                class="action-btn"
+            >
+                🏠 Dashboard
+            </a>
+
+
+        </div>
+
+
+
+        <!-- ==================================
+             LOGOUT
+        =================================== -->
+
+        <button
+            type="button"
+            class="logout-btn"
+            onclick="logout()"
+        >
+            🚪 Logout
+        </button>
+
+
+    </div>
 
 </main>
+
 
 
 <!-- ==========================================
@@ -677,16 +870,12 @@
 ></script>
 
 
-<!-- ==========================================
-     CONFIG
-========================================== -->
+<!-- CONFIG -->
 
 <script src="js/config.js"></script>
 
 
-<!-- ==========================================
-     PROFILE JS
-========================================== -->
+<!-- PROFILE LOGIC -->
 
 <script src="js/profile.js"></script>
 
