@@ -1,9 +1,9 @@
 // ==========================================
 // VIDLYRA CREATOR PORTAL
-// MULTI-FORMAT PROJECT UPLOAD
+// UPLOAD SYSTEM
 // ==========================================
 
-console.log("Upload system loaded");
+console.log("Vidlyra upload.js loaded");
 
 
 // ==========================================
@@ -12,44 +12,32 @@ console.log("Upload system loaded");
 
 const uploadSettings = {
 
-    "Anime": {
-        bucket: "anime",
-        type: "video/mp4",
-        extensions: [".mp4"],
-        maxSize: 500 * 1024 * 1024
-    },
-
-    "Manga": {
-        bucket: "manga",
-        type: "application/pdf",
+    Anime: {
+        bucket: "stories",
         extensions: [".pdf"],
         maxSize: 20 * 1024 * 1024
     },
 
-    "Story": {
-        bucket: "stories",
-        type: "application/pdf",
+    Manga: {
+        bucket: "manga",
         extensions: [".pdf"],
         maxSize: 20 * 1024 * 1024
     },
 
     "Short Film": {
         bucket: "shortfilms",
-        type: "video/mp4",
         extensions: [".mp4"],
         maxSize: 500 * 1024 * 1024
     },
 
-    "Music": {
+    Music: {
         bucket: "music",
-        type: "audio/mpeg",
         extensions: [".mp3"],
         maxSize: 50 * 1024 * 1024
     },
 
-    "Artwork": {
+    Artwork: {
         bucket: "artwork",
-        type: "image",
         extensions: [
             ".png",
             ".jpg",
@@ -66,17 +54,17 @@ const uploadSettings = {
 // GET FILE EXTENSION
 // ==========================================
 
-function getExtension(filename) {
+function getFileExtension(filename) {
 
-    const lastDot =
+    const dot =
         filename.lastIndexOf(".");
 
-    if (lastDot === -1) {
+    if (dot === -1) {
         return "";
     }
 
     return filename
-        .substring(lastDot)
+        .substring(dot)
         .toLowerCase();
 
 }
@@ -89,25 +77,30 @@ function getExtension(filename) {
 async function uploadProject() {
 
     const title =
-        document.getElementById("title")
+        document
+            .getElementById("title")
             .value
             .trim();
 
     const description =
-        document.getElementById("description")
+        document
+            .getElementById("description")
             .value
             .trim();
 
     const category =
-        document.getElementById("category")
+        document
+            .getElementById("category")
             .value;
 
     const mainFile =
-        document.getElementById("mainFile")
+        document
+            .getElementById("mainFile")
             .files[0];
 
     const thumbnail =
-        document.getElementById("thumbnail")
+        document
+            .getElementById("thumbnail")
             .files[0];
 
     const message =
@@ -122,7 +115,7 @@ async function uploadProject() {
 
 
     // ==========================================
-    // BASIC VALIDATION
+    // VALIDATION
     // ==========================================
 
     if (!title) {
@@ -170,10 +163,6 @@ async function uploadProject() {
     }
 
 
-    // ==========================================
-    // CATEGORY SETTINGS
-    // ==========================================
-
     const settings =
         uploadSettings[category];
 
@@ -181,50 +170,43 @@ async function uploadProject() {
     if (!settings) {
 
         message.textContent =
-            "Invalid project category.";
+            "Invalid category.";
 
         return;
     }
 
 
     // ==========================================
-    // FILE EXTENSION CHECK
+    // FILE EXTENSION
     // ==========================================
 
     const extension =
-        getExtension(mainFile.name);
+        getFileExtension(
+            mainFile.name
+        );
 
-
-    if (!settings.extensions.includes(extension)) {
-
-        message.textContent =
-            `Invalid file format. ${category} requires ${settings.extensions.join(", ")}.`;
-
-        return;
-    }
-
-
-    // ==========================================
-    // MIME TYPE CHECK
-    // ==========================================
 
     if (
-        settings.type !== "image" &&
-        mainFile.type !== settings.type
+        !settings.extensions.includes(
+            extension
+        )
     ) {
 
         message.textContent =
-            `Invalid file type. Please upload a valid ${category} file.`;
+            `Invalid file format. ${category} accepts ${settings.extensions.join(", ")}.`;
 
         return;
     }
 
 
     // ==========================================
-    // FILE SIZE CHECK
+    // FILE SIZE
     // ==========================================
 
-    if (mainFile.size > settings.maxSize) {
+    if (
+        mainFile.size >
+        settings.maxSize
+    ) {
 
         const maxMB =
             Math.round(
@@ -240,30 +222,35 @@ async function uploadProject() {
 
 
     // ==========================================
-    // THUMBNAIL VALIDATION
+    // THUMBNAIL CHECK
     // ==========================================
 
-    const thumbnailTypes = [
+    const allowedThumbnailTypes = [
+
         "image/jpeg",
         "image/png",
         "image/webp"
+
     ];
 
 
-    if (!thumbnailTypes.includes(thumbnail.type)) {
+    if (
+        !allowedThumbnailTypes.includes(
+            thumbnail.type
+        )
+    ) {
 
         message.textContent =
-            "Thumbnail must be JPG, PNG or WebP.";
+            "Thumbnail must be JPG, JPEG, PNG or WebP.";
 
         return;
     }
 
 
-    const thumbnailMaxSize =
-        5 * 1024 * 1024;
-
-
-    if (thumbnail.size > thumbnailMaxSize) {
+    if (
+        thumbnail.size >
+        5 * 1024 * 1024
+    ) {
 
         message.textContent =
             "Thumbnail must be smaller than 5 MB.";
@@ -273,7 +260,7 @@ async function uploadProject() {
 
 
     // ==========================================
-    // CHECK AUTHENTICATION
+    // GET LOGGED-IN USER
     // ==========================================
 
     const {
@@ -282,7 +269,10 @@ async function uploadProject() {
     } = await sb.auth.getUser();
 
 
-    if (userError || !userData.user) {
+    if (
+        userError ||
+        !userData.user
+    ) {
 
         message.textContent =
             "Please login first.";
@@ -303,13 +293,13 @@ async function uploadProject() {
 
 
     console.log(
-        "Uploading for:",
+        "Logged-in user:",
         user.id
     );
 
 
     // ==========================================
-    // LOADING
+    // START UPLOAD
     // ==========================================
 
     button.disabled = true;
@@ -320,60 +310,58 @@ async function uploadProject() {
 
     try {
 
-
-        // ======================================
-        // SAFE FILENAMES
-        // ======================================
-
-        const safeMainName =
-            mainFile.name
-                .replace(
-                    /[^a-zA-Z0-9._-]/g,
-                    "_"
-                );
-
-
-        const safeThumbnailName =
-            thumbnail.name
-                .replace(
-                    /[^a-zA-Z0-9._-]/g,
-                    "_"
-                );
-
-
         const timestamp =
             Date.now();
 
 
         // ======================================
-        // MAIN FILE PATH
+        // CLEAN FILENAMES
+        // ======================================
+
+        const cleanMainName =
+            mainFile.name.replace(
+                /[^a-zA-Z0-9._-]/g,
+                "_"
+            );
+
+
+        const cleanThumbnailName =
+            thumbnail.name.replace(
+                /[^a-zA-Z0-9._-]/g,
+                "_"
+            );
+
+
+        // ======================================
+        // FILE PATHS
         // ======================================
 
         const mainPath =
-            `${user.id}/${timestamp}-${safeMainName}`;
+            `${user.id}/${timestamp}-${cleanMainName}`;
 
-
-        // ======================================
-        // THUMBNAIL PATH
-        // ======================================
 
         const thumbnailPath =
-            `${user.id}/${timestamp}-thumbnail-${safeThumbnailName}`;
+            `${user.id}/${timestamp}-thumbnail-${cleanThumbnailName}`;
+
+
+        console.log(
+            "Bucket:",
+            settings.bucket
+        );
+
+        console.log(
+            "Main file:",
+            mainPath
+        );
 
 
         // ======================================
         // UPLOAD MAIN FILE
         // ======================================
 
-        console.log(
-            "Uploading main file to:",
-            settings.bucket
-        );
-
-
         const {
-            data: mainUploadData,
-            error: mainUploadError
+            data: mainUpload,
+            error: mainError
         } = await sb.storage
             .from(settings.bucket)
             .upload(
@@ -381,22 +369,21 @@ async function uploadProject() {
                 mainFile,
                 {
                     cacheControl: "3600",
-                    upsert: false,
-                    contentType: mainFile.type
+                    upsert: false
                 }
             );
 
 
-        if (mainUploadError) {
+        if (mainError) {
 
             console.error(
                 "Main upload error:",
-                mainUploadError
+                mainError
             );
 
             message.textContent =
-                "Project file upload failed: " +
-                mainUploadError.message;
+                "File upload failed: " +
+                mainError.message;
 
             return;
         }
@@ -404,7 +391,7 @@ async function uploadProject() {
 
         console.log(
             "Main file uploaded:",
-            mainUploadData
+            mainUpload
         );
 
 
@@ -413,7 +400,7 @@ async function uploadProject() {
         // ======================================
 
         const {
-            data: thumbnailData,
+            data: thumbnailUpload,
             error: thumbnailError
         } = await sb.storage
             .from("thumbnails")
@@ -422,8 +409,7 @@ async function uploadProject() {
                 thumbnail,
                 {
                     cacheControl: "3600",
-                    upsert: false,
-                    contentType: thumbnail.type
+                    upsert: false
                 }
             );
 
@@ -431,12 +417,12 @@ async function uploadProject() {
         if (thumbnailError) {
 
             console.error(
-                "Thumbnail error:",
+                "Thumbnail upload error:",
                 thumbnailError
             );
 
 
-            // Remove main file if thumbnail fails
+            // Delete main file if thumbnail fails
 
             await sb.storage
                 .from(settings.bucket)
@@ -455,16 +441,16 @@ async function uploadProject() {
 
         console.log(
             "Thumbnail uploaded:",
-            thumbnailData
+            thumbnailUpload
         );
 
 
         // ======================================
-        // SAVE PROJECT DATABASE RECORD
+        // SAVE PROJECT
         // ======================================
 
         const {
-            data: projectData,
+            data: project,
             error: projectError
         } = await sb
             .from("projects")
@@ -495,7 +481,7 @@ async function uploadProject() {
             );
 
 
-            // Cleanup uploaded files
+            // Cleanup files
 
             await sb.storage
                 .from(settings.bucket)
@@ -512,7 +498,7 @@ async function uploadProject() {
 
 
             message.textContent =
-                "Project could not be saved: " +
+                "Database error: " +
                 projectError.message;
 
             return;
@@ -521,52 +507,8 @@ async function uploadProject() {
 
         console.log(
             "Project saved:",
-            projectData
+            project
         );
-
-
-        // ======================================
-        // STORY RECORD
-        // ======================================
-
-        if (category === "Story") {
-
-            const {
-                error: storyError
-            } = await sb
-                .from("stories")
-                .insert({
-
-                    user_id: user.id,
-
-                    title: title,
-
-                    description: description,
-
-                    category: "Story",
-
-                    pdf_path: mainPath,
-
-                    status: "Pending"
-
-                });
-
-
-            if (storyError) {
-
-                console.error(
-                    "Story database error:",
-                    storyError
-                );
-
-                message.textContent =
-                    "Story uploaded, but story record failed: " +
-                    storyError.message;
-
-                return;
-            }
-
-        }
 
 
         // ======================================
@@ -577,7 +519,7 @@ async function uploadProject() {
             "#55dd77";
 
         message.textContent =
-            `${category} uploaded successfully!`;
+            "Project uploaded successfully!";
 
 
         setTimeout(() => {
@@ -585,21 +527,18 @@ async function uploadProject() {
             window.location.href =
                 "dashboard.html";
 
-        }, 1200);
+        }, 1500);
 
 
     } catch (error) {
 
         console.error(
-            "Unexpected upload error:",
+            "Unexpected error:",
             error
         );
 
-        message.style.color =
-            "#ff5555";
-
         message.textContent =
-            "Something went wrong while uploading.";
+            "Something went wrong during upload.";
 
     } finally {
 
