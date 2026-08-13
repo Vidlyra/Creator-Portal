@@ -29,7 +29,6 @@ const errorBox =
 function showError(message) {
 
     errorBox.textContent = message;
-
     errorBox.style.display = "block";
 
 }
@@ -65,8 +64,6 @@ async function checkAdmin() {
         const user =
             authData.user;
 
-
-        // Get admin status
 
         const {
             data: profile,
@@ -111,7 +108,6 @@ async function checkAdmin() {
 
         return user;
 
-
     } catch (error) {
 
         console.error(
@@ -132,7 +128,7 @@ async function checkAdmin() {
 
 
 // ==========================================
-// LOAD PROJECTS
+// LOAD PENDING PROJECTS
 // ==========================================
 
 async function loadProjects() {
@@ -162,11 +158,13 @@ async function loadProjects() {
                 title,
                 description,
                 category,
-                thumbnail_url,
-                file_url,
+                thumbnail,
                 status,
+                created_at,
+                file_path,
                 admin_note,
-                created_at
+                reviewed_at,
+                reviewed_by
             `)
 
             .eq(
@@ -259,7 +257,7 @@ function renderProject(project) {
 
 
     const thumbnail =
-        project.thumbnail_url ||
+        project.thumbnail ||
         "assets/default-project.png";
 
 
@@ -301,7 +299,7 @@ function renderProject(project) {
             src="${thumbnail}"
             alt="Project thumbnail"
             onerror="
-                this.src='assets/default-project.png';
+                this.style.display='none';
             "
         >
 
@@ -333,33 +331,14 @@ function renderProject(project) {
 
             <div class="actions">
 
-                <button
-                    class="approve"
-                    onclick="
-                        approveProject('${project.id}')
-                    "
-                >
-                    ✓ Approve
-                </button>
-
-                <button
-                    class="reject"
-                    onclick="
-                        rejectProject('${project.id}')
-                    "
-                >
-                    ✕ Reject
-                </button>
-
                 ${
-                    project.file_url
+                    project.file_path
                         ? `
                             <button
                                 class="approve"
                                 onclick="
-                                    window.open(
-                                        '${project.file_url}',
-                                        '_blank'
+                                    viewProjectFile(
+                                        '${project.file_path}'
                                     )
                                 "
                             >
@@ -368,6 +347,28 @@ function renderProject(project) {
                           `
                         : ""
                 }
+
+                <button
+                    class="approve"
+                    onclick="
+                        approveProject(
+                            '${project.id}'
+                        )
+                    "
+                >
+                    ✓ Approve
+                </button>
+
+                <button
+                    class="reject"
+                    onclick="
+                        rejectProject(
+                            '${project.id}'
+                        )
+                    "
+                >
+                    ✕ Reject
+                </button>
 
             </div>
 
@@ -378,6 +379,71 @@ function renderProject(project) {
 
     projectsContainer.appendChild(
         card
+    );
+
+}
+
+
+// ==========================================
+// VIEW PROJECT FILE
+// ==========================================
+
+async function viewProjectFile(
+    filePath
+) {
+
+    if (!filePath) {
+
+        alert(
+            "Project file is not available."
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * file_path is assumed to be
+     * the path inside Supabase Storage.
+     *
+     * Change "projects" below if your
+     * Storage bucket has another name.
+     */
+
+    const {
+        data,
+        error
+    } = await sb.storage
+
+        .from("projects")
+
+        .createSignedUrl(
+            filePath,
+            3600
+        );
+
+
+    if (error) {
+
+        console.error(
+            "File URL error:",
+            error
+        );
+
+        alert(
+            "Could not open project file:\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    window.open(
+        data.signedUrl,
+        "_blank"
     );
 
 }
@@ -406,16 +472,12 @@ async function approveProject(
 
     try {
 
-        // Get current admin
-
         const {
             data: authData
         } = await sb.auth.getUser();
 
 
-        if (
-            !authData.user
-        ) {
+        if (!authData.user) {
 
             window.location.href =
                 "login.html";
@@ -424,8 +486,6 @@ async function approveProject(
 
         }
 
-
-        // Update project
 
         const {
             error
@@ -463,10 +523,7 @@ async function approveProject(
         );
 
 
-        // Refresh
-
         await loadProjects();
-
 
     } catch (error) {
 
@@ -499,9 +556,7 @@ async function rejectProject(
         );
 
 
-    if (
-        note === null
-    ) {
+    if (note === null) {
 
         return;
 
@@ -515,9 +570,7 @@ async function rejectProject(
         } = await sb.auth.getUser();
 
 
-        if (
-            !authData.user
-        ) {
+        if (!authData.user) {
 
             window.location.href =
                 "login.html";
@@ -568,7 +621,6 @@ async function rejectProject(
 
         await loadProjects();
 
-
     } catch (error) {
 
         console.error(
@@ -618,24 +670,21 @@ async function loadStats() {
         const pending =
             list.filter(
                 p =>
-                    p.status ===
-                    "pending"
+                    p.status === "pending"
             ).length;
 
 
         const approved =
             list.filter(
                 p =>
-                    p.status ===
-                    "approved"
+                    p.status === "approved"
             ).length;
 
 
         const rejected =
             list.filter(
                 p =>
-                    p.status ===
-                    "rejected"
+                    p.status === "rejected"
             ).length;
 
 
