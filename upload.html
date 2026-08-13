@@ -81,17 +81,14 @@
         .container {
             width: 100%;
             max-width: 700px;
-
             margin: 50px auto;
             padding: 0 20px;
         }
 
         .upload-card {
             background: #111;
-
             border: 1px solid #252525;
             border-radius: 18px;
-
             padding: 35px;
 
             box-shadow:
@@ -113,19 +110,15 @@
 
         label {
             display: block;
-
             color: #ccc;
             font-size: 14px;
-
             margin-bottom: 8px;
         }
 
         input,
         textarea,
         select {
-
             width: 100%;
-
             padding: 14px;
 
             background: #1a1a1a;
@@ -136,7 +129,6 @@
             color: white;
 
             font-size: 15px;
-
             outline: none;
         }
 
@@ -168,6 +160,26 @@
             cursor: pointer;
 
             margin-right: 10px;
+        }
+
+        .format-box {
+            margin-top: 10px;
+
+            padding: 12px 15px;
+
+            background: #181818;
+
+            border-left: 3px solid #ff7a00;
+
+            border-radius: 7px;
+
+            color: #aaa;
+
+            font-size: 13px;
+        }
+
+        .format-box strong {
+            color: #ff7a00;
         }
 
         .preview {
@@ -229,9 +241,7 @@
 
         .hint {
             color: #777;
-
             font-size: 12px;
-
             margin-top: 7px;
         }
 
@@ -291,7 +301,7 @@
         <form id="uploadForm">
 
 
-            <!-- Project Title -->
+            <!-- PROJECT TITLE -->
 
             <div class="field">
 
@@ -310,7 +320,7 @@
             </div>
 
 
-            <!-- Description -->
+            <!-- DESCRIPTION -->
 
             <div class="field">
 
@@ -328,7 +338,7 @@
             </div>
 
 
-            <!-- Category -->
+            <!-- CATEGORY -->
 
             <div class="field">
 
@@ -346,23 +356,27 @@
                     </option>
 
                     <option value="Anime">
-                        Anime
+                        🎬 Anime
                     </option>
 
                     <option value="Manga">
-                        Manga
+                        📖 Manga
+                    </option>
+
+                    <option value="Story">
+                        📚 Story
                     </option>
 
                     <option value="Short Film">
-                        Short Film
+                        🎥 Short Film
                     </option>
 
                     <option value="Music">
-                        Music
+                        🎵 Music
                     </option>
 
                     <option value="Artwork">
-                        Artwork
+                        🎨 Artwork
                     </option>
 
                 </select>
@@ -370,7 +384,32 @@
             </div>
 
 
-            <!-- Thumbnail -->
+            <!-- MAIN FILE -->
+
+            <div class="field">
+
+                <label id="mainFileLabel" for="mainFile">
+                    Project File
+                </label>
+
+                <input
+                    type="file"
+                    id="mainFile"
+                    disabled
+                >
+
+                <div
+                    class="format-box"
+                    id="formatBox"
+                >
+                    Select a category to see the
+                    required file format.
+                </div>
+
+            </div>
+
+
+            <!-- THUMBNAIL -->
 
             <div class="field">
 
@@ -386,7 +425,7 @@
                 >
 
                 <p class="hint">
-                    JPG, PNG or WebP image.
+                    Thumbnail: JPG, JPEG, PNG or WebP.
                 </p>
 
 
@@ -405,7 +444,7 @@
             </div>
 
 
-            <!-- Upload -->
+            <!-- SUBMIT -->
 
             <button
                 type="submit"
@@ -430,17 +469,11 @@
 </main>
 
 
-<!-- Supabase -->
+<!-- SUPABASE -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
-<!-- Configuration -->
-
 <script src="js/config.js"></script>
-
-
-<!-- Upload Logic -->
 
 <script src="js/upload.js"></script>
 
@@ -448,29 +481,124 @@
 <script>
 
     // ==========================================
-    // CHECK USER
+    // CATEGORY FILE SETTINGS
     // ==========================================
 
-    async function checkLogin() {
+    const categorySettings = {
 
-        const {
-            data,
-            error
-        } = await sb.auth.getUser();
+        "Anime": {
+            label: "Anime Video",
+            accept: "video/mp4",
+            format: "MP4",
+            hint: "Anime video must be an MP4 file."
+        },
 
+        "Manga": {
+            label: "Manga PDF",
+            accept: "application/pdf",
+            format: "PDF",
+            hint: "Manga must be uploaded as a PDF."
+        },
 
-        if (error || !data.user) {
+        "Story": {
+            label: "Story PDF",
+            accept: "application/pdf",
+            format: "PDF",
+            hint: "Story must be uploaded as a PDF."
+        },
 
-            window.location.href =
-                "login.html";
+        "Short Film": {
+            label: "Short Film Video",
+            accept: "video/mp4",
+            format: "MP4",
+            hint: "Short film must be an MP4 file."
+        },
 
+        "Music": {
+            label: "Music File",
+            accept: "audio/mpeg",
+            format: "MP3",
+            hint: "Music must be an MP3 file."
+        },
+
+        "Artwork": {
+            label: "Artwork Image",
+            accept: "image/jpeg,image/png,image/webp",
+            format: "PNG / JPG / JPEG / WebP",
+            hint: "Artwork can be PNG, JPG, JPEG or WebP."
         }
 
-    }
+    };
 
 
     // ==========================================
-    // IMAGE PREVIEW
+    // CATEGORY CHANGE
+    // ==========================================
+
+    document
+        .getElementById("category")
+        .addEventListener("change", function () {
+
+            const category = this.value;
+
+            const fileInput =
+                document.getElementById("mainFile");
+
+            const label =
+                document.getElementById("mainFileLabel");
+
+            const formatBox =
+                document.getElementById("formatBox");
+
+
+            // No category
+
+            if (!category) {
+
+                fileInput.value = "";
+
+                fileInput.disabled = true;
+
+                fileInput.removeAttribute("accept");
+
+                label.textContent =
+                    "Project File";
+
+                formatBox.innerHTML =
+                    "Select a category to see the required file format.";
+
+                return;
+
+            }
+
+
+            const settings =
+                categorySettings[category];
+
+
+            fileInput.disabled = false;
+
+            fileInput.value = "";
+
+            fileInput.accept =
+                settings.accept;
+
+
+            label.textContent =
+                settings.label;
+
+
+            formatBox.innerHTML =
+                `<strong>Required format:</strong>
+                 ${settings.format}
+                 <br>
+                 ${settings.hint}`;
+
+        });
+
+
+    // ==========================================
+    // THUMBNAIL PREVIEW
     // ==========================================
 
     document
@@ -532,8 +660,26 @@
 
 
     // ==========================================
-    // START
+    // CHECK LOGIN
     // ==========================================
+
+    async function checkLogin() {
+
+        const {
+            data,
+            error
+        } = await sb.auth.getUser();
+
+
+        if (error || !data.user) {
+
+            window.location.href =
+                "login.html";
+
+        }
+
+    }
+
 
     checkLogin();
 
