@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Creator Profile | Vidlyra</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            background: #050505;
+
+            color: white;
+
+        }
+
+
+        /* =====================================
+           HEADER
+        ===================================== */
+
+        header {
+
+            height: 70px;
+
+            padding: 0 30px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            background: #111;
+
+            border-bottom: 1px solid #252525;
+
+        }
+
+
+        .logo {
+
+            color: #ff7a00;
+
+            font-size: 25px;
+
+            font-weight: 700;
+
+            letter-spacing: 1px;
+
+        }
+
+
+        .back-btn {
+
+            padding: 9px 16px;
+
+            background: transparent;
+
+            border: 1px solid #333;
+
+            border-radius: 8px;
+
+            color: #ccc;
+
+            cursor: pointer;
+
+        }
+
+
+        .back-btn:hover {
+
+            border-color: #ff7a00;
+
+            color: #ff7a00;
+
+        }
+
+
+        /* =====================================
+           CONTAINER
+        ===================================== */
+
+        .container {
+
+            width: 100%;
+
+            max-width: 650px;
+
+            margin: 50px auto;
+
+            padding: 0 20px;
+
+        }
+
+
+        /* =====================================
+           PROFILE CARD
+        ===================================== */
+
+        .profile-card {
+
+            background: #111;
+
+            border: 1px solid #252525;
+
+            border-radius: 20px;
+
+            padding: 40px;
+
+            box-shadow:
+                0 0 30px rgba(255, 122, 0, 0.10);
+
+        }
+
+
+        .title {
+
+            text-align: center;
+
+            font-size: 28px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .subtitle {
+
+            text-align: center;
+
+            color: #888;
+
+            margin-bottom: 35px;
+
+        }
+
+
+        /* =====================================
+           AVATAR
+        ===================================== */
+
+        .avatar-section {
+
+            text-align: center;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .avatar {
+
+            width: 130px;
+
+            height: 130px;
+
+            margin: 0 auto 15px;
+
+            border-radius: 50%;
+
+            background: #1a1a1a;
+
+            border: 3px solid #ff7a00;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+        }
+
+
+        .avatar img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+        }
+
+
+        .avatar-number {
+
+            color: #ff7a00;
+
+            font-size: 14px;
+
+        }
+
+
+        /* =====================================
+           PROFILE INFORMATION
+        ===================================== */
+
+        .info {
+
+            margin-top: 20px;
+
+        }
+
+
+        .info-box {
+
+            background: #181818;
+
+            border: 1px solid #292929;
+
+            border-radius: 10px;
+
+            padding: 15px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .info-label {
+
+            display: block;
+
+            color: #777;
+
+            font-size: 12px;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .info-value {
+
+            color: white;
+
+            font-size: 15px;
+
+            word-break: break-word;
+
+        }
+
+
+        /* =====================================
+           STATUS
+        ===================================== */
+
+        .status {
+
+            margin-top: 20px;
+
+            padding: 13px;
+
+            border-radius: 9px;
+
+            background: #181818;
+
+            border-left: 3px solid #ff7a00;
+
+            color: #aaa;
+
+            font-size: 13px;
+
+            text-align: center;
+
+        }
+
+
+        /* =====================================
+           BUTTONS
+        ===================================== */
+
+        .buttons {
+
+            display: flex;
+
+            gap: 12px;
+
+            margin-top: 25px;
+
+        }
+
+
+        .btn {
+
+            flex: 1;
+
+            padding: 13px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+        }
+
+
+        .dashboard-btn {
+
+            background: #ff7a00;
+
+            border: none;
+
+            color: white;
+
+        }
+
+
+        .dashboard-btn:hover {
+
+            background: #ff9500;
+
+        }
+
+
+        .logout-btn {
+
+            background: transparent;
+
+            border: 1px solid #444;
+
+            color: #ccc;
+
+        }
+
+
+        .logout-btn:hover {
+
+            border-color: #ff5555;
+
+            color: #ff5555;
+
+        }
+
+
+        /* =====================================
+           LOADING
+        ===================================== */
+
+        .loading {
+
+            text-align: center;
+
+            color: #888;
+
+            padding: 30px;
+
+        }
+
+
+        /* =====================================
+           ERROR
+        ===================================== */
+
+        .error {
+
+            display: none;
+
+            text-align: center;
+
+            color: #ff5555;
+
+            background: #1a1010;
+
+            border: 1px solid #3a2020;
+
+            padding: 15px;
+
+            border-radius: 9px;
+
+            margin-top: 20px;
+
+        }
+
+
+        /* =====================================
+           MOBILE
+        ===================================== */
+
+        @media (max-width: 600px) {
+
+            header {
+
+                padding: 0 18px;
+
+            }
+
+            .container {
+
+                margin-top: 30px;
+
+            }
+
+            .profile-card {
+
+                padding: 25px;
+
+            }
+
+            .buttons {
+
+                flex-direction: column;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     HEADER
+========================================== -->
+
+<header>
+
+    <div class="logo">
+        VIDLYRA
+    </div>
+
+
+    <button
+        class="back-btn"
+        type="button"
+        onclick="window.location.href='dashboard.html'"
+    >
+
+        ← Dashboard
+
+    </button>
+
+</header>
+
+
+<!-- ==========================================
+     MAIN
+========================================== -->
+
+<main class="container">
+
+
+    <section class="profile-card">
+
+
+        <h1 class="title">
+            Creator Profile
+        </h1>
+
+
+        <p class="subtitle">
+            Your Vidlyra creator information
+        </p>
+
+
+        <!-- LOADING -->
+
+        <div
+            class="loading"
+            id="loading"
+        >
+
+            Loading profile...
+
+        </div>
+
+
+        <!-- PROFILE CONTENT -->
+
+        <div
+            id="profileContent"
+            style="display:none;"
+        >
+
+
+            <!-- AVATAR -->
+
+            <div class="avatar-section">
+
+                <div class="avatar">
+
+                    <img
+                        id="avatarImage"
+                        src=""
+                        alt="Creator Avatar"
+                    >
+
+                </div>
+
+
+                <div
+                    class="avatar-number"
+                    id="avatarNumber"
+                >
+                    Avatar #1
+                </div>
+
+            </div>
+
+
+            <!-- INFORMATION -->
+
+            <div class="info">
+
+
+                <div class="info-box">
+
+                    <span class="info-label">
+                        Creator Name
+                    </span>
+
+                    <div
+                        class="info-value"
+                        id="creatorName"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <span class="info-label">
+                        Email
+                    </span>
+
+                    <div
+                        class="info-value"
+                        id="creatorEmail"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <span class="info-label">
+                        User ID
+                    </span>
+
+                    <div
+                        class="info-value"
+                        id="userId"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <span class="info-label">
+                        Account Created
+                    </span>
+
+                    <div
+                        class="info-value"
+                        id="createdAt"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="status">
+
+                🟢 Creator account active
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="buttons">
+
+                <button
+                    type="button"
+                    class="btn dashboard-btn"
+                    onclick="window.location.href='dashboard.html'"
+                >
+
+                    Dashboard
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn logout-btn"
+                    onclick="logout()"
+                >
+
+                    Logout
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ERROR -->
+
+        <div
+            class="error"
+            id="error"
+        ></div>
+
+
+    </section>
+
+
+</main>
+
+
+<!-- ==========================================
+     SUPABASE
+========================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<!-- ==========================================
+     CONFIG
+========================================== -->
+
+<script src="js/config.js"></script>
+
+
+<!-- ==========================================
+     PROFILE JS
+========================================== -->
+
+<script src="js/profile.js"></script>
+
+
+</body>
+
+</html>
