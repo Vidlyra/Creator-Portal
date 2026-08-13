@@ -81,14 +81,17 @@
         .container {
             width: 100%;
             max-width: 700px;
+
             margin: 50px auto;
             padding: 0 20px;
         }
 
         .upload-card {
             background: #111;
+
             border: 1px solid #252525;
             border-radius: 18px;
+
             padding: 35px;
 
             box-shadow:
@@ -110,15 +113,19 @@
 
         label {
             display: block;
+
             color: #ccc;
             font-size: 14px;
+
             margin-bottom: 8px;
         }
 
         input,
         textarea,
         select {
+
             width: 100%;
+
             padding: 14px;
 
             background: #1a1a1a;
@@ -129,6 +136,7 @@
             color: white;
 
             font-size: 15px;
+
             outline: none;
         }
 
@@ -148,7 +156,9 @@
         }
 
         input[type="file"]::file-selector-button {
+
             background: #ff7a00;
+
             border: none;
 
             color: white;
@@ -163,6 +173,7 @@
         }
 
         .format-box {
+
             margin-top: 10px;
 
             padding: 12px 15px;
@@ -183,26 +194,31 @@
         }
 
         .preview {
+
             display: none;
 
             margin-top: 15px;
 
             border: 1px solid #333;
+
             border-radius: 10px;
 
             overflow: hidden;
         }
 
         .preview img {
+
             display: block;
 
             width: 100%;
+
             max-height: 300px;
 
             object-fit: cover;
         }
 
         .upload-btn {
+
             width: 100%;
 
             padding: 15px;
@@ -210,11 +226,13 @@
             background: #ff7a00;
 
             border: none;
+
             border-radius: 10px;
 
             color: white;
 
             font-size: 16px;
+
             font-weight: 600;
 
             cursor: pointer;
@@ -225,11 +243,14 @@
         }
 
         .upload-btn:disabled {
+
             opacity: 0.6;
+
             cursor: not-allowed;
         }
 
         .message {
+
             min-height: 24px;
 
             margin-top: 18px;
@@ -240,8 +261,11 @@
         }
 
         .hint {
+
             color: #777;
+
             font-size: 12px;
+
             margin-top: 7px;
         }
 
@@ -264,6 +288,7 @@
     </style>
 
 </head>
+
 
 <body>
 
@@ -288,6 +313,7 @@
 <main class="container">
 
     <div class="upload-card">
+
 
         <h1>
             Upload Your Project
@@ -363,10 +389,6 @@
                         📖 Manga
                     </option>
 
-                    <option value="Story">
-                        📚 Story
-                    </option>
-
                     <option value="Short Film">
                         🎥 Short Film
                     </option>
@@ -384,11 +406,14 @@
             </div>
 
 
-            <!-- MAIN FILE -->
+            <!-- MAIN PROJECT FILE -->
 
             <div class="field">
 
-                <label id="mainFileLabel" for="mainFile">
+                <label
+                    id="mainFileLabel"
+                    for="mainFile"
+                >
                     Project File
                 </label>
 
@@ -425,7 +450,7 @@
                 >
 
                 <p class="hint">
-                    Thumbnail: JPG, JPEG, PNG or WebP.
+                    JPG, JPEG, PNG or WebP.
                 </p>
 
 
@@ -444,7 +469,7 @@
             </div>
 
 
-            <!-- SUBMIT -->
+            <!-- UPLOAD BUTTON -->
 
             <button
                 type="submit"
@@ -471,9 +496,17 @@
 
 <!-- SUPABASE -->
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<!-- SUPABASE CONFIG -->
 
 <script src="js/config.js"></script>
+
+
+<!-- UPLOAD JS -->
 
 <script src="js/upload.js"></script>
 
@@ -481,51 +514,76 @@
 <script>
 
     // ==========================================
-    // CATEGORY FILE SETTINGS
+    // CATEGORY SETTINGS
     // ==========================================
 
     const categorySettings = {
 
         "Anime": {
-            label: "Anime Video",
-            accept: "video/mp4",
-            format: "MP4",
-            hint: "Anime video must be an MP4 file."
+
+            label: "Anime File",
+
+            accept: "application/pdf",
+
+            format: "PDF",
+
+            hint:
+                "Anime content must be uploaded as a PDF."
+
         },
 
         "Manga": {
-            label: "Manga PDF",
-            accept: "application/pdf",
-            format: "PDF",
-            hint: "Manga must be uploaded as a PDF."
-        },
 
-        "Story": {
-            label: "Story PDF",
+            label: "Manga File",
+
             accept: "application/pdf",
+
             format: "PDF",
-            hint: "Story must be uploaded as a PDF."
+
+            hint:
+                "Manga must be uploaded as a PDF."
+
         },
 
         "Short Film": {
-            label: "Short Film Video",
+
+            label: "Short Film File",
+
             accept: "video/mp4",
+
             format: "MP4",
-            hint: "Short film must be an MP4 file."
+
+            hint:
+                "Short Film must be uploaded as an MP4 video."
+
         },
 
         "Music": {
+
             label: "Music File",
+
             accept: "audio/mpeg",
+
             format: "MP3",
-            hint: "Music must be an MP3 file."
+
+            hint:
+                "Music must be uploaded as an MP3 file."
+
         },
 
         "Artwork": {
-            label: "Artwork Image",
-            accept: "image/jpeg,image/png,image/webp",
-            format: "PNG / JPG / JPEG / WebP",
-            hint: "Artwork can be PNG, JPG, JPEG or WebP."
+
+            label: "Artwork File",
+
+            accept:
+                "image/png,image/jpeg,image/webp",
+
+            format:
+                "PNG / JPG / JPEG / WebP",
+
+            hint:
+                "Artwork can be PNG, JPG, JPEG or WebP."
+
         }
 
     };
@@ -537,64 +595,76 @@
 
     document
         .getElementById("category")
-        .addEventListener("change", function () {
+        .addEventListener(
+            "change",
+            function () {
 
-            const category = this.value;
+                const category =
+                    this.value;
 
-            const fileInput =
-                document.getElementById("mainFile");
+                const fileInput =
+                    document.getElementById(
+                        "mainFile"
+                    );
 
-            const label =
-                document.getElementById("mainFileLabel");
+                const label =
+                    document.getElementById(
+                        "mainFileLabel"
+                    );
 
-            const formatBox =
-                document.getElementById("formatBox");
+                const formatBox =
+                    document.getElementById(
+                        "formatBox"
+                    );
 
 
-            // No category
+                if (!category) {
 
-            if (!category) {
+                    fileInput.value = "";
+
+                    fileInput.disabled =
+                        true;
+
+                    fileInput.removeAttribute(
+                        "accept"
+                    );
+
+                    label.textContent =
+                        "Project File";
+
+                    formatBox.innerHTML =
+                        "Select a category to see the required file format.";
+
+                    return;
+
+                }
+
+
+                const settings =
+                    categorySettings[category];
+
 
                 fileInput.value = "";
 
-                fileInput.disabled = true;
+                fileInput.disabled =
+                    false;
 
-                fileInput.removeAttribute("accept");
+                fileInput.accept =
+                    settings.accept;
+
 
                 label.textContent =
-                    "Project File";
+                    settings.label;
+
 
                 formatBox.innerHTML =
-                    "Select a category to see the required file format.";
-
-                return;
+                    `<strong>Required format:</strong>
+                    ${settings.format}
+                    <br>
+                    ${settings.hint}`;
 
             }
-
-
-            const settings =
-                categorySettings[category];
-
-
-            fileInput.disabled = false;
-
-            fileInput.value = "";
-
-            fileInput.accept =
-                settings.accept;
-
-
-            label.textContent =
-                settings.label;
-
-
-            formatBox.innerHTML =
-                `<strong>Required format:</strong>
-                 ${settings.format}
-                 <br>
-                 ${settings.hint}`;
-
-        });
+        );
 
 
     // ==========================================
@@ -603,45 +673,54 @@
 
     document
         .getElementById("thumbnail")
-        .addEventListener("change", function () {
+        .addEventListener(
+            "change",
+            function () {
 
-            const file = this.files[0];
+                const file =
+                    this.files[0];
 
-            const preview =
-                document.getElementById("preview");
+                const preview =
+                    document.getElementById(
+                        "preview"
+                    );
 
-            const image =
-                document.getElementById("previewImage");
+                const image =
+                    document.getElementById(
+                        "previewImage"
+                    );
 
 
-            if (!file) {
+                if (!file) {
 
-                preview.style.display =
-                    "none";
+                    preview.style.display =
+                        "none";
 
-                return;
+                    return;
+
+                }
+
+
+                const reader =
+                    new FileReader();
+
+
+                reader.onload =
+                    function (event) {
+
+                        image.src =
+                            event.target.result;
+
+                        preview.style.display =
+                            "block";
+
+                    };
+
+
+                reader.readAsDataURL(file);
 
             }
-
-
-            const reader =
-                new FileReader();
-
-
-            reader.onload = function (event) {
-
-                image.src =
-                    event.target.result;
-
-                preview.style.display =
-                    "block";
-
-            };
-
-
-            reader.readAsDataURL(file);
-
-        });
+        );
 
 
     // ==========================================
@@ -650,17 +729,20 @@
 
     document
         .getElementById("uploadForm")
-        .addEventListener("submit", function (event) {
+        .addEventListener(
+            "submit",
+            function (event) {
 
-            event.preventDefault();
+                event.preventDefault();
 
-            uploadProject();
+                uploadProject();
 
-        });
+            }
+        );
 
 
     // ==========================================
-    // CHECK LOGIN
+    // LOGIN CHECK
     // ==========================================
 
     async function checkLogin() {
@@ -671,7 +753,10 @@
         } = await sb.auth.getUser();
 
 
-        if (error || !data.user) {
+        if (
+            error ||
+            !data.user
+        ) {
 
             window.location.href =
                 "login.html";
