@@ -1,5 +1,11 @@
 console.log("Auth loaded");
+
+// ===============================
+// SIGN UP
+// ===============================
+
 async function signup() {
+
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
@@ -16,8 +22,8 @@ async function signup() {
     }
 
     const { data, error } = await sb.auth.signUp({
-        email,
-        password
+        email: email,
+        password: password
     });
 
     if (error) {
@@ -26,6 +32,7 @@ async function signup() {
     }
 
     if (data.user) {
+
         const { error: profileError } = await sb
             .from("profiles")
             .insert({
@@ -37,42 +44,67 @@ async function signup() {
             });
 
         if (profileError) {
-            console.error(profileError);
+            console.error("Profile error:", profileError);
         }
     }
 
     alert("Account created successfully!");
+
     window.location.href = "dashboard.html";
 }
+
+
+// ===============================
+// LOGIN
+// ===============================
+
 async function login() {
 
     console.log("1. Login button clicked");
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+    const email = document
+        .getElementById("email")
+        .value
+        .trim();
+
+    const password = document
+        .getElementById("password")
+        .value;
+
+    const errorBox = document.getElementById("error");
+
+    errorBox.textContent = "";
 
     console.log("2. Email:", email);
 
     if (!email || !password) {
-        alert("Please enter email and password");
+
+        errorBox.textContent =
+            "Please enter your email and password.";
+
         return;
     }
 
     console.log("3. Attempting login...");
 
-    const { data, error } = await sb.auth.signInWithPassword({
-        email,
-        password
-    });
+    const { data, error } =
+        await sb.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
 
     console.log("4. Response:", data, error);
 
     if (error) {
-        alert(error.message);
+
+        console.error("Login error:", error);
+
+        errorBox.textContent = error.message;
+
         return;
     }
 
-    alert("Login successful!");
+    console.log("5. Login successful");
 
     window.location.href = "dashboard.html";
 }
