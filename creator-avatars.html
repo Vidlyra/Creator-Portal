@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Creator Avatars | Vidlyra</title>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Poppins, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: #050505;
+    color: white;
+}
+
+
+/* HEADER */
+
+header {
+    height: 70px;
+    padding: 0 30px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: #111;
+    border-bottom: 1px solid #252525;
+}
+
+.logo {
+    color: #ff7a00;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.back-btn {
+    padding: 9px 16px;
+
+    background: transparent;
+    border: 1px solid #333;
+    border-radius: 8px;
+
+    color: #ccc;
+    cursor: pointer;
+}
+
+.back-btn:hover {
+    border-color: #ff7a00;
+    color: #ff7a00;
+}
+
+
+/* CONTAINER */
+
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.title {
+    text-align: center;
+    font-size: 30px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #888;
+    margin-top: 7px;
+}
+
+
+/* CREATOR LEVEL */
+
+.current-level {
+    width: fit-content;
+    margin: 20px auto 35px;
+
+    padding: 8px 16px;
+
+    background: #111;
+
+    border: 1px solid #333;
+
+    border-radius: 20px;
+
+    color: #ff7a00;
+
+    font-size: 13px;
+}
+
+
+/* GRID */
+
+.avatar-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(180px, 1fr));
+
+    gap: 18px;
+
+}
+
+
+/* CARD */
+
+.avatar-card {
+
+    position: relative;
+
+    background: #111;
+
+    border: 1px solid #292929;
+
+    border-radius: 16px;
+
+    padding: 18px;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    transition: .2s;
+
+}
+
+.avatar-card:hover {
+
+    transform: translateY(-4px);
+
+    border-color: #ff7a00;
+
+}
+
+
+.avatar-card.selected {
+
+    border-color: #ff7a00;
+
+    box-shadow:
+        0 0 25px rgba(255,122,0,.20);
+
+}
+
+
+/* IMAGE */
+
+.avatar-image {
+
+    width: 125px;
+    height: 125px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    background: #1a1a1a;
+
+    border: 2px solid #333;
+
+}
+
+
+/* NAME */
+
+.avatar-name {
+
+    margin-top: 12px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+}
+
+
+/* REQUIRED LEVEL */
+
+.required-level {
+
+    margin-top: 5px;
+
+    color: #777;
+
+    font-size: 11px;
+
+}
+
+
+/* LOCK */
+
+.locked {
+
+    opacity: .45;
+
+    cursor: not-allowed;
+
+}
+
+.locked:hover {
+
+    transform: none;
+
+    border-color: #292929;
+
+}
+
+
+/* LOCK LABEL */
+
+.lock-label {
+
+    position: absolute;
+
+    top: 10px;
+
+    right: 10px;
+
+    padding: 4px 8px;
+
+    background: #222;
+
+    border-radius: 10px;
+
+    color: #aaa;
+
+    font-size: 10px;
+
+}
+
+
+/* SAVE */
+
+.save-btn {
+
+    display: block;
+
+    width: 100%;
+
+    max-width: 400px;
+
+    margin: 35px auto 15px;
+
+    padding: 15px;
+
+    background: #ff7a00;
+
+    border: none;
+
+    border-radius: 10px;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+.save-btn:hover {
+
+    background: #ff9500;
+
+}
+
+.save-btn:disabled {
+
+    opacity: .6;
+
+    cursor: not-allowed;
+
+}
+
+
+/* MESSAGE */
+
+.message {
+
+    min-height: 25px;
+
+    text-align: center;
+
+    color: #888;
+
+    font-size: 13px;
+
+}
+
+
+/* LOADING */
+
+.loading {
+
+    text-align: center;
+
+    color: #888;
+
+    padding: 50px;
+
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px) {
+
+    header {
+        padding: 0 18px;
+    }
+
+    .title {
+        font-size: 25px;
+    }
+
+    .avatar-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .avatar-image {
+        width: 100px;
+        height: 100px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+        VIDLYRA
+    </div>
+
+
+    <button
+        class="back-btn"
+        onclick="window.location.href='profile.html'"
+    >
+        ← Profile
+    </button>
+
+</header>
+
+
+
+<main class="container">
+
+
+    <h1 class="title">
+        Creator Avatars
+    </h1>
+
+
+    <p class="subtitle">
+        Unlock special avatars as your creator journey grows.
+    </p>
+
+
+    <div
+        id="currentLevel"
+        class="current-level"
+    >
+        Loading creator level...
+    </div>
+
+
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        Loading creator avatars...
+    </div>
+
+
+
+    <div
+        id="avatarContent"
+        style="display:none;"
+    >
+
+
+        <div
+            id="avatarGrid"
+            class="avatar-grid"
+        ></div>
+
+
+        <button
+            id="saveButton"
+            class="save-btn"
+            onclick="saveCreatorAvatar()"
+        >
+            Save Creator Avatar
+        </button>
+
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+
+    </div>
+
+
+</main>
+
+
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+<script src="js/config.js"></script>
+
+<script src="js/creator-avatars.js"></script>
+
+
+</body>
+
+</html>
