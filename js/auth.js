@@ -1,110 +1,113 @@
+// ==========================================
+// VIDLYRA CREATOR PORTAL
+// AUTHENTICATION
+// ==========================================
+
 console.log("Auth loaded");
 
-// ===============================
-// SIGN UP
-// ===============================
 
-async function signup() {
-
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const confirm = document.getElementById("confirm").value;
-
-    if (!name || !email || !password || !confirm) {
-        alert("Please fill all fields.");
-        return;
-    }
-
-    if (password !== confirm) {
-        alert("Passwords do not match.");
-        return;
-    }
-
-    const { data, error } = await sb.auth.signUp({
-        email: email,
-        password: password
-    });
-
-    if (error) {
-        alert(error.message);
-        return;
-    }
-
-    if (data.user) {
-
-        const { error: profileError } = await sb
-            .from("profiles")
-            .insert({
-                user_id: data.user.id,
-                full_name: name,
-                email: email,
-                avatar_url: null,
-                selected_avatar: 1
-            });
-
-        if (profileError) {
-            console.error("Profile error:", profileError);
-        }
-    }
-
-    alert("Account created successfully!");
-
-    window.location.href = "dashboard.html";
-}
-
-
-// ===============================
+// ==========================================
 // LOGIN
-// ===============================
+// ==========================================
 
 async function login() {
 
-    console.log("1. Login button clicked");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const message = document.getElementById("message");
+    const button = document.getElementById("loginButton");
+    const loading = document.getElementById("loading");
 
-    const email = document
-        .getElementById("email")
-        .value
-        .trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
 
-    const password = document
-        .getElementById("password")
-        .value;
+    // Clear previous message
+    message.textContent = "";
 
-    const errorBox = document.getElementById("error");
-
-    errorBox.textContent = "";
-
-    console.log("2. Email:", email);
-
+    // Validate
     if (!email || !password) {
 
-        errorBox.textContent =
+        message.textContent =
             "Please enter your email and password.";
 
         return;
     }
 
-    console.log("3. Attempting login...");
+    // Loading state
+    button.disabled = true;
+    loading.style.display = "inline";
 
-    const { data, error } =
-        await sb.auth.signInWithPassword({
+    console.log("Login started");
+    console.log("Email:", email);
+
+    try {
+
+        // ==================================
+        // SUPABASE LOGIN
+        // ==================================
+
+        const {
+            data,
+            error
+        } = await sb.auth.signInWithPassword({
             email: email,
             password: password
         });
 
-    console.log("4. Response:", data, error);
+        console.log("Supabase response:", data, error);
 
-    if (error) {
+        // ==================================
+        // ERROR
+        // ==================================
 
-        console.error("Login error:", error);
+        if (error) {
 
-        errorBox.textContent = error.message;
+            console.error("Login error:", error);
 
-        return;
+            message.textContent = error.message;
+
+            return;
+        }
+
+        // ==================================
+        // SUCCESS
+        // ==================================
+
+        if (!data.session) {
+
+            message.textContent =
+                "Login completed, but no session was created.";
+
+            return;
+        }
+
+        console.log("Login successful");
+        console.log("User:", data.user);
+
+        message.style.color = "#55dd77";
+        message.textContent =
+            "Login successful! Opening Creator Portal...";
+
+        // Give the message a moment to appear
+        setTimeout(() => {
+
+            window.location.href = "dashboard.html";
+
+        }, 700);
+
+    } catch (error) {
+
+        console.error("Unexpected login error:", error);
+
+        message.style.color = "#ff5555";
+
+        message.textContent =
+            "Unable to connect to the authentication service.";
+
+    } finally {
+
+        button.disabled = false;
+        loading.style.display = "none";
+
     }
-
-    console.log("5. Login successful");
-
-    window.location.href = "dashboard.html";
 }
