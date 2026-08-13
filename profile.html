@@ -12,23 +12,10 @@
 
 <title>Creator Profile | Vidlyra</title>
 
-
-<link
-    rel="preconnect"
-    href="https://fonts.googleapis.com"
->
-
-<link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
->
-
 <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
     rel="stylesheet"
 >
-
 
 <style>
 
@@ -39,133 +26,108 @@
     font-family: 'Poppins', sans-serif;
 }
 
-
 body {
-
     min-height: 100vh;
-
     background: #050505;
-
     color: white;
-
 }
 
 
-/* ==========================================
-   HEADER
-========================================== */
+/* HEADER */
 
 header {
-
     height: 70px;
-
     padding: 0 30px;
 
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
 
     background: #111;
-
     border-bottom: 1px solid #252525;
-
 }
-
 
 .logo {
-
     color: #ff7a00;
-
     font-size: 25px;
-
     font-weight: 700;
-
     letter-spacing: 1px;
-
 }
 
-
 .back-btn {
-
     padding: 9px 16px;
 
     background: transparent;
-
     border: 1px solid #333;
-
     border-radius: 8px;
 
     color: #ccc;
-
     cursor: pointer;
-
 }
-
 
 .back-btn:hover {
-
     border-color: #ff7a00;
-
     color: #ff7a00;
-
 }
 
 
-/* ==========================================
-   CONTAINER
-========================================== */
+/* CONTAINER */
 
 .container {
-
     width: 100%;
-
     max-width: 700px;
 
     margin: 45px auto;
-
     padding: 0 20px;
-
 }
 
 
-/* ==========================================
-   PROFILE CARD
-========================================== */
+/* PROFILE CARD */
 
 .profile-card {
-
     background: #111;
 
     border: 1px solid #252525;
-
     border-radius: 18px;
 
     padding: 35px;
 
     box-shadow:
         0 0 30px rgba(255,122,0,.10);
-
 }
 
 
-/* ==========================================
-   AVATAR
-========================================== */
+/* LOADING */
 
-.avatar-section {
+.loading {
+    text-align: center;
+    color: #888;
+    padding: 50px;
+}
+
+
+/* ERROR */
+
+.error {
+    display: none;
+
+    padding: 20px;
 
     text-align: center;
 
+    color: #ff5555;
 }
 
 
+/* AVATAR */
+
+.avatar-section {
+    text-align: center;
+}
+
 .avatar-image {
-
-    width: 130px;
-
-    height: 130px;
+    width: 140px;
+    height: 140px;
 
     border-radius: 50%;
 
@@ -177,49 +139,33 @@ header {
 
     box-shadow:
         0 0 25px rgba(255,122,0,.20);
-
 }
 
-
 .creator-name {
-
     margin-top: 15px;
 
     font-size: 25px;
-
     font-weight: 600;
-
 }
-
 
 .creator-email {
-
-    color: #888;
-
-    font-size: 14px;
-
     margin-top: 4px;
 
+    color: #888;
+    font-size: 14px;
 }
-
 
 .avatar-number {
-
-    color: #ff7a00;
-
-    font-size: 13px;
-
     margin-top: 8px;
 
+    color: #ff7a00;
+    font-size: 13px;
 }
 
 
-/* ==========================================
-   CREATOR LEVEL
-========================================== */
+/* LEVEL CARD */
 
 .creator-level-card {
-
     margin-top: 30px;
 
     padding: 22px;
@@ -229,39 +175,24 @@ header {
     border: 1px solid #292929;
 
     border-radius: 15px;
-
-    box-shadow:
-        0 0 25px rgba(255,122,0,.08);
-
 }
 
-
 .level-header {
-
     display: flex;
 
     justify-content: space-between;
-
     align-items: center;
-
-    gap: 15px;
-
 }
 
-
 .level-label {
-
     color: #777;
 
     font-size: 11px;
 
     letter-spacing: 1px;
-
 }
 
-
 .creator-rank {
-
     margin-top: 4px;
 
     color: #ff7a00;
@@ -269,27 +200,18 @@ header {
     font-size: 20px;
 
     font-weight: 600;
-
 }
 
-
 .creator-level {
-
-    color: white;
-
     font-size: 18px;
 
     font-weight: 700;
-
 }
 
 
-/* ==========================================
-   PROGRESS
-========================================== */
+/* PROGRESS */
 
 .progress-info {
-
     display: flex;
 
     justify-content: space-between;
@@ -299,12 +221,9 @@ header {
     color: #aaa;
 
     font-size: 13px;
-
 }
 
-
 .progress-bar {
-
     width: 100%;
 
     height: 9px;
@@ -316,12 +235,9 @@ header {
     border-radius: 20px;
 
     overflow: hidden;
-
 }
 
-
 .progress-fill {
-
     width: 0%;
 
     height: 100%;
@@ -331,34 +247,24 @@ header {
     border-radius: 20px;
 
     transition: width .5s ease;
-
 }
 
-
 .next-level {
-
     margin-top: 9px;
 
     color: #777;
 
     font-size: 12px;
-
 }
 
 
-/* ==========================================
-   ACCOUNT INFORMATION
-========================================== */
+/* INFO */
 
 .info-section {
-
     margin-top: 30px;
-
 }
 
-
 .info-row {
-
     display: flex;
 
     justify-content: space-between;
@@ -368,21 +274,15 @@ header {
     padding: 14px 0;
 
     border-bottom: 1px solid #222;
-
 }
 
-
 .info-label {
-
     color: #777;
 
     font-size: 13px;
-
 }
 
-
 .info-value {
-
     color: #ddd;
 
     font-size: 13px;
@@ -390,16 +290,12 @@ header {
     text-align: right;
 
     word-break: break-all;
-
 }
 
 
-/* ==========================================
-   BUTTONS
-========================================== */
+/* BUTTONS */
 
 .actions {
-
     margin-top: 30px;
 
     display: grid;
@@ -408,16 +304,12 @@ header {
         repeat(2, 1fr);
 
     gap: 12px;
-
 }
 
-
 .action-btn {
-
     display: flex;
 
     justify-content: center;
-
     align-items: center;
 
     padding: 13px;
@@ -432,24 +324,16 @@ header {
 
     text-decoration: none;
 
-    cursor: pointer;
-
     font-size: 14px;
-
 }
 
-
 .action-btn:hover {
-
     border-color: #ff7a00;
 
     color: #ff7a00;
-
 }
 
-
 .logout-btn {
-
     width: 100%;
 
     margin-top: 15px;
@@ -467,89 +351,37 @@ header {
     cursor: pointer;
 
     font-size: 14px;
-
 }
 
-
 .logout-btn:hover {
-
     background: #241010;
 
     border-color: #ff5555;
-
 }
 
 
-/* ==========================================
-   LOADING
-========================================== */
-
-.loading {
-
-    text-align: center;
-
-    color: #888;
-
-    padding: 50px;
-
-}
-
-
-/* ==========================================
-   ERROR
-========================================== */
-
-.error {
-
-    display: none;
-
-    padding: 20px;
-
-    text-align: center;
-
-    color: #ff5555;
-
-}
-
-
-/* ==========================================
-   MOBILE
-========================================== */
+/* MOBILE */
 
 @media(max-width:600px) {
 
     header {
-
         padding: 0 18px;
-
     }
-
 
     .container {
-
         margin-top: 25px;
-
     }
-
 
     .profile-card {
-
         padding: 25px;
-
     }
-
 
     .actions {
-
         grid-template-columns: 1fr;
-
     }
 
-
     .level-header {
-
         align-items: flex-start;
-
     }
 
 }
@@ -562,16 +394,11 @@ header {
 <body>
 
 
-<!-- ==========================================
-     HEADER
-========================================== -->
-
 <header>
 
     <div class="logo">
         VIDLYRA
     </div>
-
 
     <button
         type="button"
@@ -584,15 +411,8 @@ header {
 </header>
 
 
-
-<!-- ==========================================
-     MAIN
-========================================== -->
-
 <main class="container">
 
-
-    <!-- LOADING -->
 
     <div
         id="loading"
@@ -602,17 +422,11 @@ header {
     </div>
 
 
-
-    <!-- ERROR -->
-
     <div
         id="error"
         class="error"
     ></div>
 
-
-
-    <!-- PROFILE -->
 
     <div
         id="profileContent"
@@ -621,20 +435,16 @@ header {
     >
 
 
-        <!-- ==================================
-             AVATAR
-        =================================== -->
+        <!-- CREATOR AVATAR -->
 
         <div class="avatar-section">
 
-
             <img
-                id="avatarImage"
+                id="creatorAvatarImage"
                 class="avatar-image"
-                src="assets/avatars/avatar1.png"
+                src="assets/creator-avatars/creator1.png"
                 alt="Creator Avatar"
             >
-
 
             <div
                 id="creatorName"
@@ -643,7 +453,6 @@ header {
                 Creator
             </div>
 
-
             <div
                 id="creatorEmail"
                 class="creator-email"
@@ -651,35 +460,27 @@ header {
                 creator@email.com
             </div>
 
-
             <div
                 id="avatarNumber"
                 class="avatar-number"
             >
-                Avatar #1
+                Creator Avatar #1
             </div>
-
 
         </div>
 
 
-
-        <!-- ==================================
-             CREATOR LEVEL
-        =================================== -->
+        <!-- CREATOR LEVEL -->
 
         <div class="creator-level-card">
 
-
             <div class="level-header">
-
 
                 <div>
 
                     <div class="level-label">
                         CREATOR LEVEL
                     </div>
-
 
                     <div
                         id="creatorRank"
@@ -690,7 +491,6 @@ header {
 
                 </div>
 
-
                 <div
                     id="creatorLevel"
                     class="creator-level"
@@ -698,19 +498,14 @@ header {
                     LEVEL 1
                 </div>
 
-
             </div>
 
-
-
-            <!-- PROGRESS -->
 
             <div class="progress-info">
 
                 <span>
                     Approved Projects
                 </span>
-
 
                 <span>
 
@@ -729,7 +524,6 @@ header {
             </div>
 
 
-
             <div class="progress-bar">
 
                 <div
@@ -740,32 +534,25 @@ header {
             </div>
 
 
-
             <div
                 id="nextLevelText"
                 class="next-level"
             >
-                3 approved projects needed for Level 2
+                3 approved projects needed for the next level.
             </div>
-
 
         </div>
 
 
-
-        <!-- ==================================
-             ACCOUNT INFORMATION
-        =================================== -->
+        <!-- ACCOUNT -->
 
         <div class="info-section">
-
 
             <div class="info-row">
 
                 <span class="info-label">
                     User ID
                 </span>
-
 
                 <span
                     id="userId"
@@ -777,13 +564,11 @@ header {
             </div>
 
 
-
             <div class="info-row">
 
                 <span class="info-label">
                     Account Created
                 </span>
-
 
                 <span
                     id="createdAt"
@@ -794,25 +579,26 @@ header {
 
             </div>
 
-
         </div>
 
 
-
-        <!-- ==================================
-             ACTIONS
-        =================================== -->
+        <!-- ACTIONS -->
 
         <div class="actions">
 
+            <a
+                href="creator-avatars.html"
+                class="action-btn"
+            >
+                🎨 Creator Avatars
+            </a>
 
             <a
                 href="avatars.html"
                 class="action-btn"
             >
-                🎨 Change Avatar
+                ✨ Frequency Avatars
             </a>
-
 
             <a
                 href="projects.html"
@@ -821,7 +607,6 @@ header {
                 📁 My Projects
             </a>
 
-
             <a
                 href="upload.html"
                 class="action-btn"
@@ -829,22 +614,8 @@ header {
                 ⬆️ Upload Project
             </a>
 
-
-            <a
-                href="dashboard.html"
-                class="action-btn"
-            >
-                🏠 Dashboard
-            </a>
-
-
         </div>
 
-
-
-        <!-- ==================================
-             LOGOUT
-        =================================== -->
 
         <button
             type="button"
@@ -860,22 +631,11 @@ header {
 </main>
 
 
-
-<!-- ==========================================
-     SUPABASE
-========================================== -->
-
 <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
 ></script>
 
-
-<!-- CONFIG -->
-
 <script src="js/config.js"></script>
-
-
-<!-- PROFILE LOGIC -->
 
 <script src="js/profile.js"></script>
 
