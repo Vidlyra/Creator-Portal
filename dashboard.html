@@ -1,428 +1,417 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Dashboard | Vidlyra Creator Portal</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/responsive.css">
-
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
-}
-
-body{
-background:#050505;
-color:#fff;
-}
-
-header{
-
-height:75px;
-padding:0 8%;
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-background:#111;
-
-border-bottom:1px solid #222;
-
-position:sticky;
-top:0;
-z-index:999;
-
-}
-
-.logo{
-
-font-size:28px;
-font-weight:700;
-color:#ff7a00;
-
-}
-
-nav{
-
-display:flex;
-gap:15px;
-
-}
-
-nav a{
-
-text-decoration:none;
-
-color:white;
-
-padding:10px 18px;
-
-border-radius:8px;
-
-transition:.3s;
-
-}
-
-nav a:hover{
-
-background:#ff7a00;
-
-}
-
-.container{
-
-width:90%;
-max-width:1300px;
-
-margin:40px auto;
-
-}
-
-.welcome{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-flex-wrap:wrap;
-
-gap:20px;
-
-margin-bottom:35px;
-
-}
-
-.welcome h1{
-
-font-size:38px;
-
-}
-
-.welcome span{
-
-color:#ff7a00;
-
-}
-
-.upload-btn{
-
-background:#ff7a00;
-
-padding:14px 24px;
-
-border-radius:10px;
-
-text-decoration:none;
-
-color:white;
-
-font-weight:600;
-
-}
-
-.stats{
-
-display:grid;
-
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-
-gap:20px;
-
-margin-bottom:40px;
-
-}
-
-.card{
-
-background:#111;
-
-border:1px solid #222;
-
-padding:25px;
-
-border-radius:15px;
-
-}
-
-.card h2{
-
-font-size:42px;
-
-color:#ff7a00;
-
-margin-bottom:10px;
-
-}
-
-.projects-title{
-
-margin-bottom:20px;
-
-font-size:28px;
-
-}
-
-.projects{
-
-display:grid;
-
-grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-
-gap:25px;
-
-}
-
-.project{
-
-background:#111;
-
-border:1px solid #222;
-
-border-radius:15px;
-
-overflow:hidden;
-
-}
-
-.project img{
-
-width:100%;
-height:180px;
-
-object-fit:cover;
-
-}
-
-.content{
-
-padding:20px;
-
-}
-
-.content h3{
-
-margin-bottom:10px;
-
-}
-
-.badge{
-
-display:inline-block;
-
-padding:6px 14px;
-
-border-radius:20px;
-
-background:#ff7a00;
-
-margin-top:15px;
-
-}
-
-.actions{
-
-display:flex;
-
-gap:10px;
-
-margin-top:20px;
-
-}
-
-.actions button{
-
-flex:1;
-
-padding:10px;
-
-border:none;
-
-border-radius:8px;
-
-cursor:pointer;
-
-}
-
-.edit{
-
-background:#2196f3;
-color:white;
-
-}
-
-.delete{
-
-background:#ff4444;
-color:white;
-
-}
-
-@media(max-width:768px){
-
-header{
-
-flex-direction:column;
-height:auto;
-padding:20px;
-
-}
-
-nav{
-
-margin-top:15px;
-flex-wrap:wrap;
-justify-content:center;
-
-}
-
-.welcome{
-
-flex-direction:column;
-align-items:flex-start;
-
-}
-
-.welcome h1{
-
-font-size:30px;
-
-}
-
-}
-
-</style>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Creator Dashboard | Vidlyra</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #050505;
+            color: white;
+        }
+
+        header {
+            height: 70px;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #111;
+            border-bottom: 1px solid #252525;
+        }
+
+        .logo {
+            color: #ff7a00;
+            font-size: 25px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logout-btn {
+            padding: 10px 18px;
+            background: transparent;
+            border: 1px solid #ff7a00;
+            border-radius: 8px;
+            color: #ff7a00;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #ff7a00;
+            color: white;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
+            padding: 40px 25px;
+        }
+
+        .welcome {
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #999;
+        }
+
+        .email {
+            color: #ff7a00;
+            margin-top: 5px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: #111;
+            border: 1px solid #252525;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .card button {
+            padding: 11px 18px;
+            background: #ff7a00;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .card button:hover {
+            background: #ff9500;
+        }
+
+        .status {
+            margin-top: 30px;
+            padding: 20px;
+            background: #111;
+            border: 1px solid #252525;
+            border-radius: 15px;
+        }
+
+        .status h2 {
+            margin-bottom: 10px;
+        }
+
+        #userStatus {
+            color: #55dd77;
+        }
+
+        @media (max-width: 700px) {
+
+            header {
+                padding: 0 18px;
+            }
+
+            main {
+                padding: 30px 18px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
 
 </head>
 
 <body>
 
+
 <header>
 
-<div class="logo">
+    <div class="logo">
+        VIDLYRA
+    </div>
 
-VIDLYRA
-
-</div>
-
-<nav>
-
-<a href="dashboard.html">Dashboard</a>
-
-<a href="upload.html">Upload</a>
-
-<a href="profile.html">Profile</a>
-
-<a href="#" onclick="logout()">Logout</a>
-
-</nav>
+    <button
+        class="logout-btn"
+        id="logoutButton"
+    >
+        Logout
+    </button>
 
 </header>
 
-<div class="container">
 
-<div class="welcome">
+<main>
 
-<div>
+    <section class="welcome">
 
-<h1>
+        <h1>
+            Creator Dashboard
+        </h1>
 
-Welcome,
+        <p>
+            Welcome to the Vidlyra Creator Portal.
+        </p>
 
-<span id="creatorName">
+        <p
+            class="email"
+            id="userEmail"
+        >
+            Loading account...
+        </p>
 
-Creator
+    </section>
 
-</span>
 
-</h1>
+    <section class="cards">
 
-<p>
 
-Manage your creative projects from one place.
+        <div class="card">
 
-</p>
+            <h2>
+                Upload Project
+            </h2>
 
-</div>
+            <p>
+                Submit your anime, manga, music,
+                artwork or short film.
+            </p>
 
-<a href="upload.html" class="upload-btn">
+            <button
+                onclick="window.location.href='upload.html'"
+            >
+                Upload
+            </button>
 
-+ Upload Project
+        </div>
 
-</a>
 
-</div>
+        <div class="card">
 
-<div class="stats">
+            <h2>
+                My Projects
+            </h2>
 
-<div class="card">
+            <p>
+                View projects you have submitted
+                to Vidlyra.
+            </p>
 
-<h2 id="totalProjects">0</h2>
+            <button
+                onclick="viewProjects()"
+            >
+                View Projects
+            </button>
 
-<p>Total Projects</p>
+        </div>
 
-</div>
 
-<div class="card">
+        <div class="card">
 
-<h2 id="pendingProjects">0</h2>
+            <h2>
+                Creator Profile
+            </h2>
 
-<p>Pending</p>
+            <p>
+                Manage your creator information.
+            </p>
 
-</div>
+            <button
+                onclick="profileComingSoon()"
+            >
+                Profile
+            </button>
 
-<div class="card">
+        </div>
 
-<h2 id="approvedProjects">0</h2>
 
-<p>Approved</p>
+    </section>
 
-</div>
 
-<div class="card">
+    <section class="status">
 
-<h2 id="rejectedProjects">0</h2>
+        <h2>
+            Account Status
+        </h2>
 
-<p>Rejected</p>
+        <p id="userStatus">
+            Checking authentication...
+        </p>
 
-</div>
+    </section>
 
-</div>
+</main>
 
-<h2 class="projects-title">
 
-My Projects
-
-</h2>
-
-<div class="projects" id="projectsContainer">
-
-<p>No projects uploaded yet.</p>
-
-</div>
-
-</div>
+<!-- Supabase -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- Configuration -->
+
 <script src="js/config.js"></script>
 
-<script src="js/dashboard.js"></script>
+
+<script>
+
+    // ==========================================
+    // CHECK LOGIN
+    // ==========================================
+
+    async function checkUser() {
+
+        const {
+            data,
+            error
+        } = await sb.auth.getUser();
+
+
+        if (error || !data.user) {
+
+            console.log("No authenticated user.");
+
+            window.location.href =
+                "login.html";
+
+            return;
+        }
+
+
+        const user = data.user;
+
+
+        console.log(
+            "Authenticated user:",
+            user
+        );
+
+
+        document
+            .getElementById("userEmail")
+            .textContent =
+            user.email;
+
+
+        document
+            .getElementById("userStatus")
+            .textContent =
+            "✓ You are logged in successfully.";
+
+    }
+
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
+
+    document
+        .getElementById("logoutButton")
+        .addEventListener("click", async function () {
+
+            const {
+                error
+            } = await sb.auth.signOut();
+
+
+            if (error) {
+
+                alert(error.message);
+
+                return;
+            }
+
+
+            window.location.href =
+                "login.html";
+
+        });
+
+
+    // ==========================================
+    // PROJECTS
+    // ==========================================
+
+    function viewProjects() {
+
+        alert(
+            "My Projects will be added next."
+        );
+
+    }
+
+
+    // ==========================================
+    // PROFILE
+    // ==========================================
+
+    function profileComingSoon() {
+
+        alert(
+            "Creator Profile will be added next."
+        );
+
+    }
+
+
+    // ==========================================
+    // START
+    // ==========================================
+
+    checkUser();
+
+</script>
 
 </body>
+
 </html>
