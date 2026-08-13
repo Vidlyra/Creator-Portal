@@ -400,3 +400,86 @@ border-radius:10px;
 font-size:18px;
 
 }
+.creator-level-card {
+    margin-top: 25px;
+    padding: 22px;
+
+    background: #111;
+
+    border: 1px solid #292929;
+    border-radius: 15px;
+
+    box-shadow:
+        0 0 25px rgba(255,122,0,.08);
+}
+
+.level-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.level-label {
+    color: #777;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.creator-rank {
+    margin-top: 4px;
+
+    color: #ff7a00;
+
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.creator-level {
+    color: #fff;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+
+    margin-top: 20px;
+
+    color: #aaa;
+    font-size: 13px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 9px;
+
+    margin-top: 8px;
+
+    background: #252525;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+
+    background: #ff7a00;
+
+    border-radius: 20px;
+
+    transition: width .5s ease;
+}
+
+.next-level {
+    margin-top: 9px;
+
+    color: #777;
+
+    font-size: 12px;
+}
