@@ -2,14 +2,15 @@
 // VIDLYRA CREATOR PROFILE
 // ==========================================
 
-console.log("Profile JS loaded");
+console.log("Creator Profile JS loaded");
 
 
 // ==========================================
-// LEVEL SYSTEM
+// LEVEL DATA
 // ==========================================
 
 const creatorLevels = [
+
     {
         level: 1,
         rank: "New Creator",
@@ -17,6 +18,7 @@ const creatorLevels = [
         max: 2,
         next: 3
     },
+
     {
         level: 2,
         rank: "Rising Creator",
@@ -24,6 +26,7 @@ const creatorLevels = [
         max: 5,
         next: 6
     },
+
     {
         level: 3,
         rank: "Active Creator",
@@ -31,6 +34,7 @@ const creatorLevels = [
         max: 10,
         next: 11
     },
+
     {
         level: 4,
         rank: "Pro Creator",
@@ -38,6 +42,7 @@ const creatorLevels = [
         max: 20,
         next: 21
     },
+
     {
         level: 5,
         rank: "Elite Creator",
@@ -45,6 +50,7 @@ const creatorLevels = [
         max: 35,
         next: 36
     },
+
     {
         level: 6,
         rank: "Master Creator",
@@ -52,6 +58,7 @@ const creatorLevels = [
         max: 50,
         next: 51
     },
+
     {
         level: 7,
         rank: "Legendary Creator",
@@ -59,132 +66,102 @@ const creatorLevels = [
         max: Infinity,
         next: null
     }
+
 ];
 
 
 // ==========================================
-// GET LEVEL INFORMATION
+// FIND LEVEL
 // ==========================================
 
-function getLevelInfo(projectCount) {
+function getCreatorLevel(projects) {
 
-    for (const level of creatorLevels) {
+    return creatorLevels.find(level =>
 
-        if (
-            projectCount >= level.min &&
-            projectCount <= level.max
-        ) {
-            return level;
-        }
+        projects >= level.min &&
+        projects <= level.max
 
-    }
+    ) || creatorLevels[0];
 
-    return creatorLevels[0];
 }
 
 
 // ==========================================
-// UPDATE LEVEL DISPLAY
+// UPDATE LEVEL UI
 // ==========================================
 
-function updateCreatorLevel(projectCount) {
+function updateLevelUI(projects) {
 
     const levelInfo =
-        getLevelInfo(projectCount);
+        getCreatorLevel(projects);
 
 
-    const creatorLevel =
-        document.getElementById(
-            "creatorLevel"
-        );
+    document.getElementById(
+        "creatorLevel"
+    ).textContent =
+        `LEVEL ${levelInfo.level}`;
 
-    const creatorRank =
-        document.getElementById(
-            "creatorRank"
-        );
 
-    const approvedProjects =
-        document.getElementById(
-            "approvedProjects"
-        );
+    document.getElementById(
+        "creatorRank"
+    ).textContent =
+        levelInfo.rank;
+
+
+    document.getElementById(
+        "approvedProjects"
+    ).textContent =
+        projects;
+
 
     const progress =
         document.getElementById(
             "levelProgress"
         );
 
-    const nextLevelTarget =
+
+    const target =
         document.getElementById(
             "nextLevelTarget"
         );
 
-    const nextLevelText =
+
+    const nextText =
         document.getElementById(
             "nextLevelText"
         );
 
 
-    // ======================================
-    // LEVEL
-    // ======================================
-
-    creatorLevel.textContent =
-        `LEVEL ${levelInfo.level}`;
-
-
-    // ======================================
-    // RANK
-    // ======================================
-
-    creatorRank.textContent =
-        levelInfo.rank;
-
-
-    // ======================================
-    // PROJECT COUNT
-    // ======================================
-
-    approvedProjects.textContent =
-        projectCount;
-
-
-    // ======================================
     // LEGENDARY
-    // ======================================
 
     if (levelInfo.level === 7) {
 
-        nextLevelTarget.textContent =
-            "∞";
+        target.textContent = "∞";
 
+        progress.style.width = "100%";
 
-        progress.style.width =
-            "100%";
-
-
-        nextLevelText.textContent =
-            "🌌 Maximum creator level reached";
-
+        nextText.textContent =
+            "🌌 Legendary Creator — maximum level reached.";
 
         return;
 
     }
 
 
-    // ======================================
-    // PROGRESS CALCULATION
-    // ======================================
+    // PROGRESS
 
-    const range =
-        levelInfo.next - levelInfo.min;
+    const total =
+        levelInfo.next -
+        levelInfo.min;
 
 
     const completed =
-        projectCount - levelInfo.min;
+        projects -
+        levelInfo.min;
 
 
     let percentage =
-        (completed / range) * 100;
+        (completed / total) * 100;
 
 
     percentage =
@@ -201,26 +178,23 @@ function updateCreatorLevel(projectCount) {
         `${percentage}%`;
 
 
-    // ======================================
-    // NEXT LEVEL
-    // ======================================
-
-    nextLevelTarget.textContent =
+    target.textContent =
         levelInfo.next;
 
 
     const remaining =
-        levelInfo.next - projectCount;
+        levelInfo.next -
+        projects;
 
 
     if (remaining === 1) {
 
-        nextLevelText.textContent =
+        nextText.textContent =
             "1 approved project needed for the next level.";
 
     } else {
 
-        nextLevelText.textContent =
+        nextText.textContent =
             `${remaining} approved projects needed for the next level.`;
 
     }
@@ -229,7 +203,7 @@ function updateCreatorLevel(projectCount) {
 
 
 // ==========================================
-// LOAD CREATOR PROFILE
+// LOAD PROFILE
 // ==========================================
 
 async function loadProfile() {
@@ -252,19 +226,17 @@ async function loadProfile() {
 
     try {
 
-        // ======================================
-        // GET USER
-        // ======================================
+        // GET LOGGED-IN USER
 
         const {
-            data: userData,
-            error: userError
+            data,
+            error
         } = await sb.auth.getUser();
 
 
         if (
-            userError ||
-            !userData.user
+            error ||
+            !data.user
         ) {
 
             window.location.href =
@@ -276,37 +248,34 @@ async function loadProfile() {
 
 
         const user =
-            userData.user;
+            data.user;
 
 
-        console.log(
-            "Creator:",
-            user.id
-        );
-
-
-        // ======================================
         // GET PROFILE
-        // ======================================
 
         const {
             data: profile,
             error: profileError
         } = await sb
+
             .from("profiles")
+
             .select(`
                 full_name,
                 email,
                 avatar_url,
                 selected_avatar,
+                creator_avatar,
                 approved_projects,
                 creator_level,
                 creator_rank
             `)
+
             .eq(
                 "user_id",
                 user.id
             )
+
             .maybeSingle();
 
 
@@ -320,14 +289,14 @@ async function loadProfile() {
         if (!profile) {
 
             throw new Error(
-                "Creator profile was not found."
+                "Creator profile not found."
             );
 
         }
 
 
         console.log(
-            "Profile:",
+            "Creator profile:",
             profile
         );
 
@@ -336,43 +305,37 @@ async function loadProfile() {
         // NAME
         // ======================================
 
-        document
-            .getElementById(
-                "creatorName"
-            )
-            .textContent =
-                profile.full_name ||
-                "Creator";
+        document.getElementById(
+            "creatorName"
+        ).textContent =
+            profile.full_name ||
+            "Creator";
 
 
         // ======================================
         // EMAIL
         // ======================================
 
-        document
-            .getElementById(
-                "creatorEmail"
-            )
-            .textContent =
-                profile.email ||
-                user.email ||
-                "Not available";
+        document.getElementById(
+            "creatorEmail"
+        ).textContent =
+            profile.email ||
+            user.email ||
+            "";
 
 
         // ======================================
         // USER ID
         // ======================================
 
-        document
-            .getElementById(
-                "userId"
-            )
-            .textContent =
-                user.id;
+        document.getElementById(
+            "userId"
+        ).textContent =
+            user.id;
 
 
         // ======================================
-        // ACCOUNT CREATED
+        // CREATED DATE
         // ======================================
 
         if (user.created_at) {
@@ -383,62 +346,49 @@ async function loadProfile() {
                 );
 
 
-            document
-                .getElementById(
-                    "createdAt"
-                )
-                .textContent =
-                    date.toLocaleDateString(
-                        "en-IN",
-                        {
-                            day: "2-digit",
-                            month: "long",
-                            year: "numeric"
-                        }
-                    );
+            document.getElementById(
+                "createdAt"
+            ).textContent =
+                date.toLocaleDateString(
+                    "en-IN",
+                    {
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric"
+                    }
+                );
 
         }
 
 
         // ======================================
-        // AVATAR NUMBER
+        // CREATOR AVATAR
         // ======================================
 
-        const avatarNumber =
+        const creatorAvatar =
             Number(
-                profile.selected_avatar || 1
+                profile.creator_avatar || 1
             );
 
-
-        document
-            .getElementById(
-                "avatarNumber"
-            )
-            .textContent =
-                `Avatar #${avatarNumber}`;
-
-
-        // ======================================
-        // AVATAR IMAGE
-        // ======================================
 
         const avatarImage =
             document.getElementById(
-                "avatarImage"
+                "creatorAvatarImage"
             );
 
 
-        if (profile.avatar_url) {
+        avatarImage.src =
+            `assets/creator-avatars/creator${creatorAvatar}.png`;
 
-            avatarImage.src =
-                profile.avatar_url;
 
-        } else {
+        avatarImage.alt =
+            `Creator Avatar #${creatorAvatar}`;
 
-            avatarImage.src =
-                `assets/avatars/avatar${avatarNumber}.png`;
 
-        }
+        document.getElementById(
+            "avatarNumber"
+        ).textContent =
+            `Creator Avatar #${creatorAvatar}`;
 
 
         // ======================================
@@ -452,16 +402,16 @@ async function loadProfile() {
 
 
         // ======================================
-        // UPDATE CREATOR LEVEL
+        // LEVEL UI
         // ======================================
 
-        updateCreatorLevel(
+        updateLevelUI(
             approvedProjects
         );
 
 
         // ======================================
-        // SHOW PROFILE
+        // SHOW
         // ======================================
 
         loading.style.display =
@@ -474,7 +424,7 @@ async function loadProfile() {
     } catch (error) {
 
         console.error(
-            "Profile loading error:",
+            "Profile error:",
             error
         );
 
@@ -487,7 +437,7 @@ async function loadProfile() {
 
         errorBox.textContent =
             error.message ||
-            "Unable to load creator profile.";
+            "Unable to load profile.";
 
     }
 
@@ -500,23 +450,12 @@ async function loadProfile() {
 
 async function logout() {
 
-    console.log(
-        "Logging out..."
-    );
-
-
     const {
         error
     } = await sb.auth.signOut();
 
 
     if (error) {
-
-        console.error(
-            "Logout error:",
-            error
-        );
-
 
         alert(
             "Logout failed: " +
