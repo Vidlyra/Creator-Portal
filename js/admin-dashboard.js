@@ -1,7 +1,3 @@
-// ==========================================
-// VIDLYRA ADMIN DASHBOARD
-// ==========================================
-
 console.log("Admin Dashboard loaded");
 
 
