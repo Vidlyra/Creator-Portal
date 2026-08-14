@@ -1,596 +1,247 @@
 // ==========================================
-// VIDLYRA CREATOR DASHBOARD
+// VIDLYRA PROJECTS
+// Explore + My Projects
 // ==========================================
 
-console.log("Dashboard JS loaded");
-
-
-// ==========================================
-// CREATOR LEVEL SYSTEM
-// ==========================================
-
-const creatorLevels = [
-
-    {
-        level: 1,
-        rank: "New Creator",
-        min: 0,
-        max: 2,
-        next: 3
-    },
-
-    {
-        level: 2,
-        rank: "Rising Creator",
-        min: 3,
-        max: 5,
-        next: 6
-    },
-
-    {
-        level: 3,
-        rank: "Active Creator",
-        min: 6,
-        max: 10,
-        next: 11
-    },
-
-    {
-        level: 4,
-        rank: "Pro Creator",
-        min: 11,
-        max: 20,
-        next: 21
-    },
-
-    {
-        level: 5,
-        rank: "Elite Creator",
-        min: 21,
-        max: 35,
-        next: 36
-    },
-
-    {
-        level: 6,
-        rank: "Master Creator",
-        min: 36,
-        max: 50,
-        next: 51
-    },
-
-    {
-        level: 7,
-        rank: "Legendary Creator",
-        min: 51,
-        max: Infinity,
-        next: null
-    }
-
-];
+console.log("Vidlyra Projects loaded");
 
 
 // ==========================================
-// GET LEVEL
+// ELEMENTS
 // ==========================================
 
-function getCreatorLevel(projectCount) {
+const projectsContainer =
+    document.getElementById("projects");
 
-    return creatorLevels.find(level =>
+const searchInput =
+    document.getElementById("search");
 
-        projectCount >= level.min &&
-        projectCount <= level.max
-
-    ) || creatorLevels[0];
-
-}
+const categorySelect =
+    document.getElementById("category");
 
 
 // ==========================================
-// UPDATE LEVEL
+// MODE
 // ==========================================
 
-function updateLevel(projectCount) {
+const urlParams =
+    new URLSearchParams(
+        window.location.search
+    );
 
-    const levelInfo =
-        getCreatorLevel(projectCount);
-
-
-    document.getElementById(
-        "creatorLevel"
-    ).textContent =
-        `LEVEL ${levelInfo.level}`;
+const mineMode =
+    urlParams.get("mine") === "true";
 
 
-    document.getElementById(
-        "creatorRank"
-    ).textContent =
-        levelInfo.rank;
+console.log(
+    "Projects mode:",
+    mineMode
+        ? "MY PROJECTS"
+        : "EXPLORE"
+);
 
 
-    document.getElementById(
-        "creatorProfileRank"
-    ).textContent =
-        `${levelInfo.rank} • Level ${levelInfo.level}`;
+// ==========================================
+// DATA
+// ==========================================
+
+let allProjects = [];
+
+let currentUser = null;
 
 
-    document.getElementById(
-        "approvedProjects"
-    ).textContent =
-        projectCount;
+// ==========================================
+// PAGE TITLE
+// ==========================================
 
+function updatePageTitle() {
 
-    const progress =
-        document.getElementById(
-            "levelProgress"
-        );
+    const heroTitle =
+        document.querySelector(".hero h1");
 
+    const heroDescription =
+        document.querySelector(".hero p");
 
-    const target =
-        document.getElementById(
-            "nextLevelTarget"
-        );
+    if (mineMode) {
 
+        if (heroTitle) {
+            heroTitle.textContent =
+                "My Projects";
+        }
 
-    const nextText =
-        document.getElementById(
-            "nextLevelText"
-        );
+        if (heroDescription) {
+            heroDescription.textContent =
+                "View and manage your submitted projects.";
+        }
 
-
-    // ======================================
-    // LEGENDARY
-    // ======================================
-
-    if (levelInfo.level === 7) {
-
-        target.textContent = "∞";
-
-        progress.style.width = "100%";
-
-        nextText.textContent =
-            "🌌 Legendary Creator — maximum level reached.";
-
-        return;
-
-    }
-
-
-    // ======================================
-    // PROGRESS
-    // ======================================
-
-    const total =
-        levelInfo.next -
-        levelInfo.min;
-
-
-    const completed =
-        projectCount -
-        levelInfo.min;
-
-
-    let percentage =
-        (completed / total) * 100;
-
-
-    percentage =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                percentage
-            )
-        );
-
-
-    progress.style.width =
-        `${percentage}%`;
-
-
-    target.textContent =
-        levelInfo.next;
-
-
-    const remaining =
-        levelInfo.next -
-        projectCount;
-
-
-    if (remaining === 1) {
-
-        nextText.textContent =
-            "1 approved project needed for the next level.";
+        document.title =
+            "My Projects | Vidlyra";
 
     } else {
 
-        nextText.textContent =
-            `${remaining} approved projects needed for the next level.`;
+        if (heroTitle) {
+            heroTitle.textContent =
+                "Anime";
+        }
 
+        if (heroDescription) {
+            heroDescription.textContent =
+                "Discover approved creations from Vidlyra creators.";
+        }
+
+        document.title =
+            "Anime | Vidlyra";
     }
 
 }
 
 
 // ==========================================
-// LOAD DASHBOARD
+// GET CURRENT USER
 // ==========================================
 
-async function loadDashboard() {
+async function getCurrentUser() {
 
-    const loading =
-        document.getElementById(
-            "loading"
+    const {
+        data,
+        error
+    } = await sb.auth.getUser();
+
+
+    if (error) {
+
+        console.error(
+            "Auth error:",
+            error
         );
 
-    const content =
-        document.getElementById(
-            "dashboardContent"
-        );
+        return null;
+    }
 
-    const errorBox =
-        document.getElementById(
-            "error"
-        );
+
+    return data?.user || null;
+
+}
+
+
+// ==========================================
+// LOAD PROJECTS
+// ==========================================
+
+async function loadProjects() {
+
+    projectsContainer.innerHTML = `
+        <div class="loading">
+            Loading projects...
+        </div>
+    `;
 
 
     try {
 
         // ======================================
-        // CHECK LOGIN
+        // GET LOGIN USER
         // ======================================
 
-        const {
-            data,
-            error
-        } = await sb.auth.getUser();
+        currentUser =
+            await getCurrentUser();
 
+
+        // ======================================
+        // MY PROJECTS MODE
+        // ======================================
 
         if (
-            error ||
-            !data.user
+            mineMode &&
+            !currentUser
         ) {
 
-            window.location.href =
-                "login.html";
+            projectsContainer.innerHTML = `
+                <div class="error">
+                    Please login to view your projects.
+                </div>
+            `;
 
             return;
 
         }
 
 
-        const user =
-            data.user;
+        // ======================================
+        // BASE QUERY
+        // ======================================
 
+        let query =
+            sb
 
-        console.log(
-            "Logged-in creator:",
-            user.id
-        );
+                .from("projects")
+
+                .select(`
+                    id,
+                    user_id,
+                    title,
+                    description,
+                    category,
+                    thumbnail,
+                    status,
+                    created_at
+                `);
 
 
         // ======================================
-        // LOAD PROFILE
+        // EXPLORE
         // ======================================
 
-        const {
-            data: profile,
-            error: profileError
-        } = await sb
+        if (!mineMode) {
 
-            .from("profiles")
-
-            .select(`
-                full_name,
-                email,
-                creator_avatar,
-                creator_level,
-                creator_rank,
-                approved_projects
-            `)
-
-            .eq(
-                "user_id",
-                user.id
-            )
-
-            .maybeSingle();
-
-
-        if (profileError) {
-
-            throw profileError;
+            query =
+                query.eq(
+                    "status",
+                    "Approved"
+                );
 
         }
 
 
-        if (!profile) {
+        // ======================================
+        // MY PROJECTS
+        // ======================================
 
-            throw new Error(
-                "Creator profile not found."
-            );
+        if (
+            mineMode &&
+            currentUser
+        ) {
+
+            query =
+                query.eq(
+                    "user_id",
+                    currentUser.id
+                );
 
         }
 
 
-        console.log(
-            "Creator profile:",
-            profile
-        );
-
-
         // ======================================
-        // CREATOR NAME
+        // ORDER
         // ======================================
 
-        const creatorName =
-            profile.full_name ||
-            "Creator";
-
-
-        document.getElementById(
-            "welcomeName"
-        ).textContent =
-            creatorName;
-
-
-        document.getElementById(
-            "headerName"
-        ).textContent =
-            creatorName;
-
-
-        document.getElementById(
-            "creatorProfileName"
-        ).textContent =
-            creatorName;
-
-
-        // ======================================
-        // CREATOR AVATAR
-        // ======================================
-
-        const avatarNumber =
-            Number(
-                profile.creator_avatar || 1
-            );
-
-
-        const avatarPath =
-            `assets/creator-avatars/creator${avatarNumber}.png`;
-
-
-        document.getElementById(
-            "headerAvatar"
-        ).src =
-            avatarPath;
-
-
-        document.getElementById(
-            "creatorAvatar"
-        ).src =
-            avatarPath;
-
-
-        // ======================================
-        // APPROVED PROJECTS
-        // ======================================
-
-        const approvedProjects =
-            Number(
-                profile.approved_projects || 0
+        query =
+            query.order(
+                "created_at",
+                {
+                    ascending: false
+                }
             );
 
 
         // ======================================
-        // LEVEL
+        // EXECUTE
         // ======================================
-
-        updateLevel(
-            approvedProjects
-        );
-
-
-        // ======================================
-        // PROJECT STATISTICS
-        // ======================================
-
-        await loadProjectStats(
-            user.id,
-            approvedProjects
-        );
-
-
-        // ======================================
-        // SHOW DASHBOARD
-        // ======================================
-
-        loading.style.display =
-            "none";
-
-
-        content.style.display =
-            "block";
-
-
-    } catch (error) {
-
-        console.error(
-            "Dashboard error:",
-            error
-        );
-
-
-        loading.style.display =
-            "none";
-
-
-        errorBox.style.display =
-            "block";
-
-
-        errorBox.textContent =
-            error.message ||
-            "Unable to load dashboard.";
-
-    }
-
-}
-
-
-// ==========================================
-// LOAD PROJECT STATISTICS
-// ==========================================
-
-async function loadProjectStats(
-    userId,
-    approvedFromProfile
-) {
-
-    try {
-
-        /*
-         * IMPORTANT:
-         *
-         * This assumes your project table
-         * is called "projects".
-         *
-         * If your table has a different name,
-         * change "projects" below.
-         */
-
 
         const {
             data: projects,
             error
-        } = await sb
-
-            .from("projects")
-
-            .select(`
-                id,
-                status
-            `)
-
-            .eq(
-                "user_id",
-                userId
-            );
-
-
-        if (error) {
-
-            console.warn(
-                "Project statistics unavailable:",
-                error.message
-            );
-
-
-            // Still show approved count
-            document.getElementById(
-                "approvedCount"
-            ).textContent =
-                approvedFromProfile;
-
-
-            return;
-
-        }
-
-
-        const projectList =
-            projects || [];
-
-
-        // ======================================
-        // TOTAL
-        // ======================================
-
-        const total =
-            projectList.length;
-
-
-        document.getElementById(
-            "totalProjects"
-        ).textContent =
-            total;
-
-
-        // ======================================
-        // APPROVED
-        // ======================================
-
-        const approved =
-            projectList.filter(
-                project =>
-
-                    String(
-                        project.status || ""
-                    ).toLowerCase() ===
-                    "approved"
-
-            ).length;
-
-
-        document.getElementById(
-            "approvedCount"
-        ).textContent =
-            approved;
-
-
-        // ======================================
-        // PENDING
-        // ======================================
-
-        const pending =
-            projectList.filter(
-                project => {
-
-                    const status =
-                        String(
-                            project.status || ""
-                        ).toLowerCase();
-
-
-                    return (
-                        status === "pending" ||
-                        status === "submitted" ||
-                        status === ""
-                    );
-
-                }
-            ).length;
-
-
-        document.getElementById(
-            "pendingCount"
-        ).textContent =
-            pending;
-
-
-    } catch (error) {
-
-        console.warn(
-            "Project stats error:",
-            error
-        );
-
-    }
-
-}
-
-
-// ==========================================
-// LOGOUT
-// ==========================================
-
-async function logout() {
-
-    try {
-
-        const {
-            error
-        } = await sb.auth.signOut();
+        } = await query;
 
 
         if (error) {
@@ -600,22 +251,50 @@ async function logout() {
         }
 
 
-        window.location.href =
-            "login.html";
+        allProjects =
+            projects || [];
+
+
+        console.log(
+            mineMode
+                ? "My projects:"
+                : "Approved projects:",
+            allProjects
+        );
+
+
+        // ======================================
+        // ATTACH CREATORS
+        // ======================================
+
+        await attachCreators();
+
+
+        // ======================================
+        // RENDER
+        // ======================================
+
+        renderProjects(
+            allProjects
+        );
 
 
     } catch (error) {
 
         console.error(
-            "Logout error:",
+            "Projects error:",
             error
         );
 
 
-        alert(
-            "Logout failed: " +
-            error.message
-        );
+        projectsContainer.innerHTML = `
+            <div class="error">
+                ${escapeHTML(
+                    error.message ||
+                    "Unable to load projects."
+                )}
+            </div>
+        `;
 
     }
 
@@ -623,7 +302,713 @@ async function logout() {
 
 
 // ==========================================
-// START DASHBOARD
+// ATTACH CREATOR INFORMATION
 // ==========================================
 
-loadDashboard();
+async function attachCreators() {
+
+    const userIds = [
+        ...new Set(
+            allProjects
+                .map(
+                    project =>
+                        project.user_id
+                )
+                .filter(Boolean)
+        )
+    ];
+
+
+    if (
+        userIds.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    const {
+        data: profiles,
+        error
+    } = await sb
+
+        .from("profiles")
+
+        .select(`
+            user_id,
+            full_name,
+            avatar_url,
+            selected_avatar,
+            creator_avatar,
+            creator_level,
+            creator_rank
+        `)
+
+        .in(
+            "user_id",
+            userIds
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Creator profiles error:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    const profileMap =
+        new Map();
+
+
+    (profiles || []).forEach(
+        profile => {
+
+            profileMap.set(
+                profile.user_id,
+                profile
+            );
+
+        }
+    );
+
+
+    allProjects =
+        allProjects.map(
+            project => ({
+
+                ...project,
+
+                creator:
+                    profileMap.get(
+                        project.user_id
+                    ) || null
+
+            })
+        );
+
+}
+
+
+// ==========================================
+// CREATOR AVATAR
+// ==========================================
+
+function getCreatorAvatar(
+    creator
+) {
+
+    if (!creator) {
+
+        return "";
+
+    }
+
+
+    // --------------------------------------
+    // GitHub creator avatar
+    // --------------------------------------
+
+    if (
+        creator.creator_avatar &&
+        Number(creator.creator_avatar) >= 1 &&
+        Number(creator.creator_avatar) <= 7
+    ) {
+
+        return (
+            "assets/creator-avatars/creator" +
+            Number(creator.creator_avatar) +
+            ".png"
+        );
+
+    }
+
+
+    // --------------------------------------
+    // GitHub Frequency avatar
+    // --------------------------------------
+
+    if (
+        creator.selected_avatar &&
+        Number(creator.selected_avatar) >= 1 &&
+        Number(creator.selected_avatar) <= 12
+    ) {
+
+        return (
+            "assets/avatars/avatar" +
+            Number(creator.selected_avatar) +
+            ".png"
+        );
+
+    }
+
+
+    // --------------------------------------
+    // Supabase avatar URL
+    // --------------------------------------
+
+    if (
+        creator.avatar_url
+    ) {
+
+        return creator.avatar_url;
+
+    }
+
+
+    return "";
+
+}
+
+
+// ==========================================
+// RENDER PROJECTS
+// ==========================================
+
+function renderProjects(
+    projects
+) {
+
+    projectsContainer.innerHTML = "";
+
+
+    if (
+        !projects ||
+        projects.length === 0
+    ) {
+
+        projectsContainer.innerHTML = `
+
+            <div class="empty">
+
+                ${
+                    mineMode
+                    ?
+                    "You have not submitted any projects yet."
+                    :
+                    "No approved projects found."
+                }
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    projects.forEach(
+        project => {
+
+            renderProject(
+                project
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// RENDER PROJECT CARD
+// ==========================================
+
+function renderProject(
+    project
+) {
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+
+    card.className =
+        "card";
+
+
+    const creator =
+        project.creator;
+
+
+    const creatorName =
+        creator?.full_name ||
+        "Vidlyra Creator";
+
+
+    const creatorLevel =
+        creator?.creator_level ||
+        1;
+
+
+    const creatorRank =
+        creator?.creator_rank ||
+        "New Creator";
+
+
+    const avatar =
+        getCreatorAvatar(
+            creator
+        );
+
+
+    // ======================================
+    // THUMBNAIL
+    // ======================================
+
+    let thumbnailHTML = "";
+
+
+    if (
+        project.thumbnail
+    ) {
+
+        thumbnailHTML = `
+
+            <img
+                class="poster"
+                src="${safeAttribute(
+                    project.thumbnail
+                )}"
+                alt="${escapeHTML(
+                    project.title ||
+                    "Anime"
+                )}"
+                loading="lazy"
+            >
+
+        `;
+
+    } else {
+
+        thumbnailHTML = `
+
+            <div class="poster"></div>
+
+        `;
+
+    }
+
+
+    // ======================================
+    // CREATOR AVATAR
+    // ======================================
+
+    let avatarHTML = "";
+
+
+    if (avatar) {
+
+        avatarHTML = `
+
+            <img
+                class="creator-avatar"
+                src="${safeAttribute(
+                    avatar
+                )}"
+                alt="Creator avatar"
+                loading="lazy"
+            >
+
+        `;
+
+    } else {
+
+        avatarHTML = `
+
+            <div class="creator-avatar"></div>
+
+        `;
+
+    }
+
+
+    // ======================================
+    // STATUS
+    // ======================================
+
+    const statusHTML =
+        mineMode
+        ?
+        `
+
+        <div
+            class="project-status"
+            style="
+                margin-top:10px;
+                font-size:11px;
+                color:${
+                    project.status === "Approved"
+                    ? "#63d471"
+                    : "#ffb347"
+                };
+            "
+        >
+            Status:
+            ${escapeHTML(
+                project.status ||
+                "Pending"
+            )}
+        </div>
+
+        `
+        :
+        "";
+
+
+    // ======================================
+    // CARD
+    // ======================================
+
+    card.innerHTML = `
+
+        ${thumbnailHTML}
+
+
+        <div class="card-body">
+
+
+            <div class="title">
+
+                ${escapeHTML(
+                    project.title ||
+                    "Untitled"
+                )}
+
+            </div>
+
+
+            <div class="category">
+
+                ${escapeHTML(
+                    project.category ||
+                    "Anime"
+                )}
+
+            </div>
+
+
+            ${
+                mineMode
+                ?
+                `
+                <div
+                    style="
+                        color:#777;
+                        font-size:11px;
+                        line-height:1.5;
+                    "
+                >
+                    ${
+                        escapeHTML(
+                            project.description ||
+                            "No description available."
+                        )
+                    }
+                </div>
+                `
+                :
+                ""
+            }
+
+
+            <div class="creator">
+
+
+                ${avatarHTML}
+
+
+                <div>
+
+                    <div class="creator-name">
+
+                        ${escapeHTML(
+                            creatorName
+                        )}
+
+                    </div>
+
+
+                    <div class="creator-level">
+
+                        Level
+                        ${creatorLevel}
+
+                        •
+
+                        ${escapeHTML(
+                            creatorRank
+                        )}
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            ${statusHTML}
+
+
+            <a
+                class="view-profile"
+                href="profile.html?user=${encodeURIComponent(
+                    project.user_id
+                )}"
+            >
+
+                View Creator Profile →
+
+            </a>
+
+
+        </div>
+
+    `;
+
+
+    // ======================================
+    // THUMBNAIL ERROR
+    // ======================================
+
+    const image =
+        card.querySelector(
+            ".poster"
+        );
+
+
+    if (
+        image &&
+        image.tagName === "IMG"
+    ) {
+
+        image.addEventListener(
+            "error",
+            function () {
+
+                console.error(
+                    "Thumbnail failed:",
+                    project.thumbnail
+                );
+
+
+                image.style.display =
+                    "none";
+
+            }
+        );
+
+    }
+
+
+    // ======================================
+    // AVATAR ERROR
+    // ======================================
+
+    const avatarImage =
+        card.querySelector(
+            ".creator-avatar"
+        );
+
+
+    if (
+        avatarImage &&
+        avatarImage.tagName === "IMG"
+    ) {
+
+        avatarImage.addEventListener(
+            "error",
+            function () {
+
+                console.error(
+                    "Creator avatar failed:",
+                    avatarImage.src
+                );
+
+
+                avatarImage.style.display =
+                    "block";
+
+                avatarImage.src =
+                    "assets/avatars/avatar1.png";
+
+            }
+        );
+
+    }
+
+
+    projectsContainer.appendChild(
+        card
+    );
+
+}
+
+
+// ==========================================
+// SEARCH + FILTER
+// ==========================================
+
+function filterProjects() {
+
+    const search =
+        searchInput
+            ? searchInput.value
+                .trim()
+                .toLowerCase()
+            : "";
+
+
+    const category =
+        categorySelect
+            ? categorySelect.value
+            : "all";
+
+
+    const filtered =
+        allProjects.filter(
+            project => {
+
+                const title =
+                    (
+                        project.title ||
+                        ""
+                    ).toLowerCase();
+
+
+                const description =
+                    (
+                        project.description ||
+                        ""
+                    ).toLowerCase();
+
+
+                const projectCategory =
+                    project.category ||
+                    "";
+
+
+                const creatorName =
+                    (
+                        project.creator?.full_name ||
+                        ""
+                    ).toLowerCase();
+
+
+                const matchesSearch =
+                    !search ||
+                    title.includes(search) ||
+                    description.includes(search) ||
+                    creatorName.includes(search);
+
+
+                const matchesCategory =
+                    category === "all" ||
+                    projectCategory === category;
+
+
+                return (
+                    matchesSearch &&
+                    matchesCategory
+                );
+
+            }
+        );
+
+
+    renderProjects(
+        filtered
+    );
+
+}
+
+
+// ==========================================
+// EVENTS
+// ==========================================
+
+if (searchInput) {
+
+    searchInput.addEventListener(
+        "input",
+        filterProjects
+    );
+
+}
+
+
+if (categorySelect) {
+
+    categorySelect.addEventListener(
+        "change",
+        filterProjects
+    );
+
+}
+
+
+// ==========================================
+// SECURITY
+// ==========================================
+
+function escapeHTML(
+    value
+) {
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+function safeAttribute(
+    value
+) {
+
+    return escapeHTML(
+        value
+    );
+
+}
+
+
+// ==========================================
+// START
+// ==========================================
+
+updatePageTitle();
+
+loadProjects();
