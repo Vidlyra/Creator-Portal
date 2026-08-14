@@ -6,95 +6,18 @@ console.log("Profile JS loaded");
 
 
 // ==========================================
-// GITHUB AVATAR SYSTEM
+// ELEMENTS
 // ==========================================
 
-// Your GitHub Pages structure:
-//
-// assets/
-// ├── avatars/
-// │   ├── avatar1.png
-// │   ├── avatar2.png
-// │   └── avatar12.png
-// │
-// └── creator-avatars/
-//     ├── creator1.png
-//     ├── creator2.png
-//     └── creator7.png
-//
-// These are official Vidlyra avatars.
-// No Supabase avatar storage is needed.
+const profileHero =
+    document.getElementById("profileHero");
 
-const AVATAR_BASE =
-    "assets/avatars/";
-
-const CREATOR_AVATAR_BASE =
-    "assets/creator-avatars/";
+const projectsContainer =
+    document.getElementById("projects");
 
 
 // ==========================================
-// GET OFFICIAL AVATAR
-// ==========================================
-
-function getOfficialAvatar(profile) {
-
-    // Creator avatar gets priority
-    // when it has been unlocked.
-
-    if (
-        profile.creator_avatar_unlocked === true &&
-        profile.creator_avatar
-    ) {
-
-        const creatorNumber =
-            Number(profile.creator_avatar);
-
-        if (
-            creatorNumber >= 1 &&
-            creatorNumber <= 7
-        ) {
-
-            return (
-                CREATOR_AVATAR_BASE +
-                `creator${creatorNumber}.png`
-            );
-
-        }
-
-    }
-
-
-    // Normal Vidlyra avatar.
-
-    if (profile.selected_avatar) {
-
-        const avatarNumber =
-            Number(profile.selected_avatar);
-
-        if (
-            avatarNumber >= 1 &&
-            avatarNumber <= 12
-        ) {
-
-            return (
-                AVATAR_BASE +
-                `avatar${avatarNumber}.png`
-            );
-
-        }
-
-    }
-
-
-    // No avatar selected.
-
-    return "";
-
-}
-
-
-// ==========================================
-// GET CREATOR ID
+// CREATOR ID
 // ==========================================
 
 const params =
@@ -102,32 +25,113 @@ const params =
         window.location.search
     );
 
-
-const creatorId =
+let creatorId =
     params.get("user") ||
     params.get("user_id");
 
 
 console.log(
-    "Creator ID:",
+    "Profile URL:",
+    window.location.href
+);
+
+console.log(
+    "Creator ID from URL:",
     creatorId
 );
 
 
 // ==========================================
-// ELEMENTS
+// GET CREATOR ID
 // ==========================================
 
-const profileHero =
-    document.getElementById(
-        "profileHero"
+async function getCreatorId() {
+
+    // --------------------------------------
+    // 1. Creator ID from URL
+    // --------------------------------------
+
+    if (creatorId) {
+
+        console.log(
+            "Using creator ID from URL:",
+            creatorId
+        );
+
+        return creatorId;
+
+    }
+
+
+    // --------------------------------------
+    // 2. No URL ID
+    // Use logged-in Supabase user
+    // --------------------------------------
+
+    console.log(
+        "No creator ID in URL."
+    );
+
+    console.log(
+        "Checking logged-in user..."
     );
 
 
-const projectsContainer =
-    document.getElementById(
-        "projects"
-    );
+    try {
+
+        const {
+            data,
+            error
+        } = await sb.auth.getUser();
+
+
+        if (error) {
+
+            console.error(
+                "Auth user error:",
+                error
+            );
+
+            return null;
+
+        }
+
+
+        const user =
+            data?.user;
+
+
+        if (!user) {
+
+            console.error(
+                "No logged-in user found."
+            );
+
+            return null;
+
+        }
+
+
+        console.log(
+            "Using logged-in user as creator:",
+            user.id
+        );
+
+
+        return user.id;
+
+    } catch (error) {
+
+        console.error(
+            "Could not get logged-in user:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
 
 
 // ==========================================
@@ -136,14 +140,22 @@ const projectsContainer =
 
 async function loadProfile() {
 
+    // --------------------------------------
+    // Get creator ID
+    // --------------------------------------
+
+    creatorId =
+        await getCreatorId();
+
+
     if (!creatorId) {
 
         showError(
-            "Creator profile not found. No creator ID was provided."
+            "Unable to identify this creator. Please login first."
         );
 
         console.error(
-            "Missing ?user=CREATOR_UUID in URL."
+            "No creator ID was found."
         );
 
         return;
@@ -151,11 +163,17 @@ async function loadProfile() {
     }
 
 
+    console.log(
+        "Final Creator ID:",
+        creatorId
+    );
+
+
     try {
 
-        // ======================================
-        // GET CREATOR PROFILE
-        // ======================================
+        // ==================================
+        // GET PROFILE
+        // ==================================
 
         const {
             data: creator,
@@ -167,6 +185,7 @@ async function loadProfile() {
             .select(`
                 user_id,
                 full_name,
+                email,
                 avatar_url,
                 selected_avatar,
                 approved_projects,
@@ -191,6 +210,10 @@ async function loadProfile() {
         }
 
 
+        // ==================================
+        // PROFILE NOT FOUND
+        // ==================================
+
         if (!creator) {
 
             showError(
@@ -213,18 +236,18 @@ async function loadProfile() {
         );
 
 
-        // ======================================
+        // ==================================
         // DISPLAY CREATOR
-        // ======================================
+        // ==================================
 
         renderCreator(
             creator
         );
 
 
-        // ======================================
+        // ==================================
         // LOAD APPROVED PROJECTS
-        // ======================================
+        // ==================================
 
         await loadProjects(
             creatorId
@@ -238,64 +261,13 @@ async function loadProfile() {
             error
         );
 
+
         showError(
-            error.message
+            error.message ||
+            "Unable to load creator profile."
         );
 
     }
-
-}
-
-
-// ==========================================
-// STORAGE URL HELPER
-// ==========================================
-
-// Used ONLY for project thumbnails.
-// Creator avatars are from GitHub.
-
-function getStorageUrl(
-    bucket,
-    filePath
-) {
-
-    if (!filePath) {
-
-        return "";
-
-    }
-
-
-    // Already a complete URL.
-
-    if (
-        filePath.startsWith(
-            "http://"
-        ) ||
-        filePath.startsWith(
-            "https://"
-        )
-    ) {
-
-        return filePath;
-
-    }
-
-
-    const {
-        data
-    } = sb.storage
-
-        .from(
-            bucket
-        )
-
-        .getPublicUrl(
-            filePath
-        );
-
-
-    return data?.publicUrl || "";
 
 }
 
@@ -410,8 +382,20 @@ function renderCreator(
 
 
     // ======================================
-    // OFFICIAL GITHUB AVATAR
+    // GITHUB AVATAR
     // ======================================
+
+    const avatar =
+        getOfficialAvatar(
+            creator
+        );
+
+
+    console.log(
+        "Creator profile avatar:",
+        avatar
+    );
+
 
     const placeholder =
         profileHero.querySelector(
@@ -419,88 +403,141 @@ function renderCreator(
         );
 
 
-    if (!placeholder) {
+    if (
+        avatar &&
+        placeholder
+    ) {
 
-        console.warn(
-            "Avatar placeholder not found."
-        );
-
-        return;
-
-    }
-
-
-    const avatarUrl =
-        getOfficialAvatar(
-            creator
-        );
-
-
-    console.log(
-        "Official GitHub avatar:",
-        avatarUrl
-    );
-
-
-    if (!avatarUrl) {
-
-        console.warn(
-            "No official avatar selected."
-        );
-
-        return;
-
-    }
-
-
-    const image =
-        document.createElement(
-            "img"
-        );
-
-
-    image.className =
-        "avatar";
-
-
-    image.src =
-        avatarUrl;
-
-
-    image.alt =
-        creator.full_name
-            ? `${creator.full_name} avatar`
-            : "Creator avatar";
-
-
-    // ======================================
-    // AVATAR ERROR
-    // ======================================
-
-    image.onerror =
-        function () {
-
-            console.error(
-                "GitHub avatar failed:",
-                avatarUrl
+        const image =
+            document.createElement(
+                "img"
             );
 
 
-            image.remove();
+        image.className =
+            "avatar";
 
-            placeholder.style.display =
-                "flex";
 
-        };
+        image.src =
+            avatar;
+
+
+        image.alt =
+            "Creator avatar";
+
+
+        image.onerror =
+            function () {
+
+                console.error(
+                    "Creator avatar failed:",
+                    image.src
+                );
+
+
+                image.remove();
+
+
+                placeholder.style.display =
+                    "flex";
+
+            };
+
+
+        placeholder.replaceWith(
+            image
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// GITHUB AVATAR SYSTEM
+// ==========================================
+
+function getOfficialAvatar(
+    profile
+) {
+
+    if (!profile) {
+
+        return "";
+
+    }
 
 
     // ======================================
-    // SHOW AVATAR
+    // CREATOR AVATAR
     // ======================================
 
-    placeholder.replaceWith(
-        image
-    );
+    if (
+        profile.creator_avatar_unlocked === true &&
+        profile.creator_avatar !== null &&
+        profile.creator_avatar !== undefined &&
+        profile.creator_avatar !== ""
+    ) {
+
+        const creatorNumber =
+            Number(
+                profile.creator_avatar
+            );
+
+
+        if (
+            Number.isInteger(
+                creatorNumber
+            ) &&
+            creatorNumber >= 1 &&
+            creatorNumber <= 7
+        ) {
+
+            return (
+                "assets/creator-avatars/" +
+                `creator${creatorNumber}.png`
+            );
+
+        }
+
+    }
+
+
+    // ======================================
+    // NORMAL AVATAR
+    // ======================================
+
+    if (
+        profile.selected_avatar !== null &&
+        profile.selected_avatar !== undefined &&
+        profile.selected_avatar !== ""
+    ) {
+
+        const avatarNumber =
+            Number(
+                profile.selected_avatar
+            );
+
+
+        if (
+            Number.isInteger(
+                avatarNumber
+            ) &&
+            avatarNumber >= 1 &&
+            avatarNumber <= 12
+        ) {
+
+            return (
+                "assets/avatars/" +
+                `avatar${avatarNumber}.png`
+            );
+
+        }
+
+    }
+
+
+    return "";
 
 }
 
@@ -531,84 +568,111 @@ async function loadProjects(
     `;
 
 
-    const {
-        data: projects,
-        error
-    } = await sb
+    try {
 
-        .from("projects")
+        const {
+            data: projects,
+            error
+        } = await sb
 
-        .select(`
-            id,
-            title,
-            description,
-            category,
-            thumbnail,
-            status,
-            created_at,
-            file_path
-        `)
+            .from("projects")
 
-        .eq(
-            "user_id",
-            userId
-        )
+            .select(`
+                id,
+                user_id,
+                title,
+                description,
+                category,
+                thumbnail,
+                status,
+                created_at,
+                file_path
+            `)
 
-        .eq(
-            "status",
-            "Approved"
-        )
+            .eq(
+                "user_id",
+                userId
+            )
 
-        .order(
-            "created_at",
-            {
-                ascending: false
+            .eq(
+                "status",
+                "Approved"
+            )
+
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        console.log(
+            "Creator approved projects:",
+            projects
+        );
+
+
+        // ==================================
+        // NO PROJECTS
+        // ==================================
+
+        if (
+            !projects ||
+            projects.length === 0
+        ) {
+
+            projectsContainer.innerHTML = `
+                <div class="empty">
+                    This creator has no approved projects yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        projectsContainer.innerHTML =
+            "";
+
+
+        projects.forEach(
+            project => {
+
+                renderProject(
+                    project
+                );
+
             }
         );
 
 
-    if (error) {
+    } catch (error) {
 
-        throw error;
+        console.error(
+            "Creator projects error:",
+            error
+        );
 
-    }
-
-
-    console.log(
-        "Creator approved projects:",
-        projects
-    );
-
-
-    if (
-        !projects ||
-        projects.length === 0
-    ) {
 
         projectsContainer.innerHTML = `
-            <div class="empty">
-                This creator has no approved projects yet.
+            <div class="error">
+                ${safeHTML(
+                    error.message ||
+                    "Unable to load projects."
+                )}
             </div>
         `;
 
-        return;
-
     }
-
-
-    projectsContainer.innerHTML =
-        "";
-
-
-    projects.forEach(
-        project => {
-
-            renderProject(
-                project
-            );
-
-        }
-    );
 
 }
 
@@ -635,39 +699,48 @@ function renderProject(
     // THUMBNAIL
     // ======================================
 
-    const thumbnailUrl =
-        getStorageUrl(
-            "thumbnails",
+    let thumbnailUrl =
+        getThumbnailUrl(
             project.thumbnail
         );
 
 
     console.log(
-        "Profile project thumbnail:",
+        "Project thumbnail:",
         project.title,
         thumbnailUrl
     );
 
 
-    const image =
-        thumbnailUrl
-        ?
-        `
-        <img
-            class="project-image"
-            src="${safeAttribute(
-                thumbnailUrl
-            )}"
-            alt="${safeHTML(
-                project.title ||
-                "Project"
-            )}"
-        >
-        `
-        :
-        `
-        <div class="project-image"></div>
+    let imageHTML;
+
+
+    if (thumbnailUrl) {
+
+        imageHTML = `
+            <img
+                class="project-image"
+                src="${safeAttribute(
+                    thumbnailUrl
+                )}"
+                alt="${safeHTML(
+                    project.title ||
+                    "Project"
+                )}"
+            >
         `;
+
+    } else {
+
+        imageHTML = `
+            <div class="project-image placeholder">
+                <span>
+                    No Thumbnail
+                </span>
+            </div>
+        `;
+
+    }
 
 
     // ======================================
@@ -676,7 +749,8 @@ function renderProject(
 
     card.innerHTML = `
 
-        ${image}
+        ${imageHTML}
+
 
         <div class="project-content">
 
@@ -714,31 +788,108 @@ function renderProject(
 
 
     // ======================================
-    // IMAGE ERROR
+    // THUMBNAIL FALLBACK
     // ======================================
 
-    const imageElement =
+    const image =
         card.querySelector(
             ".project-image"
         );
 
 
     if (
-        imageElement &&
-        imageElement.tagName === "IMG"
+        image &&
+        image.tagName === "IMG"
     ) {
 
-        imageElement.addEventListener(
+        image.addEventListener(
             "error",
             function () {
 
-                console.error(
-                    "Profile thumbnail failed:",
-                    thumbnailUrl
+                console.warn(
+                    "Thumbnail failed:",
+                    image.src
                 );
 
-                imageElement.style.display =
+
+                // --------------------------------
+                // Try projects bucket
+                // --------------------------------
+
+                if (
+                    !image.dataset.fallbackUsed &&
+                    project.thumbnail &&
+                    !project.thumbnail.startsWith(
+                        "http://"
+                    ) &&
+                    !project.thumbnail.startsWith(
+                        "https://"
+                    )
+                ) {
+
+                    image.dataset.fallbackUsed =
+                        "true";
+
+
+                    const {
+                        data
+                    } = sb.storage
+                        .from("projects")
+                        .getPublicUrl(
+                            project.thumbnail
+                        );
+
+
+                    if (
+                        data?.publicUrl
+                    ) {
+
+                        console.log(
+                            "Trying projects bucket:",
+                            data.publicUrl
+                        );
+
+
+                        image.src =
+                            data.publicUrl;
+
+
+                        return;
+
+                    }
+
+                }
+
+
+                // --------------------------------
+                // Final fallback
+                // --------------------------------
+
+                image.style.display =
                     "none";
+
+
+                const placeholder =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                placeholder.className =
+                    "project-image placeholder";
+
+
+                placeholder.innerHTML = `
+                    <span>
+                        Thumbnail unavailable
+                    </span>
+                `;
+
+
+                image.parentNode.insertBefore(
+                    placeholder,
+                    image
+                );
 
             }
         );
@@ -748,6 +899,69 @@ function renderProject(
 
     projectsContainer.appendChild(
         card
+    );
+
+}
+
+
+// ==========================================
+// GET THUMBNAIL URL
+// ==========================================
+
+function getThumbnailUrl(
+    thumbnail
+) {
+
+    if (!thumbnail) {
+
+        return "";
+
+    }
+
+
+    // Complete URL
+
+    if (
+        thumbnail.startsWith(
+            "http://"
+        ) ||
+        thumbnail.startsWith(
+            "https://"
+        )
+    ) {
+
+        return thumbnail;
+
+    }
+
+
+    // Local/GitHub asset
+
+    if (
+        thumbnail.startsWith(
+            "assets/"
+        )
+    ) {
+
+        return thumbnail;
+
+    }
+
+
+    // Supabase thumbnails bucket
+
+    const {
+        data
+    } = sb.storage
+        .from("thumbnails")
+        .getPublicUrl(
+            thumbnail
+        );
+
+
+    return (
+        data?.publicUrl ||
+        ""
     );
 
 }
