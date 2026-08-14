@@ -27,14 +27,14 @@ let allProjects = [];
 
 
 // ==========================================
-// SUPABASE STORAGE
+// STORAGE BUCKET
 // ==========================================
 
-// Your project thumbnail files are stored
-// inside the Supabase "projects" bucket.
+// IMPORTANT:
+// "projects" = DATABASE TABLE
+// "thumbnails" = STORAGE BUCKET
 
-const PROJECT_BUCKET =
-    "thumbnails";
+const PROJECT_BUCKET = "thumbnails";
 
 
 // ==========================================
@@ -43,22 +43,28 @@ const PROJECT_BUCKET =
 
 async function loadProjects() {
 
+    if (!projectsContainer) {
+        console.error("Projects container not found.");
+        return;
+    }
+
     projectsContainer.innerHTML = `
         <div class="loading">
             Loading anime...
         </div>
     `;
 
-
     try {
+
+        // ======================================
+        // DATABASE TABLE
+        // ======================================
 
         const {
             data: projects,
             error
         } = await sb
-
-            .from("thumbnails")
-
+            .from("projects")
             .select(`
                 id,
                 user_id,
@@ -69,12 +75,10 @@ async function loadProjects() {
                 status,
                 created_at
             `)
-
             .eq(
                 "status",
                 "Approved"
             )
-
             .order(
                 "created_at",
                 {
@@ -84,9 +88,7 @@ async function loadProjects() {
 
 
         if (error) {
-
             throw error;
-
         }
 
 
@@ -100,12 +102,16 @@ async function loadProjects() {
         );
 
 
-        // Get creator information
+        // ======================================
+        // LOAD CREATOR PROFILES
+        // ======================================
 
         await attachCreators();
 
 
-        // Display projects
+        // ======================================
+        // DISPLAY PROJECTS
+        // ======================================
 
         renderProjects(
             allProjects
@@ -154,9 +160,7 @@ async function attachCreators() {
     if (
         userIds.length === 0
     ) {
-
         return;
-
     }
 
 
@@ -164,9 +168,7 @@ async function attachCreators() {
         data: profiles,
         error
     } = await sb
-
         .from("profiles")
-
         .select(`
             user_id,
             full_name,
@@ -176,7 +178,6 @@ async function attachCreators() {
             creator_rank,
             creator_avatar_unlocked
         `)
-
         .in(
             "user_id",
             userIds
@@ -184,9 +185,7 @@ async function attachCreators() {
 
 
     if (error) {
-
         throw error;
-
     }
 
 
@@ -232,14 +231,13 @@ function getThumbnailUrl(
 ) {
 
     if (!thumbnail) {
-
         return "";
-
     }
 
 
-    // If database already contains
-    // a complete URL, use it directly.
+    // ======================================
+    // ALREADY A FULL URL
+    // ======================================
 
     if (
         thumbnail.startsWith(
@@ -255,19 +253,70 @@ function getThumbnailUrl(
     }
 
 
-    // Otherwise treat it as a
-    // Supabase Storage path.
+    // ======================================
+    // SUPABASE STORAGE
+    // ======================================
 
     const {
         data
     } = sb.storage
-
         .from(
             PROJECT_BUCKET
         )
-
         .getPublicUrl(
             thumbnail
+        );
+
+
+    return data?.publicUrl || "";
+
+}
+
+
+// ==========================================
+// GET CREATOR AVATAR URL
+// ==========================================
+
+function getAvatarUrl(
+    avatar
+) {
+
+    if (!avatar) {
+        return "";
+    }
+
+
+    // ======================================
+    // FULL URL
+    // ======================================
+
+    if (
+        avatar.startsWith(
+            "http://"
+        ) ||
+        avatar.startsWith(
+            "https://"
+        )
+    ) {
+
+        return avatar;
+
+    }
+
+
+    // ======================================
+    // STORAGE PATH
+    // ======================================
+
+    // avatar_url may contain a path.
+    // Try the public avatars bucket.
+
+    const {
+        data
+    } = sb.storage
+        .from("avatars")
+        .getPublicUrl(
+            avatar
         );
 
 
@@ -345,7 +394,7 @@ function renderProjects(
 
 
             // ==================================
-            // THUMBNAIL
+            // IMAGE URLS
             // ==================================
 
             const thumbnailUrl =
@@ -354,10 +403,24 @@ function renderProjects(
                 );
 
 
+            const avatarUrl =
+                getAvatarUrl(
+                    avatar
+                );
+
+
             console.log(
                 "Thumbnail:",
                 project.title,
                 thumbnailUrl
+            );
+
+
+            console.log(
+                "Creator:",
+                creatorName,
+                "Avatar:",
+                avatarUrl
             );
 
 
@@ -374,10 +437,12 @@ function renderProjects(
 
 
             // ==================================
-            // CARD
+            // PROJECT CARD
             // ==================================
 
             card.innerHTML = `
+
+                <!-- PROJECT THUMBNAIL -->
 
                 ${
                     thumbnailUrl
@@ -396,7 +461,8 @@ function renderProjects(
                     `
                     :
                     `
-                    <div class="poster"></div>
+                    <div class="poster">
+                    </div>
                     `
                 }
 
@@ -404,7 +470,7 @@ function renderProjects(
                 <div class="card-body">
 
 
-                    <!-- PROJECT TITLE -->
+                    <!-- TITLE -->
 
                     <div class="title">
 
@@ -434,27 +500,31 @@ function renderProjects(
 
 
                         ${
-                            avatar
+                            avatarUrl
                             ?
                             `
                             <img
                                 class="creator-avatar"
                                 src="${safeAttribute(
-                                    avatar
+                                    avatarUrl
                                 )}"
-                                alt="Creator avatar"
+                                alt="${escapeHTML(
+                                    creatorName
+                                )}"
                             >
                             `
                             :
                             `
-                            <div class="creator-avatar">
+                            <div
+                                class="creator-avatar"
+                                aria-label="Creator avatar"
+                            >
                             </div>
                             `
                         }
 
 
                         <div>
-
 
                             <div class="creator-name">
 
@@ -471,13 +541,12 @@ function renderProjects(
                                 ${creatorLevel}
 
                                 •
-                                
+
                                 ${escapeHTML(
                                     creatorRank
                                 )}
 
                             </div>
-
 
                         </div>
 
@@ -501,7 +570,7 @@ function renderProjects(
 
 
             // ==================================
-            // IMAGE ERROR HANDLER
+            // THUMBNAIL ERROR
             // ==================================
 
             const image =
@@ -534,6 +603,10 @@ function renderProjects(
             }
 
 
+            // ==================================
+            // ADD CARD
+            // ==================================
+
             projectsContainer.appendChild(
                 card
             );
@@ -551,19 +624,22 @@ function renderProjects(
 function filterProjects() {
 
     const search =
-        searchInput.value
-            .trim()
-            .toLowerCase();
+        searchInput
+            ? searchInput.value
+                .trim()
+                .toLowerCase()
+            : "";
 
 
     const category =
-        categorySelect.value;
+        categorySelect
+            ? categorySelect.value
+            : "all";
 
 
     const filtered =
         allProjects.filter(
             project => {
-
 
                 const title =
                     (
