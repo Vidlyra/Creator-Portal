@@ -1,811 +1,202 @@
 // ==========================================
-// VIDLYRA ADMIN DASHBOARD
+// VIDLYRA LOGIN
 // ==========================================
 
-console.log("Vidlyra Admin Dashboard loaded");
-
-
-// ==========================================
-// ELEMENTS
-// ==========================================
-
-const loading =
-    document.getElementById("loading");
-
-const projectsContainer =
-    document.getElementById("projects");
-
-const emptyBox =
-    document.getElementById("empty");
-
-const errorBox =
-    document.getElementById("error");
+console.log("Vidlyra Login loaded");
 
 
 // ==========================================
-// SHOW ERROR
+// LOGIN FORM
 // ==========================================
 
-function showError(message) {
+const loginForm =
+    document.getElementById("loginForm");
 
-    errorBox.textContent = message;
-
-    errorBox.style.display = "block";
-
-}
+const message =
+    document.getElementById("message");
 
 
-// ==========================================
-// CHECK ADMIN
-// ==========================================
+loginForm.addEventListener(
+    "submit",
+    async function (event) {
 
-async function checkAdmin() {
-
-    try {
-
-        const {
-            data: authData,
-            error: authError
-        } = await sb.auth.getUser();
+        event.preventDefault();
 
 
-        if (
-            authError ||
-            !authData.user
-        ) {
+        const email =
+            document.getElementById("email").value.trim();
 
-            window.location.href =
-                "login.html";
-
-            return null;
-
-        }
+        const password =
+            document.getElementById("password").value;
 
 
-        const user =
-            authData.user;
+        if (!email || !password) {
 
-
-        const {
-            data: profile,
-            error: profileError
-        } = await sb
-
-            .from("profiles")
-
-            .select("is_admin")
-
-            .eq(
-                "user_id",
-                user.id
-            )
-
-            .maybeSingle();
-
-
-        if (profileError) {
-
-            throw profileError;
-
-        }
-
-
-        if (
-            !profile ||
-            profile.is_admin !== true
-        ) {
-
-            alert(
-                "You do not have administrator access."
+            showMessage(
+                "Please enter your email and password."
             );
-
-            window.location.href =
-                "dashboard.html";
-
-            return null;
-
-        }
-
-
-        return user;
-
-
-    } catch (error) {
-
-        console.error(
-            "Admin check error:",
-            error
-        );
-
-        showError(
-            error.message ||
-            "Unable to verify administrator access."
-        );
-
-        return null;
-
-    }
-
-}
-
-
-// ==========================================
-// LOAD PENDING PROJECTS
-// ==========================================
-
-async function loadProjects() {
-
-    loading.style.display =
-        "block";
-
-    projectsContainer.innerHTML =
-        "";
-
-    emptyBox.style.display =
-        "none";
-
-
-    try {
-
-        const {
-            data: projects,
-            error
-        } = await sb
-
-            .from("projects")
-
-            .select(`
-                id,
-                user_id,
-                title,
-                description,
-                category,
-                thumbnail,
-                status,
-                created_at,
-                file_path,
-                admin_note,
-                reviewed_at,
-                reviewed_by
-            `)
-
-            .eq(
-                "status",
-                "Pending"
-            )
-
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
-
-
-        if (error) {
-
-            throw error;
-
-        }
-
-
-        loading.style.display =
-            "none";
-
-
-        if (
-            !projects ||
-            projects.length === 0
-        ) {
-
-            emptyBox.style.display =
-                "block";
-
-            await loadStats();
 
             return;
 
         }
 
 
-        projects.forEach(
-            project => {
+        try {
 
-                renderProject(
-                    project
+            showMessage(
+                "Signing in..."
+            );
+
+
+            // ==================================
+            // SUPABASE LOGIN
+            // ==================================
+
+            const {
+                data,
+                error
+            } = await sb.auth.signInWithPassword({
+
+                email: email,
+
+                password: password
+
+            });
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            if (!data.user) {
+
+                throw new Error(
+                    "Login successful, but user information was not found."
                 );
 
             }
-        );
 
 
-        await loadStats();
+            const user =
+                data.user;
 
 
-    } catch (error) {
+            // ==================================
+            // GET PROFILE
+            // ==================================
 
-        loading.style.display =
-            "none";
+            const {
+                data: profile,
+                error: profileError
+            } = await sb
 
-        console.error(
-            "Load projects error:",
-            error
-        );
+                .from("profiles")
 
-        showError(
-            error.message ||
-            "Unable to load projects."
-        );
+                .select(
+                    "is_admin"
+                )
 
-    }
+                .eq(
+                    "user_id",
+                    user.id
+                )
 
-}
-
-
-// ==========================================
-// RENDER PROJECT
-// ==========================================
-
-function renderProject(project) {
-
-    const card =
-        document.createElement(
-            "article"
-        );
+                .maybeSingle();
 
 
-    card.className =
-        "project-card";
+            if (profileError) {
+
+                throw profileError;
+
+            }
 
 
-    const thumbnail =
-        project.thumbnail ||
-        "assets/default-project.png";
+            // ==================================
+            // ADMIN REDIRECT
+            // ==================================
+
+            if (
+                profile &&
+                profile.is_admin === true
+            ) {
+
+                showMessage(
+                    "Welcome, Admin. Redirecting..."
+                );
 
 
-    const title =
-        escapeHTML(
-            project.title ||
-            "Untitled Project"
-        );
+                setTimeout(
+                    function () {
+
+                        window.location.href =
+                            "admin-dashboard.html";
+
+                    },
+                    500
+                );
 
 
-    const description =
-        escapeHTML(
-            project.description ||
-            "No description provided."
-        );
+                return;
+
+            }
 
 
-    const category =
-        escapeHTML(
-            project.category ||
-            "Unknown"
-        );
+            // ==================================
+            // CREATOR REDIRECT
+            // ==================================
 
-
-    const created =
-        project.created_at
-            ? new Date(
-                project.created_at
-            ).toLocaleDateString(
-                "en-IN"
-            )
-            : "Unknown";
-
-
-    card.innerHTML = `
-
-        <img
-            class="thumbnail"
-            src="${thumbnail}"
-            alt="Project thumbnail"
-            onerror="
-                this.style.display='none';
-            "
-        >
-
-        <div class="project-info">
-
-            <h3>
-                ${title}
-            </h3>
-
-            <p class="project-description">
-                ${description}
-            </p>
-
-            <div class="project-meta">
-
-                <span class="badge">
-                    ${category}
-                </span>
-
-                <span class="badge status">
-                    Pending Review
-                </span>
-
-                <span class="badge">
-                    ${created}
-                </span>
-
-            </div>
-
-            <div class="actions">
-
-                ${
-                    project.file_path
-                        ? `
-                            <button
-                                class="approve"
-                                onclick="
-                                    viewProjectFile(
-                                        '${escapeAttribute(project.file_path)}'
-                                    )
-                                "
-                            >
-                                👁 View File
-                            </button>
-                          `
-                        : ""
-                }
-
-                <button
-                    class="approve"
-                    onclick="
-                        approveProject(
-                            '${project.id}'
-                        )
-                    "
-                >
-                    ✓ Approve
-                </button>
-
-                <button
-                    class="reject"
-                    onclick="
-                        rejectProject(
-                            '${project.id}'
-                        )
-                    "
-                >
-                    ✕ Reject
-                </button>
-
-            </div>
-
-        </div>
-
-    `;
-
-
-    projectsContainer.appendChild(
-        card
-    );
-
-}
-
-
-// ==========================================
-// VIEW PROJECT FILE
-// ==========================================
-
-async function viewProjectFile(
-    filePath
-) {
-
-    if (!filePath) {
-
-        alert(
-            "Project file is not available."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } = await sb.storage
-
-            .from("projects")
-
-            .createSignedUrl(
-                filePath,
-                3600
+            showMessage(
+                "Login successful. Redirecting..."
             );
 
 
-        if (error) {
+            setTimeout(
+                function () {
 
-            throw error;
+                    window.location.href =
+                        "dashboard.html";
 
-        }
-
-
-        window.open(
-            data.signedUrl,
-            "_blank"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "File URL error:",
-            error
-        );
-
-        alert(
-            "Could not open project file:\n" +
-            error.message
-        );
-
-    }
-
-}
-
-
-// ==========================================
-// APPROVE PROJECT
-// ==========================================
-
-async function approveProject(
-    projectId
-) {
-
-    const confirmed =
-        confirm(
-            "Approve this project?"
-        );
-
-
-    if (!confirmed) {
-
-        return;
-
-    }
-
-
-    try {
-
-        const {
-            data: authData,
-            error: authError
-        } = await sb.auth.getUser();
-
-
-        if (
-            authError ||
-            !authData.user
-        ) {
-
-            window.location.href =
-                "login.html";
-
-            return;
-
-        }
-
-
-        const {
-            error
-        } = await sb
-
-            .from("projects")
-
-            .update({
-
-                status: "Approved",
-
-                reviewed_at:
-                    new Date().toISOString(),
-
-                reviewed_by:
-                    authData.user.id
-
-            })
-
-            .eq(
-                "id",
-                projectId
+                },
+                500
             );
 
 
-        if (error) {
+        } catch (error) {
 
-            throw error;
-
-        }
-
-
-        alert(
-            "Project approved successfully! ✓"
-        );
-
-
-        await loadProjects();
-
-
-    } catch (error) {
-
-        console.error(
-            "Approve error:",
-            error
-        );
-
-        alert(
-            "Could not approve project:\n" +
-            error.message
-        );
-
-    }
-
-}
-
-
-// ==========================================
-// REJECT PROJECT
-// ==========================================
-
-async function rejectProject(
-    projectId
-) {
-
-    const note =
-        prompt(
-            "Why are you rejecting this project?\n\nOptional:"
-        );
-
-
-    if (note === null) {
-
-        return;
-
-    }
-
-
-    try {
-
-        const {
-            data: authData,
-            error: authError
-        } = await sb.auth.getUser();
-
-
-        if (
-            authError ||
-            !authData.user
-        ) {
-
-            window.location.href =
-                "login.html";
-
-            return;
-
-        }
-
-
-        const {
-            error
-        } = await sb
-
-            .from("projects")
-
-            .update({
-
-                status: "Rejected",
-
-                admin_note:
-                    note.trim(),
-
-                reviewed_at:
-                    new Date().toISOString(),
-
-                reviewed_by:
-                    authData.user.id
-
-            })
-
-            .eq(
-                "id",
-                projectId
+            console.error(
+                "Login error:",
+                error
             );
 
 
-        if (error) {
-
-            throw error;
-
-        }
-
-
-        alert(
-            "Project rejected."
-        );
-
-
-        await loadProjects();
-
-
-    } catch (error) {
-
-        console.error(
-            "Reject error:",
-            error
-        );
-
-        alert(
-            "Could not reject project:\n" +
-            error.message
-        );
-
-    }
-
-}
-
-
-// ==========================================
-// LOAD STATISTICS
-// ==========================================
-
-async function loadStats() {
-
-    try {
-
-        const {
-            data: projects,
-            error
-        } = await sb
-
-            .from("projects")
-
-            .select("status");
-
-
-        if (error) {
-
-            throw error;
+            showMessage(
+                error.message ||
+                "Login failed."
+            );
 
         }
 
-
-        const list =
-            projects || [];
-
-
-        const pending =
-            list.filter(
-                p =>
-                    p.status === "Pending"
-            ).length;
-
-
-        const approved =
-            list.filter(
-                p =>
-                    p.status === "Approved"
-            ).length;
-
-
-        const rejected =
-            list.filter(
-                p =>
-                    p.status === "Rejected"
-            ).length;
-
-
-        document.getElementById(
-            "pendingCount"
-        ).textContent =
-            pending;
-
-
-        document.getElementById(
-            "approvedCount"
-        ).textContent =
-            approved;
-
-
-        document.getElementById(
-            "rejectedCount"
-        ).textContent =
-            rejected;
-
-
-    } catch (error) {
-
-        console.error(
-            "Stats error:",
-            error
-        );
-
     }
-
-}
-
-
-// ==========================================
-// ESCAPE HTML
-// ==========================================
-
-function escapeHTML(value) {
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
+);
 
 
 // ==========================================
-// ESCAPE ATTRIBUTE
+// MESSAGE
 // ==========================================
 
-function escapeAttribute(value) {
+function showMessage(text) {
 
-    return String(value)
-
-        .replace(
-            /\\/g,
-            "\\\\"
-        )
-
-        .replace(
-            /'/g,
-            "\\'"
-        );
-
-}
-
-
-// ==========================================
-// START
-// ==========================================
-
-async function startAdminDashboard() {
-
-    const admin =
-        await checkAdmin();
-
-
-    if (!admin) {
+    if (!message) {
 
         return;
 
     }
 
 
-    await loadProjects();
+    message.textContent =
+        text;
 
 }
-
-
-startAdminDashboard();
