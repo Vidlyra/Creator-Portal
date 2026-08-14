@@ -23,14 +23,11 @@ const errorBox =
 
 
 // ==========================================
-// STORAGE CONFIG
+// BUCKETS
 // ==========================================
 
-const PROJECT_BUCKET =
-    "projects";
-
-const THUMBNAIL_BUCKET =
-    "thumbnails";
+const PROJECT_BUCKET = "projects";
+const THUMBNAIL_BUCKET = "thumbnails";
 
 
 // ==========================================
@@ -48,8 +45,7 @@ async function checkAdmin() {
         throw error;
     }
 
-    const user =
-        data?.user;
+    const user = data?.user;
 
     if (!user) {
 
@@ -64,19 +60,15 @@ async function checkAdmin() {
         data: profile,
         error: profileError
     } = await sb
-
         .from("profiles")
-
         .select(`
             user_id,
             is_admin
         `)
-
         .eq(
             "user_id",
             user.id
         )
-
         .maybeSingle();
 
 
@@ -112,23 +104,19 @@ async function checkAdmin() {
 async function loadProjects() {
 
     if (loading) {
-        loading.style.display =
-            "block";
+        loading.style.display = "block";
     }
 
     if (emptyBox) {
-        emptyBox.style.display =
-            "none";
+        emptyBox.style.display = "none";
     }
 
     if (errorBox) {
-        errorBox.style.display =
-            "none";
+        errorBox.style.display = "none";
     }
 
     if (projectsContainer) {
-        projectsContainer.innerHTML =
-            "";
+        projectsContainer.innerHTML = "";
     }
 
 
@@ -136,9 +124,7 @@ async function loadProjects() {
         data: projects,
         error
     } = await sb
-
         .from("projects")
-
         .select(`
             id,
             user_id,
@@ -151,12 +137,10 @@ async function loadProjects() {
             file_path,
             admin_note
         `)
-
         .eq(
             "status",
             "Pending"
         )
-
         .order(
             "created_at",
             {
@@ -166,8 +150,7 @@ async function loadProjects() {
 
 
     if (loading) {
-        loading.style.display =
-            "none";
+        loading.style.display = "none";
     }
 
 
@@ -209,7 +192,7 @@ async function loadProjects() {
 
 
 // ==========================================
-// GET STORAGE IMAGE URL
+// THUMBNAIL URL
 // ==========================================
 
 async function getThumbnailUrl(
@@ -221,61 +204,37 @@ async function getThumbnailUrl(
     }
 
 
-    const value =
-        String(thumbnail).trim();
+    let path =
+        String(
+            thumbnail
+        ).trim();
 
 
-    if (!value) {
+    if (!path) {
         return null;
     }
 
 
-    // --------------------------------------
-    // Already a normal HTTP URL
-    // --------------------------------------
-
+    // Existing URL
     if (
-        value.startsWith("http://") ||
-        value.startsWith("https://")
+        path.startsWith("http://") ||
+        path.startsWith("https://")
     ) {
 
-        return value;
-
+        return path;
     }
 
 
-    // --------------------------------------
-    // Cloudinary path
-    // --------------------------------------
-
-    if (
-        value.includes(
-            "res.cloudinary.com"
-        )
-    ) {
-
-        return value;
-
-    }
-
-
-    // --------------------------------------
-    // Remove accidental bucket prefix
-    // --------------------------------------
-
-    let path =
-        value;
-
-
+    // Remove bucket prefix
     if (
         path.startsWith(
-            PROJECT_BUCKET + "/"
+            "thumbnails/"
         )
     ) {
 
         path =
             path.substring(
-                PROJECT_BUCKET.length + 1
+                "thumbnails/".length
             );
 
     }
@@ -283,109 +242,61 @@ async function getThumbnailUrl(
 
     if (
         path.startsWith(
-            THUMBNAIL_BUCKET + "/"
+            "projects/"
         )
     ) {
 
         path =
             path.substring(
-                THUMBNAIL_BUCKET.length + 1
+                "projects/".length
             );
 
     }
 
 
     console.log(
-        "Thumbnail storage path:",
+        "Thumbnail path:",
         path
     );
 
 
-    // --------------------------------------
-    // First try PUBLIC thumbnails bucket
-    // --------------------------------------
-
-    try {
-
-        const {
-            data
-        } = sb.storage
-
-            .from(
-                THUMBNAIL_BUCKET
-            )
-
-            .getPublicUrl(
-                path
-            );
-
-
-        if (
-            data?.publicUrl
-        ) {
-
-            console.log(
-                "Thumbnail URL:",
-                data.publicUrl
-            );
-
-            return data.publicUrl;
-
-        }
-
-    } catch (error) {
-
-        console.warn(
-            "Public thumbnail URL failed:",
-            error
+    // Public thumbnails bucket
+    const {
+        data: thumbnailData
+    } = sb.storage
+        .from(
+            THUMBNAIL_BUCKET
+        )
+        .getPublicUrl(
+            path
         );
+
+
+    if (
+        thumbnailData?.publicUrl
+    ) {
+
+        return thumbnailData.publicUrl;
 
     }
 
 
-    // --------------------------------------
-    // Try PROJECTS bucket as fallback
-    // --------------------------------------
-
-    try {
-
-        const {
-            data
-        } = sb.storage
-
-            .from(
-                PROJECT_BUCKET
-            )
-
-            .getPublicUrl(
-                path
-            );
-
-
-        if (
-            data?.publicUrl
-        ) {
-
-            console.log(
-                "Project thumbnail URL:",
-                data.publicUrl
-            );
-
-            return data.publicUrl;
-
-        }
-
-    } catch (error) {
-
-        console.warn(
-            "Project public URL failed:",
-            error
+    // Fallback to projects bucket
+    const {
+        data: projectData
+    } = sb.storage
+        .from(
+            PROJECT_BUCKET
+        )
+        .getPublicUrl(
+            path
         );
 
-    }
 
-
-    return null;
+    return (
+        projectData?.publicUrl ||
+        null
+    );
 
 }
 
@@ -407,7 +318,6 @@ async function renderProject(
         document.createElement(
             "article"
         );
-
 
     card.className =
         "project-card";
@@ -444,10 +354,6 @@ async function renderProject(
             : "Unknown";
 
 
-    // --------------------------------------
-    // Get thumbnail
-    // --------------------------------------
-
     const thumbnailUrl =
         await getThumbnailUrl(
             project.thumbnail
@@ -456,15 +362,23 @@ async function renderProject(
 
     console.log(
         "Project:",
-        project.title,
+        project.title
+    );
+
+    console.log(
         "Thumbnail:",
         thumbnailUrl
     );
 
+    console.log(
+        "File path:",
+        project.file_path
+    );
 
-    // --------------------------------------
-    // Image HTML
-    // --------------------------------------
+
+    // ======================================
+    // IMAGE
+    // ======================================
 
     let imageHTML;
 
@@ -472,6 +386,7 @@ async function renderProject(
     if (thumbnailUrl) {
 
         imageHTML = `
+
             <img
                 class="thumbnail"
                 src="${escapeAttribute(
@@ -479,10 +394,13 @@ async function renderProject(
                 )}"
                 alt="${escapeAttribute(
                     project.title ||
-                    "Project thumbnail"
+                    "Project"
                 )}"
                 loading="lazy"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                onerror="
+                    this.style.display='none';
+                    this.nextElementSibling.style.display='flex';
+                "
             >
 
             <div
@@ -491,26 +409,33 @@ async function renderProject(
             >
                 🎬
             </div>
+
         `;
 
     } else {
 
         imageHTML = `
-            <div class="thumbnail thumbnail-fallback">
+
+            <div class="
+                thumbnail
+                thumbnail-fallback
+            ">
                 🎬
             </div>
+
         `;
 
     }
 
 
-    // --------------------------------------
-    // Card
-    // --------------------------------------
+    // ======================================
+    // CARD
+    // ======================================
 
     card.innerHTML = `
 
         ${imageHTML}
+
 
         <div class="project-info">
 
@@ -548,6 +473,7 @@ async function renderProject(
                     ?
                     `
                     <button
+                        type="button"
                         class="view"
                         data-file-path="${escapeAttribute(
                             project.file_path
@@ -557,11 +483,20 @@ async function renderProject(
                     </button>
                     `
                     :
-                    ""
+                    `
+                    <button
+                        type="button"
+                        class="view"
+                        disabled
+                    >
+                        👁 No File
+                    </button>
+                    `
                 }
 
 
                 <button
+                    type="button"
                     class="approve"
                     data-project-id="${escapeAttribute(
                         project.id
@@ -572,6 +507,7 @@ async function renderProject(
 
 
                 <button
+                    type="button"
                     class="reject"
                     data-project-id="${escapeAttribute(
                         project.id
@@ -592,9 +528,9 @@ async function renderProject(
     );
 
 
-    // --------------------------------------
-    // View button
-    // --------------------------------------
+    // ======================================
+    // VIEW BUTTON
+    // ======================================
 
     const viewButton =
         card.querySelector(
@@ -602,14 +538,27 @@ async function renderProject(
         );
 
 
-    if (viewButton) {
+    if (
+        viewButton &&
+        project.file_path
+    ) {
 
         viewButton.addEventListener(
             "click",
             function () {
 
+                console.log(
+                    "VIEW BUTTON CLICKED"
+                );
+
+                console.log(
+                    "File:",
+                    this.dataset.filePath
+                );
+
+
                 viewProject(
-                    project.file_path
+                    this.dataset.filePath
                 );
 
             }
@@ -618,9 +567,9 @@ async function renderProject(
     }
 
 
-    // --------------------------------------
-    // Approve button
-    // --------------------------------------
+    // ======================================
+    // APPROVE BUTTON
+    // ======================================
 
     const approveButton =
         card.querySelector(
@@ -635,7 +584,7 @@ async function renderProject(
             function () {
 
                 approveProject(
-                    project.id
+                    this.dataset.projectId
                 );
 
             }
@@ -644,9 +593,9 @@ async function renderProject(
     }
 
 
-    // --------------------------------------
-    // Reject button
-    // --------------------------------------
+    // ======================================
+    // REJECT BUTTON
+    // ======================================
 
     const rejectButton =
         card.querySelector(
@@ -661,7 +610,7 @@ async function renderProject(
             function () {
 
                 rejectProject(
-                    project.id
+                    this.dataset.projectId
                 );
 
             }
@@ -673,7 +622,168 @@ async function renderProject(
 
 
 // ==========================================
-// APPROVE
+// VIEW PROJECT
+// ==========================================
+
+async function viewProject(
+    filePath
+) {
+
+    console.log(
+        "Opening project file:",
+        filePath
+    );
+
+
+    if (!filePath) {
+
+        alert(
+            "No project file available."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        let path =
+            String(
+                filePath
+            ).trim();
+
+
+        // ======================================
+        // FULL URL
+        // ======================================
+
+        if (
+            path.startsWith(
+                "http://"
+            ) ||
+            path.startsWith(
+                "https://"
+            )
+        ) {
+
+            console.log(
+                "Opening existing URL"
+            );
+
+            window.open(
+                path,
+                "_blank"
+            );
+
+            return;
+        }
+
+
+        // ======================================
+        // REMOVE BUCKET PREFIX
+        // ======================================
+
+        if (
+            path.startsWith(
+                "projects/"
+            )
+        ) {
+
+            path =
+                path.substring(
+                    "projects/".length
+                );
+
+        }
+
+
+        console.log(
+            "Supabase project path:",
+            path
+        );
+
+
+        // ======================================
+        // CREATE SIGNED URL
+        // ======================================
+
+        const {
+            data,
+            error
+        } = await sb.storage
+
+            .from(
+                PROJECT_BUCKET
+            )
+
+            .createSignedUrl(
+                path,
+                3600
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Signed URL error:",
+                error
+            );
+
+            alert(
+                "Unable to view project:\n" +
+                error.message
+            );
+
+            return;
+        }
+
+
+        if (
+            !data?.signedUrl
+        ) {
+
+            alert(
+                "Supabase did not return a file URL."
+            );
+
+            return;
+        }
+
+
+        console.log(
+            "Signed URL created successfully."
+        );
+
+
+        // ======================================
+        // OPEN
+        // ======================================
+
+        window.open(
+            data.signedUrl,
+            "_blank"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "View error:",
+            error
+        );
+
+
+        alert(
+            "Unable to view project:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// APPROVE PROJECT
 // ==========================================
 
 async function approveProject(
@@ -685,6 +795,7 @@ async function approveProject(
             "Approve this project?"
         )
     ) {
+
         return;
     }
 
@@ -706,7 +817,6 @@ async function approveProject(
                 "login.html";
 
             return;
-
         }
 
 
@@ -746,16 +856,16 @@ async function approveProject(
 
 
         await loadProjects();
-
         await loadStats();
 
 
     } catch (error) {
 
         console.error(
-            "Approval error:",
+            "Approve error:",
             error
         );
+
 
         showError(
             "Approval failed: " +
@@ -768,7 +878,7 @@ async function approveProject(
 
 
 // ==========================================
-// REJECT
+// REJECT PROJECT
 // ==========================================
 
 async function rejectProject(
@@ -803,7 +913,6 @@ async function rejectProject(
                 "login.html";
 
             return;
-
         }
 
 
@@ -846,125 +955,19 @@ async function rejectProject(
 
 
         await loadProjects();
-
         await loadStats();
 
 
     } catch (error) {
 
         console.error(
-            "Rejection error:",
+            "Reject error:",
             error
         );
+
 
         showError(
             "Rejection failed: " +
-            error.message
-        );
-
-    }
-
-}
-
-
-// ==========================================
-// VIEW PROJECT FILE
-// ==========================================
-
-async function viewProject(
-    filePath
-) {
-
-    if (!filePath) {
-
-        alert(
-            "No project file available."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        let path =
-            String(
-                filePath
-            ).trim();
-
-
-        // --------------------------------------
-        // Remove bucket name if stored in DB
-        // --------------------------------------
-
-        if (
-            path.startsWith(
-                PROJECT_BUCKET + "/"
-            )
-        ) {
-
-            path =
-                path.substring(
-                    PROJECT_BUCKET.length + 1
-                );
-
-        }
-
-
-        console.log(
-            "Opening project:",
-            path
-        );
-
-
-        const {
-            data,
-            error
-        } = await sb.storage
-
-            .from(
-                PROJECT_BUCKET
-            )
-
-            .createSignedUrl(
-                path,
-                3600
-            );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        if (
-            !data?.signedUrl
-        ) {
-
-            throw new Error(
-                "Supabase did not return a file URL."
-            );
-
-        }
-
-
-        window.open(
-            data.signedUrl,
-            "_blank"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "View project error:",
-            error
-        );
-
-
-        alert(
-            "Unable to open file:\n" +
             error.message
         );
 
@@ -999,7 +1002,6 @@ async function loadStats() {
         );
 
         return;
-
     }
 
 
@@ -1053,7 +1055,6 @@ async function loadStats() {
 
         pendingElement.textContent =
             pending;
-
     }
 
 
@@ -1061,7 +1062,6 @@ async function loadStats() {
 
         approvedElement.textContent =
             approved;
-
     }
 
 
@@ -1069,7 +1069,6 @@ async function loadStats() {
 
         rejectedElement.textContent =
             rejected;
-
     }
 
 }
@@ -1087,7 +1086,6 @@ function showError(
 
         loading.style.display =
             "none";
-
     }
 
 
@@ -1099,7 +1097,6 @@ function showError(
 
         errorBox.style.display =
             "block";
-
     }
 
 }
