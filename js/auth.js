@@ -1,113 +1,202 @@
 // ==========================================
-// VIDLYRA CREATOR PORTAL
-// AUTHENTICATION
+// VIDLYRA AUTH
 // ==========================================
 
-console.log("Auth loaded");
+console.log("Vidlyra Auth loaded");
 
 
 // ==========================================
 // LOGIN
 // ==========================================
 
-async function login() {
+async function loginUser() {
 
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const message = document.getElementById("message");
-    const button = document.getElementById("loginButton");
-    const loading = document.getElementById("loading");
+    const email =
+        document.getElementById("email").value.trim();
 
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
+    const password =
+        document.getElementById("password").value;
 
-    // Clear previous message
-    message.textContent = "";
 
-    // Validate
     if (!email || !password) {
 
-        message.textContent =
-            "Please enter your email and password.";
+        showMessage(
+            "Please enter email and password."
+        );
 
         return;
+
     }
 
-    // Loading state
-    button.disabled = true;
-    loading.style.display = "inline";
-
-    console.log("Login started");
-    console.log("Email:", email);
 
     try {
 
-        // ==================================
+        showMessage(
+            "Signing in..."
+        );
+
+
+        // ======================================
         // SUPABASE LOGIN
-        // ==================================
+        // ======================================
 
         const {
             data,
             error
         } = await sb.auth.signInWithPassword({
+
             email: email,
+
             password: password
+
         });
 
-        console.log("Supabase response:", data, error);
-
-        // ==================================
-        // ERROR
-        // ==================================
 
         if (error) {
 
-            console.error("Login error:", error);
+            throw error;
 
-            message.textContent = error.message;
-
-            return;
         }
 
-        // ==================================
-        // SUCCESS
-        // ==================================
 
-        if (!data.session) {
+        const user =
+            data.user;
 
-            message.textContent =
-                "Login completed, but no session was created.";
 
-            return;
+        if (!user) {
+
+            throw new Error(
+                "User was not found after login."
+            );
+
         }
 
-        console.log("Login successful");
-        console.log("User:", data.user);
 
-        message.style.color = "#55dd77";
-        message.textContent =
-            "Login successful! Opening Creator Portal...";
+        console.log(
+            "Logged in:",
+            user.id
+        );
 
-        // Give the message a moment to appear
-        setTimeout(() => {
 
-            window.location.href = "dashboard.html";
+        // ======================================
+        // GET PROFILE
+        // ======================================
 
-        }, 700);
+        const {
+            data: profile,
+            error: profileError
+        } = await sb
+
+            .from("profiles")
+
+            .select(
+                "user_id,is_admin"
+            )
+
+            .eq(
+                "user_id",
+                user.id
+            )
+
+            .maybeSingle();
+
+
+        if (profileError) {
+
+            throw profileError;
+
+        }
+
+
+        console.log(
+            "Profile:",
+            profile
+        );
+
+
+        // ======================================
+        // ADMIN
+        // ======================================
+
+        if (
+            profile &&
+            profile.is_admin === true
+        ) {
+
+            showMessage(
+                "Welcome Admin! Redirecting..."
+            );
+
+
+            setTimeout(
+                () => {
+
+                    window.location.href =
+                        "admin-dashboard.html";
+
+                },
+                500
+            );
+
+
+            return;
+
+        }
+
+
+        // ======================================
+        // NORMAL CREATOR
+        // ======================================
+
+        showMessage(
+            "Login successful. Redirecting..."
+        );
+
+
+        setTimeout(
+            () => {
+
+                window.location.href =
+                    "dashboard.html";
+
+            },
+            500
+        );
+
 
     } catch (error) {
 
-        console.error("Unexpected login error:", error);
+        console.error(
+            "Login error:",
+            error
+        );
 
-        message.style.color = "#ff5555";
 
-        message.textContent =
-            "Unable to connect to the authentication service.";
-
-    } finally {
-
-        button.disabled = false;
-        loading.style.display = "none";
+        showMessage(
+            error.message ||
+            "Login failed."
+        );
 
     }
+
+}
+
+
+// ==========================================
+// MESSAGE
+// ==========================================
+
+function showMessage(text) {
+
+    const message =
+        document.getElementById("message");
+
+
+    if (message) {
+
+        message.textContent =
+            text;
+
+    }
+
 }
