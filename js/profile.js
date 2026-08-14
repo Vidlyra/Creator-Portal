@@ -1,21 +1,26 @@
 // ==========================================
-// VIDLYRA CREATOR PUBLIC PROFILE
+// VIDLYRA CREATOR PROFILE
 // ==========================================
 
-console.log("Creator Profile loaded");
+console.log("Profile JS loaded");
 
 
 // ==========================================
 // GET CREATOR ID
 // ==========================================
 
-const params =
-    new URLSearchParams(
-        window.location.search
-    );
+const params = new URLSearchParams(
+    window.location.search
+);
 
 const creatorId =
-    params.get("user");
+    params.get("user") ||
+    params.get("user_id");
+
+console.log(
+    "Creator ID:",
+    creatorId
+);
 
 
 // ==========================================
@@ -30,7 +35,7 @@ const projectsContainer =
 
 
 // ==========================================
-// START
+// LOAD PROFILE
 // ==========================================
 
 async function loadProfile() {
@@ -38,19 +43,22 @@ async function loadProfile() {
     if (!creatorId) {
 
         showError(
-            "Creator profile not found."
+            "Creator profile not found. No creator ID was provided."
+        );
+
+        console.error(
+            "Missing ?user=CREATOR_UUID in URL."
         );
 
         return;
-
     }
 
 
     try {
 
-        // ==================================
-        // GET CREATOR
-        // ==================================
+        // ======================================
+        // GET CREATOR PROFILE
+        // ======================================
 
         const {
             data: creator,
@@ -82,7 +90,6 @@ async function loadProfile() {
         if (creatorError) {
 
             throw creatorError;
-
         }
 
 
@@ -92,23 +99,33 @@ async function loadProfile() {
                 "Creator profile does not exist."
             );
 
-            return;
+            console.error(
+                "No profile found for:",
+                creatorId
+            );
 
+            return;
         }
 
 
-        // ==================================
+        console.log(
+            "Creator found:",
+            creator
+        );
+
+
+        // ======================================
         // DISPLAY CREATOR
-        // ==================================
+        // ======================================
 
         renderCreator(
             creator
         );
 
 
-        // ==================================
+        // ======================================
         // LOAD APPROVED PROJECTS
-        // ==================================
+        // ======================================
 
         await loadProjects(
             creatorId
@@ -118,7 +135,7 @@ async function loadProfile() {
     } catch (error) {
 
         console.error(
-            "Profile error:",
+            "Profile loading error:",
             error
         );
 
@@ -160,21 +177,26 @@ function renderCreator(
         );
 
 
-    nameElement.textContent =
-        creator.full_name ||
-        "Vidlyra Creator";
+    if (nameElement) {
+
+        nameElement.textContent =
+            creator.full_name ||
+            "Vidlyra Creator";
+    }
 
 
-    rankElement.textContent =
-        creator.creator_rank ||
-        "New Creator";
+    if (rankElement) {
+
+        rankElement.textContent =
+            creator.creator_rank ||
+            "New Creator";
+    }
 
 
     if (stats[0]) {
 
         stats[0].textContent =
             creator.approved_projects || 0;
-
     }
 
 
@@ -182,19 +204,24 @@ function renderCreator(
 
         stats[1].textContent =
             creator.creator_level || 1;
-
     }
 
 
-    levelElement.textContent =
-        `Level ${creator.creator_level || 1} • ${
-            creator.creator_rank || "New Creator"
-        }`;
+    if (levelElement) {
+
+        levelElement.textContent =
+            `Level ${
+                creator.creator_level || 1
+            } • ${
+                creator.creator_rank ||
+                "New Creator"
+            }`;
+    }
 
 
-    // ==================================
-    // CREATOR AVATAR
-    // ==================================
+    // ======================================
+    // AVATAR
+    // ======================================
 
     const placeholder =
         profileHero.querySelector(
@@ -219,7 +246,8 @@ function renderCreator(
             creator.avatar_url;
 
         image.alt =
-            `${creator.full_name || "Creator"} avatar`;
+            "Creator avatar";
+
 
         image.onerror =
             function () {
@@ -228,21 +256,19 @@ function renderCreator(
 
                 placeholder.style.display =
                     "flex";
-
             };
 
 
         placeholder.replaceWith(
             image
         );
-
     }
 
 }
 
 
 // ==========================================
-// LOAD APPROVED PROJECTS
+// LOAD PROJECTS
 // ==========================================
 
 async function loadProjects(
@@ -251,7 +277,7 @@ async function loadProjects(
 
     projectsContainer.innerHTML = `
         <div class="loading">
-            Loading projects...
+            Loading approved projects...
         </div>
     `;
 
@@ -295,7 +321,6 @@ async function loadProjects(
     if (error) {
 
         throw error;
-
     }
 
 
@@ -311,7 +336,6 @@ async function loadProjects(
         `;
 
         return;
-
     }
 
 
@@ -324,7 +348,6 @@ async function loadProjects(
             renderProject(
                 project
             );
-
         }
     );
 
@@ -344,23 +367,27 @@ function renderProject(
             "article"
         );
 
-
     card.className =
         "project-card";
 
 
     const image =
         project.thumbnail
-            ? `
-                <img
-                    class="project-image"
-                    src="${safeAttribute(project.thumbnail)}"
-                    alt="${safeHTML(project.title || "Project")}"
-                >
-              `
-            : `
-                <div class="project-image"></div>
-              `;
+        ?
+        `
+        <img
+            class="project-image"
+            src="${safeAttribute(project.thumbnail)}"
+            alt="${safeHTML(
+                project.title ||
+                "Project"
+            )}"
+        >
+        `
+        :
+        `
+        <div class="project-image"></div>
+        `;
 
 
     card.innerHTML = `
@@ -415,9 +442,7 @@ function showError(
         </div>
     `;
 
-
     projectsContainer.innerHTML = "";
-
 }
 
 
@@ -430,9 +455,7 @@ function formatDate(
 ) {
 
     if (!value) {
-
         return "";
-
     }
 
 
@@ -451,7 +474,7 @@ function formatDate(
 
 
 // ==========================================
-// SECURITY HELPERS
+// SECURITY
 // ==========================================
 
 function safeHTML(
@@ -459,32 +482,11 @@ function safeHTML(
 ) {
 
     return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
@@ -492,15 +494,12 @@ function safeAttribute(
     value
 ) {
 
-    return safeHTML(
-        value
-    );
-
+    return safeHTML(value);
 }
 
 
 // ==========================================
-// RUN
+// START
 // ==========================================
 
 loadProfile();
