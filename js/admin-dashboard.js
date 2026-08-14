@@ -1,3 +1,7 @@
+// ==========================================
+// VIDLYRA ADMIN DASHBOARD
+// ==========================================
+
 console.log("Admin Dashboard loaded");
 
 
@@ -5,53 +9,33 @@ console.log("Admin Dashboard loaded");
 // ELEMENTS
 // ==========================================
 
-const loading =
-    document.getElementById("loading");
-
-const projectsContainer =
-    document.getElementById("projects");
-
-const emptyBox =
-    document.getElementById("empty");
-
-const errorBox =
-    document.getElementById("error");
+const loading = document.getElementById("loading");
+const projectsContainer = document.getElementById("projects");
+const emptyBox = document.getElementById("empty");
+const errorBox = document.getElementById("error");
 
 
 // ==========================================
-// SUPABASE STORAGE URL
+// STORAGE BUCKETS
 // ==========================================
 
-const SUPABASE_URL =
-    "https://sfehwodlybnvrbotrtyc.supabase.co";
+const BUCKETS = {
+    Anime: "stories",
+    "Short Film": "shortfilms",
+    Music: "music",
+    Artwork: "artwork",
+    Manga: "manga"
+};
 
 
 // ==========================================
-// CATEGORY → BUCKET
+// GET BUCKET
 // ==========================================
 
 function getBucket(category) {
 
-    switch (category) {
+    return BUCKETS[category] || "stories";
 
-        case "Anime":
-            return "stories";
-
-        case "Short Film":
-            return "shortfilms";
-
-        case "Music":
-            return "music";
-
-        case "Artwork":
-            return "artwork";
-
-        case "Manga":
-            return "manga";
-
-        default:
-            return "stories";
-    }
 }
 
 
@@ -59,54 +43,52 @@ function getBucket(category) {
 // THUMBNAIL URL
 // ==========================================
 
-function getThumbnailUrl(
-    thumbnail
-) {
+function getThumbnailUrl(thumbnail) {
 
     if (!thumbnail) {
         return "";
     }
-
 
     // Already a complete URL
     if (
         thumbnail.startsWith("http://") ||
         thumbnail.startsWith("https://")
     ) {
-
         return thumbnail;
     }
 
+    // Thumbnail stored as:
+    // user_id/filename.png
 
-    // Database contains only storage path
     return (
-        SUPABASE_URL +
-        "/storage/v1/object/public/thumbnails/" +
-        thumbnail
+        sb.storage
+            .from("thumbnails")
+            .getPublicUrl(thumbnail)
+            .data.publicUrl
     );
+
 }
 
 
 // ==========================================
-// CHECK ADMIN
+// AUTH
 // ==========================================
 
 async function checkAdmin() {
 
     const {
-        data: { user },
+        data: {
+            user
+        },
         error
     } = await sb.auth.getUser();
 
-
     if (error || !user) {
 
-        window.location.href =
-            "login.html";
+        window.location.href = "login.html";
 
         return null;
     }
-
 
     console.log(
         "Logged in user:",
@@ -119,18 +101,12 @@ async function checkAdmin() {
         error: profileError
     } = await sb
         .from("profiles")
-        .select(
-            "user_id,is_admin"
-        )
-        .eq(
-            "user_id",
-            user.id
-        )
+        .select("user_id,is_admin")
+        .eq("user_id", user.id)
         .maybeSingle();
 
 
     if (profileError) {
-
         throw profileError;
     }
 
@@ -140,9 +116,7 @@ async function checkAdmin() {
         profile.is_admin !== true
     ) {
 
-        alert(
-            "Admin access required."
-        );
+        alert("Admin access required.");
 
         window.location.href =
             "dashboard.html";
@@ -152,6 +126,7 @@ async function checkAdmin() {
 
 
     return user;
+
 }
 
 
@@ -180,64 +155,57 @@ async function loadStats() {
     }
 
 
-    const projects =
-        data || [];
+    const projects = data || [];
 
 
     const pending =
         projects.filter(
-            project =>
-                project.status === "Pending"
+            p => p.status === "Pending"
         ).length;
 
 
     const approved =
         projects.filter(
-            project =>
-                project.status === "Approved"
+            p => p.status === "Approved"
         ).length;
 
 
     const rejected =
         projects.filter(
-            project =>
-                project.status === "Rejected"
+            p => p.status === "Rejected"
         ).length;
 
 
-    const pendingCount =
+    const pendingElement =
         document.getElementById(
             "pendingCount"
         );
 
-    const approvedCount =
+    const approvedElement =
         document.getElementById(
             "approvedCount"
         );
 
-    const rejectedCount =
+    const rejectedElement =
         document.getElementById(
             "rejectedCount"
         );
 
 
-    if (pendingCount) {
-
-        pendingCount.textContent =
+    if (pendingElement) {
+        pendingElement.textContent =
             pending;
     }
 
 
-    if (approvedCount) {
-
-        approvedCount.textContent =
+    if (approvedElement) {
+        approvedElement.textContent =
             approved;
     }
 
 
-    if (rejectedCount) {
-
-        rejectedCount.textContent =
+    if (rejectedElement) {
+        rejectedElement.textContent =
             rejected;
     }
 
@@ -250,6 +218,7 @@ async function loadStats() {
             rejected
         }
     );
+
 }
 
 
@@ -259,39 +228,28 @@ async function loadStats() {
 
 async function loadProjects() {
 
-    if (!projectsContainer) {
-
-        console.error(
-            "#projects element not found."
-        );
-
-        return;
-    }
-
-
     if (loading) {
-
         loading.style.display =
             "block";
     }
 
 
-    if (emptyBox) {
-
-        emptyBox.style.display =
-            "none";
-    }
-
-
     if (errorBox) {
-
         errorBox.style.display =
             "none";
     }
 
 
-    projectsContainer.innerHTML =
-        "";
+    if (emptyBox) {
+        emptyBox.style.display =
+            "none";
+    }
+
+
+    if (projectsContainer) {
+        projectsContainer.innerHTML =
+            "";
+    }
 
 
     const {
@@ -324,7 +282,6 @@ async function loadProjects() {
 
 
     if (loading) {
-
         loading.style.display =
             "none";
     }
@@ -357,7 +314,6 @@ async function loadProjects() {
     ) {
 
         if (emptyBox) {
-
             emptyBox.style.display =
                 "block";
         }
@@ -369,12 +325,49 @@ async function loadProjects() {
     projects.forEach(
         project => {
 
+            console.log(
+                "=============================="
+            );
+
+            console.log(
+                "Project:",
+                project.title
+            );
+
+            console.log(
+                "Category:",
+                project.category
+            );
+
+            console.log(
+                "Bucket:",
+                getBucket(
+                    project.category
+                )
+            );
+
+            console.log(
+                "File path:",
+                project.file_path
+            );
+
+            console.log(
+                "Thumbnail:",
+                project.thumbnail
+            );
+
+            console.log(
+                "=============================="
+            );
+
+
             renderProject(
                 project
             );
 
         }
     );
+
 }
 
 
@@ -382,9 +375,7 @@ async function loadProjects() {
 // RENDER PROJECT
 // ==========================================
 
-function renderProject(
-    project
-) {
+function renderProject(project) {
 
     const card =
         document.createElement(
@@ -394,6 +385,12 @@ function renderProject(
 
     card.className =
         "project-card";
+
+
+    const thumbnailUrl =
+        getThumbnailUrl(
+            project.thumbnail
+        );
 
 
     const title =
@@ -411,92 +408,49 @@ function renderProject(
 
 
     const category =
-        project.category ||
-        "Anime";
-
-
-    const safeCategory =
         escapeHTML(
-            category
+            project.category ||
+            "Anime"
         );
 
 
     const date =
         project.created_at
-            ? new Date(
+            ?
+            new Date(
                 project.created_at
             ).toLocaleDateString(
-                "en-IN"
+                "en-IN",
+                {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric"
+                }
             )
-            : "Unknown";
-
-
-    // ----------------------------------
-    // FIXED THUMBNAIL URL
-    // ----------------------------------
-
-    const thumbnail =
-        getThumbnailUrl(
-            project.thumbnail
-        );
-
-
-    console.log(
-        "Project:",
-        project.title
-    );
-
-
-    console.log(
-        "Category:",
-        category
-    );
-
-
-    console.log(
-        "Bucket:",
-        getBucket(category)
-    );
-
-
-    console.log(
-        "File path:",
-        project.file_path
-    );
-
-
-    console.log(
-        "Original thumbnail:",
-        project.thumbnail
-    );
-
-
-    console.log(
-        "Final thumbnail URL:",
-        thumbnail
-    );
+            :
+            "Unknown";
 
 
     card.innerHTML = `
 
         ${
-            thumbnail
-                ?
-                `
-                <img
-                    class="thumbnail"
-                    src="${escapeAttribute(thumbnail)}"
-                    alt="${title}"
-                    loading="lazy"
-                    onerror="thumbnailError(this)"
-                >
-                `
-                :
-                `
-                <div class="thumbnail">
-                    No Thumbnail
-                </div>
-                `
+            thumbnailUrl
+            ?
+            `
+            <img
+                class="thumbnail"
+                src="${escapeAttribute(
+                    thumbnailUrl
+                )}"
+                alt="${title}"
+            >
+            `
+            :
+            `
+            <div class="thumbnail">
+                No thumbnail
+            </div>
+            `
         }
 
 
@@ -515,14 +469,12 @@ function renderProject(
             <div class="meta">
 
                 <span class="badge">
-                    ${safeCategory}
+                    ${category}
                 </span>
-
 
                 <span class="badge pending">
                     Pending
                 </span>
-
 
                 <span class="badge">
                     ${date}
@@ -533,44 +485,34 @@ function renderProject(
 
             <div class="actions">
 
-                ${
-                    project.file_path
-                        ?
-                        `
-                        <button
-                            type="button"
-                            class="view"
-                            onclick="viewProject('${project.id}')"
-                        >
-                            👁 View
-                        </button>
-                        `
-                        :
-                        `
-                        <button
-                            type="button"
-                            class="view"
-                            disabled
-                        >
-                            No File
-                        </button>
-                        `
-                }
+                <button
+                    class="view"
+                    type="button"
+                    data-project-id="${escapeAttribute(
+                        project.id
+                    )}"
+                >
+                    👁 View
+                </button>
 
 
                 <button
-                    type="button"
                     class="approve"
-                    onclick="approveProject('${project.id}')"
+                    type="button"
+                    data-approve-id="${escapeAttribute(
+                        project.id
+                    )}"
                 >
                     ✓ Approve
                 </button>
 
 
                 <button
-                    type="button"
                     class="reject"
-                    onclick="rejectProject('${project.id}')"
+                    type="button"
+                    data-reject-id="${escapeAttribute(
+                        project.id
+                    )}"
                 >
                     ✕ Reject
                 </button>
@@ -585,25 +527,106 @@ function renderProject(
     projectsContainer.appendChild(
         card
     );
-}
 
 
-// ==========================================
-// THUMBNAIL ERROR
-// ==========================================
-
-function thumbnailError(
-    image
-) {
-
-    console.error(
-        "Thumbnail failed:",
-        image.src
-    );
+    // View
+    const viewButton =
+        card.querySelector(
+            ".view"
+        );
 
 
-    image.style.display =
-        "none";
+    if (viewButton) {
+
+        viewButton.addEventListener(
+            "click",
+            function () {
+
+                viewProject(
+                    project
+                );
+
+            }
+        );
+
+    }
+
+
+    // Approve
+    const approveButton =
+        card.querySelector(
+            ".approve"
+        );
+
+
+    if (approveButton) {
+
+        approveButton.addEventListener(
+            "click",
+            function () {
+
+                approveProject(
+                    project.id
+                );
+
+            }
+        );
+
+    }
+
+
+    // Reject
+    const rejectButton =
+        card.querySelector(
+            ".reject"
+        );
+
+
+    if (rejectButton) {
+
+        rejectButton.addEventListener(
+            "click",
+            function () {
+
+                rejectProject(
+                    project.id
+                );
+
+            }
+        );
+
+    }
+
+
+    // Thumbnail error
+    const thumbnail =
+        card.querySelector(
+            ".thumbnail"
+        );
+
+
+    if (
+        thumbnail &&
+        thumbnail.tagName === "IMG"
+    ) {
+
+        thumbnail.addEventListener(
+            "error",
+            function () {
+
+                console.warn(
+                    "Thumbnail failed:",
+                    thumbnail.src
+                );
+
+                thumbnail.style.display =
+                    "none";
+
+            }
+        );
+
+    }
+
 }
 
 
@@ -612,88 +635,48 @@ function thumbnailError(
 // ==========================================
 
 async function viewProject(
-    projectId
+    project
 ) {
 
     console.log(
         "VIEW PROJECT:",
-        projectId
+        project
+    );
+
+
+    if (!project.file_path) {
+
+        alert(
+            "No project file available."
+        );
+
+        return;
+    }
+
+
+    const bucket =
+        getBucket(
+            project.category
+        );
+
+
+    console.log(
+        "Bucket:",
+        bucket
+    );
+
+
+    console.log(
+        "File:",
+        project.file_path
     );
 
 
     try {
 
         const {
-            data: project,
-            error
-        } = await sb
-            .from("projects")
-            .select(`
-                id,
-                title,
-                category,
-                file_path
-            `)
-            .eq(
-                "id",
-                projectId
-            )
-            .maybeSingle();
-
-
-        if (error) {
-
-            throw error;
-        }
-
-
-        if (!project) {
-
-            alert(
-                "Project not found."
-            );
-
-            return;
-        }
-
-
-        if (!project.file_path) {
-
-            alert(
-                "This project has no file."
-            );
-
-            return;
-        }
-
-
-        const bucket =
-            getBucket(
-                project.category
-            );
-
-
-        console.log(
-            "Opening project:",
-            project.title
-        );
-
-
-        console.log(
-            "Bucket:",
-            bucket
-        );
-
-
-        console.log(
-            "Path:",
-            project.file_path
-        );
-
-
-        const {
             data,
-            error: storageError
+            error
         } = await sb.storage
             .from(bucket)
             .createSignedUrl(
@@ -702,16 +685,15 @@ async function viewProject(
             );
 
 
-        if (storageError) {
+        if (error) {
 
             console.error(
                 "Storage error:",
-                storageError
+                error
             );
 
-
             alert(
-                "File not found in Supabase Storage.\n\n" +
+                "Project file could not be opened.\n\n" +
                 "Bucket: " +
                 bucket +
                 "\n\n" +
@@ -724,22 +706,16 @@ async function viewProject(
 
 
         if (
-            !data ||
-            !data.signedUrl
+            data &&
+            data.signedUrl
         ) {
 
-            alert(
-                "Could not create file URL."
+            window.open(
+                data.signedUrl,
+                "_blank"
             );
 
-            return;
         }
-
-
-        window.open(
-            data.signedUrl,
-            "_blank"
-        );
 
     } catch (error) {
 
@@ -748,17 +724,17 @@ async function viewProject(
             error
         );
 
-
         alert(
-            "Unable to open project:\n\n" +
-            error.message
+            "Unable to open project file."
         );
+
     }
+
 }
 
 
 // ==========================================
-// APPROVE
+// APPROVE PROJECT
 // ==========================================
 
 async function approveProject(
@@ -781,7 +757,8 @@ async function approveProject(
             data: {
                 user
             }
-        } = await sb.auth.getUser();
+        } =
+            await sb.auth.getUser();
 
 
         if (!user) {
@@ -798,16 +775,11 @@ async function approveProject(
         } = await sb
             .from("projects")
             .update({
-
-                status:
-                    "Approved",
-
+                status: "Approved",
                 reviewed_at:
                     new Date().toISOString(),
-
                 reviewed_by:
                     user.id
-
             })
             .eq(
                 "id",
@@ -816,7 +788,6 @@ async function approveProject(
 
 
         if (error) {
-
             throw error;
         }
 
@@ -837,17 +808,17 @@ async function approveProject(
             error
         );
 
-
         showError(
-            "Approval failed: " +
             error.message
         );
+
     }
+
 }
 
 
 // ==========================================
-// REJECT
+// REJECT PROJECT
 // ==========================================
 
 async function rejectProject(
@@ -861,7 +832,6 @@ async function rejectProject(
 
 
     if (note === null) {
-
         return;
     }
 
@@ -872,7 +842,8 @@ async function rejectProject(
             data: {
                 user
             }
-        } = await sb.auth.getUser();
+        } =
+            await sb.auth.getUser();
 
 
         if (!user) {
@@ -889,19 +860,13 @@ async function rejectProject(
         } = await sb
             .from("projects")
             .update({
-
-                status:
-                    "Rejected",
-
+                status: "Rejected",
                 admin_note:
                     note.trim(),
-
                 reviewed_at:
                     new Date().toISOString(),
-
                 reviewed_by:
                     user.id
-
             })
             .eq(
                 "id",
@@ -910,7 +875,6 @@ async function rejectProject(
 
 
         if (error) {
-
             throw error;
         }
 
@@ -931,12 +895,12 @@ async function rejectProject(
             error
         );
 
-
         showError(
-            "Rejection failed: " +
             error.message
         );
+
     }
+
 }
 
 
@@ -949,7 +913,6 @@ function showError(
 ) {
 
     if (loading) {
-
         loading.style.display =
             "none";
     }
@@ -962,7 +925,9 @@ function showError(
 
         errorBox.style.display =
             "block";
+
     }
+
 }
 
 
@@ -1000,6 +965,7 @@ function escapeHTML(
             /'/g,
             "&#039;"
         );
+
 }
 
 
@@ -1010,6 +976,7 @@ function escapeAttribute(
     return escapeHTML(
         value
     );
+
 }
 
 
@@ -1046,11 +1013,12 @@ async function startDashboard() {
             error
         );
 
-
         showError(
             error.message
         );
+
     }
+
 }
 
 
