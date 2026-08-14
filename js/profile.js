@@ -1,424 +1,118 @@
 // ==========================================
-// VIDLYRA CREATOR PROFILE
+// VIDLYRA CREATOR PUBLIC PROFILE
 // ==========================================
 
-console.log("Creator Profile JS loaded");
-
-
-// ==========================================
-// LEVEL DATA
-// ==========================================
-
-const creatorLevels = [
-
-    {
-        level: 1,
-        rank: "New Creator",
-        min: 0,
-        max: 2,
-        next: 3
-    },
-
-    {
-        level: 2,
-        rank: "Rising Creator",
-        min: 3,
-        max: 5,
-        next: 6
-    },
-
-    {
-        level: 3,
-        rank: "Active Creator",
-        min: 6,
-        max: 10,
-        next: 11
-    },
-
-    {
-        level: 4,
-        rank: "Pro Creator",
-        min: 11,
-        max: 20,
-        next: 21
-    },
-
-    {
-        level: 5,
-        rank: "Elite Creator",
-        min: 21,
-        max: 35,
-        next: 36
-    },
-
-    {
-        level: 6,
-        rank: "Master Creator",
-        min: 36,
-        max: 50,
-        next: 51
-    },
-
-    {
-        level: 7,
-        rank: "Legendary Creator",
-        min: 51,
-        max: Infinity,
-        next: null
-    }
-
-];
+console.log("Creator Profile loaded");
 
 
 // ==========================================
-// FIND LEVEL
+// GET CREATOR ID
 // ==========================================
 
-function getCreatorLevel(projects) {
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
 
-    return creatorLevels.find(level =>
-
-        projects >= level.min &&
-        projects <= level.max
-
-    ) || creatorLevels[0];
-
-}
+const creatorId =
+    params.get("user");
 
 
 // ==========================================
-// UPDATE LEVEL UI
+// ELEMENTS
 // ==========================================
 
-function updateLevelUI(projects) {
+const profileHero =
+    document.getElementById("profileHero");
 
-    const levelInfo =
-        getCreatorLevel(projects);
-
-
-    document.getElementById(
-        "creatorLevel"
-    ).textContent =
-        `LEVEL ${levelInfo.level}`;
+const projectsContainer =
+    document.getElementById("projects");
 
 
-    document.getElementById(
-        "creatorRank"
-    ).textContent =
-        levelInfo.rank;
+// ==========================================
+// START
+// ==========================================
 
+async function loadProfile() {
 
-    document.getElementById(
-        "approvedProjects"
-    ).textContent =
-        projects;
+    if (!creatorId) {
 
-
-    const progress =
-        document.getElementById(
-            "levelProgress"
+        showError(
+            "Creator profile not found."
         );
-
-
-    const target =
-        document.getElementById(
-            "nextLevelTarget"
-        );
-
-
-    const nextText =
-        document.getElementById(
-            "nextLevelText"
-        );
-
-
-    // LEGENDARY
-
-    if (levelInfo.level === 7) {
-
-        target.textContent = "∞";
-
-        progress.style.width = "100%";
-
-        nextText.textContent =
-            "🌌 Legendary Creator — maximum level reached.";
 
         return;
 
     }
 
 
-    // PROGRESS
-
-    const total =
-        levelInfo.next -
-        levelInfo.min;
-
-
-    const completed =
-        projects -
-        levelInfo.min;
-
-
-    let percentage =
-        (completed / total) * 100;
-
-
-    percentage =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                percentage
-            )
-        );
-
-
-    progress.style.width =
-        `${percentage}%`;
-
-
-    target.textContent =
-        levelInfo.next;
-
-
-    const remaining =
-        levelInfo.next -
-        projects;
-
-
-    if (remaining === 1) {
-
-        nextText.textContent =
-            "1 approved project needed for the next level.";
-
-    } else {
-
-        nextText.textContent =
-            `${remaining} approved projects needed for the next level.`;
-
-    }
-
-}
-
-
-// ==========================================
-// LOAD PROFILE
-// ==========================================
-
-async function loadProfile() {
-
-    const loading =
-        document.getElementById(
-            "loading"
-        );
-
-    const content =
-        document.getElementById(
-            "profileContent"
-        );
-
-    const errorBox =
-        document.getElementById(
-            "error"
-        );
-
-
     try {
 
-        // GET LOGGED-IN USER
+        // ==================================
+        // GET CREATOR
+        // ==================================
 
         const {
-            data,
-            error
-        } = await sb.auth.getUser();
+            data: creator,
+            error: creatorError
+        } = await sb
+
+            .from("profiles")
+
+            .select(`
+                user_id,
+                full_name,
+                avatar_url,
+                selected_avatar,
+                approved_projects,
+                creator_level,
+                creator_rank,
+                creator_avatar,
+                creator_avatar_unlocked
+            `)
+
+            .eq(
+                "user_id",
+                creatorId
+            )
+
+            .maybeSingle();
 
 
-        if (
-            error ||
-            !data.user
-        ) {
+        if (creatorError) {
 
-            window.location.href =
-                "login.html";
+            throw creatorError;
+
+        }
+
+
+        if (!creator) {
+
+            showError(
+                "Creator profile does not exist."
+            );
 
             return;
 
         }
 
 
-        const user =
-            data.user;
+        // ==================================
+        // DISPLAY CREATOR
+        // ==================================
 
-
-        // GET PROFILE
-
-        const {
-            data: profile,
-            error: profileError
-        } = await sb
-
-            .from("profiles")
-
-            .select(`
-                full_name,
-                email,
-                avatar_url,
-                selected_avatar,
-                creator_avatar,
-                approved_projects,
-                creator_level,
-                creator_rank
-            `)
-
-            .eq(
-                "user_id",
-                user.id
-            )
-
-            .maybeSingle();
-
-
-        if (profileError) {
-
-            throw profileError;
-
-        }
-
-
-        if (!profile) {
-
-            throw new Error(
-                "Creator profile not found."
-            );
-
-        }
-
-
-        console.log(
-            "Creator profile:",
-            profile
+        renderCreator(
+            creator
         );
 
 
-        // ======================================
-        // NAME
-        // ======================================
+        // ==================================
+        // LOAD APPROVED PROJECTS
+        // ==================================
 
-        document.getElementById(
-            "creatorName"
-        ).textContent =
-            profile.full_name ||
-            "Creator";
-
-
-        // ======================================
-        // EMAIL
-        // ======================================
-
-        document.getElementById(
-            "creatorEmail"
-        ).textContent =
-            profile.email ||
-            user.email ||
-            "";
-
-
-        // ======================================
-        // USER ID
-        // ======================================
-
-        document.getElementById(
-            "userId"
-        ).textContent =
-            user.id;
-
-
-        // ======================================
-        // CREATED DATE
-        // ======================================
-
-        if (user.created_at) {
-
-            const date =
-                new Date(
-                    user.created_at
-                );
-
-
-            document.getElementById(
-                "createdAt"
-            ).textContent =
-                date.toLocaleDateString(
-                    "en-IN",
-                    {
-                        day: "2-digit",
-                        month: "long",
-                        year: "numeric"
-                    }
-                );
-
-        }
-
-
-        // ======================================
-        // CREATOR AVATAR
-        // ======================================
-
-        const creatorAvatar =
-            Number(
-                profile.creator_avatar || 1
-            );
-
-
-        const avatarImage =
-            document.getElementById(
-                "creatorAvatarImage"
-            );
-
-
-        avatarImage.src =
-            `assets/creator-avatars/creator${creatorAvatar}.png`;
-
-
-        avatarImage.alt =
-            `Creator Avatar #${creatorAvatar}`;
-
-
-        document.getElementById(
-            "avatarNumber"
-        ).textContent =
-            `Creator Avatar #${creatorAvatar}`;
-
-
-        // ======================================
-        // APPROVED PROJECTS
-        // ======================================
-
-        const approvedProjects =
-            Number(
-                profile.approved_projects || 0
-            );
-
-
-        // ======================================
-        // LEVEL UI
-        // ======================================
-
-        updateLevelUI(
-            approvedProjects
+        await loadProjects(
+            creatorId
         );
-
-
-        // ======================================
-        // SHOW
-        // ======================================
-
-        loading.style.display =
-            "none";
-
-        content.style.display =
-            "block";
 
 
     } catch (error) {
@@ -428,16 +122,9 @@ async function loadProfile() {
             error
         );
 
-
-        loading.style.display =
-            "none";
-
-        errorBox.style.display =
-            "block";
-
-        errorBox.textContent =
-            error.message ||
-            "Unable to load profile.";
+        showError(
+            error.message
+        );
 
     }
 
@@ -445,36 +132,375 @@ async function loadProfile() {
 
 
 // ==========================================
-// LOGOUT
+// RENDER CREATOR
 // ==========================================
 
-async function logout() {
+function renderCreator(
+    creator
+) {
+
+    const nameElement =
+        profileHero.querySelector(
+            ".creator-name"
+        );
+
+    const rankElement =
+        profileHero.querySelector(
+            ".rank"
+        );
+
+    const stats =
+        profileHero.querySelectorAll(
+            ".stat strong"
+        );
+
+    const levelElement =
+        profileHero.querySelector(
+            ".level"
+        );
+
+
+    nameElement.textContent =
+        creator.full_name ||
+        "Vidlyra Creator";
+
+
+    rankElement.textContent =
+        creator.creator_rank ||
+        "New Creator";
+
+
+    if (stats[0]) {
+
+        stats[0].textContent =
+            creator.approved_projects || 0;
+
+    }
+
+
+    if (stats[1]) {
+
+        stats[1].textContent =
+            creator.creator_level || 1;
+
+    }
+
+
+    levelElement.textContent =
+        `Level ${creator.creator_level || 1} • ${
+            creator.creator_rank || "New Creator"
+        }`;
+
+
+    // ==================================
+    // CREATOR AVATAR
+    // ==================================
+
+    const placeholder =
+        profileHero.querySelector(
+            ".avatar-placeholder"
+        );
+
+
+    if (
+        creator.avatar_url &&
+        placeholder
+    ) {
+
+        const image =
+            document.createElement(
+                "img"
+            );
+
+        image.className =
+            "avatar";
+
+        image.src =
+            creator.avatar_url;
+
+        image.alt =
+            `${creator.full_name || "Creator"} avatar`;
+
+        image.onerror =
+            function () {
+
+                image.remove();
+
+                placeholder.style.display =
+                    "flex";
+
+            };
+
+
+        placeholder.replaceWith(
+            image
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// LOAD APPROVED PROJECTS
+// ==========================================
+
+async function loadProjects(
+    userId
+) {
+
+    projectsContainer.innerHTML = `
+        <div class="loading">
+            Loading projects...
+        </div>
+    `;
+
 
     const {
+        data: projects,
         error
-    } = await sb.auth.signOut();
+    } = await sb
+
+        .from("projects")
+
+        .select(`
+            id,
+            title,
+            description,
+            category,
+            thumbnail,
+            status,
+            created_at,
+            file_path
+        `)
+
+        .eq(
+            "user_id",
+            userId
+        )
+
+        .eq(
+            "status",
+            "Approved"
+        )
+
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
 
 
     if (error) {
 
-        alert(
-            "Logout failed: " +
-            error.message
-        );
+        throw error;
+
+    }
+
+
+    if (
+        !projects ||
+        projects.length === 0
+    ) {
+
+        projectsContainer.innerHTML = `
+            <div class="empty">
+                This creator has no approved projects yet.
+            </div>
+        `;
 
         return;
 
     }
 
 
-    window.location.href =
-        "login.html";
+    projectsContainer.innerHTML = "";
+
+
+    projects.forEach(
+        project => {
+
+            renderProject(
+                project
+            );
+
+        }
+    );
 
 }
 
 
 // ==========================================
-// START
+// PROJECT CARD
+// ==========================================
+
+function renderProject(
+    project
+) {
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+
+    card.className =
+        "project-card";
+
+
+    const image =
+        project.thumbnail
+            ? `
+                <img
+                    class="project-image"
+                    src="${safeAttribute(project.thumbnail)}"
+                    alt="${safeHTML(project.title || "Project")}"
+                >
+              `
+            : `
+                <div class="project-image"></div>
+              `;
+
+
+    card.innerHTML = `
+
+        ${image}
+
+        <div class="project-content">
+
+            <h3 class="project-title">
+                ${safeHTML(
+                    project.title ||
+                    "Untitled Project"
+                )}
+            </h3>
+
+            <div class="project-category">
+                ${safeHTML(
+                    project.category ||
+                    "Anime"
+                )}
+            </div>
+
+            <div class="project-date">
+                ${formatDate(
+                    project.created_at
+                )}
+            </div>
+
+        </div>
+
+    `;
+
+
+    projectsContainer.appendChild(
+        card
+    );
+
+}
+
+
+// ==========================================
+// ERROR
+// ==========================================
+
+function showError(
+    message
+) {
+
+    profileHero.innerHTML = `
+        <div class="error">
+            ${safeHTML(message)}
+        </div>
+    `;
+
+
+    projectsContainer.innerHTML = "";
+
+}
+
+
+// ==========================================
+// DATE
+// ==========================================
+
+function formatDate(
+    value
+) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    return new Date(
+        value
+    ).toLocaleDateString(
+        "en-IN",
+        {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+// ==========================================
+// SECURITY HELPERS
+// ==========================================
+
+function safeHTML(
+    value
+) {
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+function safeAttribute(
+    value
+) {
+
+    return safeHTML(
+        value
+    );
+
+}
+
+
+// ==========================================
+// RUN
 // ==========================================
 
 loadProfile();
