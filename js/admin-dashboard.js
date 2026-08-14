@@ -6,6 +6,37 @@ console.log("Admin Dashboard loaded");
 
 
 // ==========================================
+// STORAGE CONFIGURATION
+// ==========================================
+
+const BUCKETS = {
+
+    // Anime files are stored in stories
+    "Anime": "stories",
+
+    // Short films
+    "Short Film": "shortfilms",
+
+    // Music
+    "Music": "music",
+
+    // Artwork
+    "Artwork": "artwork",
+
+    // Manga
+    "Manga": "manga",
+
+    // Optional lowercase support
+    "anime": "stories",
+    "short film": "shortfilms",
+    "music": "music",
+    "artwork": "artwork",
+    "manga": "manga"
+
+};
+
+
+// ==========================================
 // ELEMENTS
 // ==========================================
 
@@ -23,11 +54,34 @@ const errorBox =
 
 
 // ==========================================
-// BUCKETS
+// HELPERS
 // ==========================================
 
-const PROJECT_BUCKET = "projects";
-const THUMBNAIL_BUCKET = "thumbnails";
+function getBucketForCategory(category) {
+
+    if (!category) {
+
+        console.warn(
+            "No category provided."
+        );
+
+        return null;
+    }
+
+
+    const cleanCategory =
+        String(category).trim();
+
+
+    return (
+        BUCKETS[cleanCategory] ||
+        BUCKETS[
+            cleanCategory.toLowerCase()
+        ] ||
+        null
+    );
+
+}
 
 
 // ==========================================
@@ -41,11 +95,15 @@ async function checkAdmin() {
         error
     } = await sb.auth.getUser();
 
+
     if (error) {
         throw error;
     }
 
-    const user = data?.user;
+
+    const user =
+        data?.user;
+
 
     if (!user) {
 
@@ -56,19 +114,29 @@ async function checkAdmin() {
     }
 
 
+    console.log(
+        "Logged in user:",
+        user.id
+    );
+
+
     const {
         data: profile,
         error: profileError
     } = await sb
+
         .from("profiles")
+
         .select(`
             user_id,
             is_admin
         `)
+
         .eq(
             "user_id",
             user.id
         )
+
         .maybeSingle();
 
 
@@ -86,104 +154,144 @@ async function checkAdmin() {
             "Admin access required."
         );
 
+
         window.location.href =
             "dashboard.html";
+
 
         return null;
     }
 
 
     return user;
+
 }
 
 
 // ==========================================
-// LOAD PROJECTS
+// LOAD PENDING PROJECTS
 // ==========================================
 
 async function loadProjects() {
 
     if (loading) {
-        loading.style.display = "block";
+
+        loading.style.display =
+            "block";
     }
+
 
     if (emptyBox) {
-        emptyBox.style.display = "none";
+
+        emptyBox.style.display =
+            "none";
     }
+
 
     if (errorBox) {
-        errorBox.style.display = "none";
+
+        errorBox.style.display =
+            "none";
     }
+
 
     if (projectsContainer) {
-        projectsContainer.innerHTML = "";
+
+        projectsContainer.innerHTML =
+            "";
     }
 
 
-    const {
-        data: projects,
-        error
-    } = await sb
-        .from("projects")
-        .select(`
-            id,
-            user_id,
-            title,
-            description,
-            category,
-            thumbnail,
-            status,
-            created_at,
-            file_path,
-            admin_note
-        `)
-        .eq(
-            "status",
-            "Pending"
-        )
-        .order(
-            "created_at",
-            {
-                ascending: false
-            }
+    try {
+
+        const {
+            data: projects,
+            error
+        } = await sb
+
+            .from("projects")
+
+            .select(`
+                id,
+                user_id,
+                title,
+                description,
+                category,
+                thumbnail,
+                status,
+                created_at,
+                file_path,
+                admin_note
+            `)
+
+            .eq(
+                "status",
+                "Pending"
+            )
+
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (loading) {
+
+            loading.style.display =
+                "none";
+        }
+
+
+        console.log(
+            "Pending projects:",
+            projects
         );
 
 
-    if (loading) {
-        loading.style.display = "none";
-    }
+        if (
+            !projects ||
+            projects.length === 0
+        ) {
+
+            if (emptyBox) {
+
+                emptyBox.style.display =
+                    "block";
+            }
 
 
-    if (error) {
+            return;
+        }
+
+
+        for (
+            const project of projects
+        ) {
+
+            await renderProject(
+                project
+            );
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Load projects error:",
+            error
+        );
+
 
         showError(
             error.message
-        );
-
-        return;
-    }
-
-
-    if (
-        !projects ||
-        projects.length === 0
-    ) {
-
-        if (emptyBox) {
-            emptyBox.style.display =
-                "block";
-        }
-
-        return;
-    }
-
-
-    for (
-        const project of projects
-    ) {
-
-        await renderProject(
-            project
         );
 
     }
@@ -192,10 +300,10 @@ async function loadProjects() {
 
 
 // ==========================================
-// THUMBNAIL URL
+// GET THUMBNAIL URL
 // ==========================================
 
-async function getThumbnailUrl(
+function getThumbnailUrl(
     thumbnail
 ) {
 
@@ -215,17 +323,22 @@ async function getThumbnailUrl(
     }
 
 
-    // Existing URL
+    // Already a complete URL
     if (
-        path.startsWith("http://") ||
-        path.startsWith("https://")
+        path.startsWith(
+            "http://"
+        ) ||
+        path.startsWith(
+            "https://"
+        )
     ) {
 
         return path;
     }
 
 
-    // Remove bucket prefix
+    // Remove thumbnails/ if database
+    // contains bucket name
     if (
         path.startsWith(
             "thumbnails/"
@@ -236,65 +349,24 @@ async function getThumbnailUrl(
             path.substring(
                 "thumbnails/".length
             );
-
     }
 
 
-    if (
-        path.startsWith(
-            "projects/"
-        )
-    ) {
-
-        path =
-            path.substring(
-                "projects/".length
-            );
-
-    }
-
-
-    console.log(
-        "Thumbnail path:",
-        path
-    );
-
-
-    // Public thumbnails bucket
     const {
-        data: thumbnailData
+        data
     } = sb.storage
+
         .from(
-            THUMBNAIL_BUCKET
+            "thumbnails"
         )
-        .getPublicUrl(
-            path
-        );
 
-
-    if (
-        thumbnailData?.publicUrl
-    ) {
-
-        return thumbnailData.publicUrl;
-
-    }
-
-
-    // Fallback to projects bucket
-    const {
-        data: projectData
-    } = sb.storage
-        .from(
-            PROJECT_BUCKET
-        )
         .getPublicUrl(
             path
         );
 
 
     return (
-        projectData?.publicUrl ||
+        data?.publicUrl ||
         null
     );
 
@@ -318,6 +390,7 @@ async function renderProject(
         document.createElement(
             "article"
         );
+
 
     card.className =
         "project-card";
@@ -354,10 +427,21 @@ async function renderProject(
             : "Unknown";
 
 
+    const bucket =
+        getBucketForCategory(
+            project.category
+        );
+
+
     const thumbnailUrl =
-        await getThumbnailUrl(
+        getThumbnailUrl(
             project.thumbnail
         );
+
+
+    console.log(
+        "================================"
+    );
 
 
     console.log(
@@ -365,10 +449,18 @@ async function renderProject(
         project.title
     );
 
+
     console.log(
-        "Thumbnail:",
-        thumbnailUrl
+        "Category:",
+        project.category
     );
+
+
+    console.log(
+        "Bucket:",
+        bucket
+    );
+
 
     console.log(
         "File path:",
@@ -376,16 +468,27 @@ async function renderProject(
     );
 
 
+    console.log(
+        "Thumbnail:",
+        thumbnailUrl
+    );
+
+
+    console.log(
+        "================================"
+    );
+
+
     // ======================================
-    // IMAGE
+    // THUMBNAIL
     // ======================================
 
-    let imageHTML;
+    let thumbnailHTML;
 
 
     if (thumbnailUrl) {
 
-        imageHTML = `
+        thumbnailHTML = `
 
             <img
                 class="thumbnail"
@@ -414,7 +517,7 @@ async function renderProject(
 
     } else {
 
-        imageHTML = `
+        thumbnailHTML = `
 
             <div class="
                 thumbnail
@@ -429,12 +532,56 @@ async function renderProject(
 
 
     // ======================================
+    // VIEW BUTTON
+    // ======================================
+
+    let viewButtonHTML;
+
+
+    if (
+        project.file_path &&
+        bucket
+    ) {
+
+        viewButtonHTML = `
+
+            <button
+                type="button"
+                class="view"
+                data-project-id="${escapeAttribute(
+                    project.id
+                )}"
+            >
+                👁 View
+            </button>
+
+        `;
+
+    } else {
+
+        viewButtonHTML = `
+
+            <button
+                type="button"
+                class="view"
+                disabled
+                title="File path or category is missing"
+            >
+                👁 File unavailable
+            </button>
+
+        `;
+
+    }
+
+
+    // ======================================
     // CARD
     // ======================================
 
     card.innerHTML = `
 
-        ${imageHTML}
+        ${thumbnailHTML}
 
 
         <div class="project-info">
@@ -455,9 +602,11 @@ async function renderProject(
                     ${category}
                 </span>
 
+
                 <span class="badge pending">
                     Pending
                 </span>
+
 
                 <span class="badge">
                     ${date}
@@ -468,31 +617,7 @@ async function renderProject(
 
             <div class="actions">
 
-                ${
-                    project.file_path
-                    ?
-                    `
-                    <button
-                        type="button"
-                        class="view"
-                        data-file-path="${escapeAttribute(
-                            project.file_path
-                        )}"
-                    >
-                        👁 View
-                    </button>
-                    `
-                    :
-                    `
-                    <button
-                        type="button"
-                        class="view"
-                        disabled
-                    >
-                        👁 No File
-                    </button>
-                    `
-                }
+                ${viewButtonHTML}
 
 
                 <button
@@ -529,36 +654,23 @@ async function renderProject(
 
 
     // ======================================
-    // VIEW BUTTON
+    // VIEW
     // ======================================
 
     const viewButton =
         card.querySelector(
-            ".view"
+            ".view:not([disabled])"
         );
 
 
-    if (
-        viewButton &&
-        project.file_path
-    ) {
+    if (viewButton) {
 
         viewButton.addEventListener(
             "click",
             function () {
 
-                console.log(
-                    "VIEW BUTTON CLICKED"
-                );
-
-                console.log(
-                    "File:",
-                    this.dataset.filePath
-                );
-
-
                 viewProject(
-                    this.dataset.filePath
+                    project
                 );
 
             }
@@ -568,7 +680,7 @@ async function renderProject(
 
 
     // ======================================
-    // APPROVE BUTTON
+    // APPROVE
     // ======================================
 
     const approveButton =
@@ -584,7 +696,7 @@ async function renderProject(
             function () {
 
                 approveProject(
-                    this.dataset.projectId
+                    project.id
                 );
 
             }
@@ -594,7 +706,7 @@ async function renderProject(
 
 
     // ======================================
-    // REJECT BUTTON
+    // REJECT
     // ======================================
 
     const rejectButton =
@@ -610,7 +722,7 @@ async function renderProject(
             function () {
 
                 rejectProject(
-                    this.dataset.projectId
+                    project.id
                 );
 
             }
@@ -626,86 +738,258 @@ async function renderProject(
 // ==========================================
 
 async function viewProject(
-    filePath
+    project
 ) {
 
     console.log(
-        "Opening project file:",
-        filePath
+        "VIEW PROJECT:",
+        project
     );
 
 
-    if (!filePath) {
+    if (
+        !project ||
+        !project.file_path
+    ) {
 
         alert(
-            "No project file available."
+            "No project file is available."
         );
 
         return;
     }
 
 
-    try {
-
-        let path =
-            String(
-                filePath
-            ).trim();
+    const bucket =
+        getBucketForCategory(
+            project.category
+        );
 
 
-        // ======================================
-        // FULL URL
-        // ======================================
+    if (!bucket) {
 
-        if (
-            path.startsWith(
-                "http://"
-            ) ||
-            path.startsWith(
-                "https://"
-            )
-        ) {
+        alert(
+            "Unknown project category:\n" +
+            project.category
+        );
 
-            console.log(
-                "Opening existing URL"
+        console.error(
+            "No bucket mapping for:",
+            project.category
+        );
+
+        return;
+    }
+
+
+    let path =
+        String(
+            project.file_path
+        ).trim();
+
+
+    if (!path) {
+
+        alert(
+            "Project file path is empty."
+        );
+
+        return;
+    }
+
+
+    console.log(
+        "Category:",
+        project.category
+    );
+
+
+    console.log(
+        "Selected bucket:",
+        bucket
+    );
+
+
+    console.log(
+        "Original path:",
+        path
+    );
+
+
+    // ======================================
+    // FULL URL
+    // ======================================
+
+    if (
+        path.startsWith(
+            "http://"
+        ) ||
+        path.startsWith(
+            "https://"
+        )
+    ) {
+
+        window.open(
+            path,
+            "_blank"
+        );
+
+        return;
+    }
+
+
+    // ======================================
+    // REMOVE BUCKET PREFIX
+    // ======================================
+
+    const bucketPrefix =
+        bucket + "/";
+
+
+    if (
+        path.startsWith(
+            bucketPrefix
+        )
+    ) {
+
+        path =
+            path.substring(
+                bucketPrefix.length
             );
 
-            window.open(
-                path,
-                "_blank"
+    }
+
+
+    // ======================================
+    // REMOVE OTHER COMMON PREFIXES
+    // ======================================
+
+    if (
+        path.startsWith(
+            "projects/"
+        )
+    ) {
+
+        path =
+            path.substring(
+                "projects/".length
             );
 
-            return;
-        }
+    }
 
 
-        // ======================================
-        // REMOVE BUCKET PREFIX
-        // ======================================
+    if (
+        path.startsWith(
+            "stories/"
+        )
+    ) {
 
         if (
-            path.startsWith(
-                "projects/"
-            )
+            bucket === "stories"
         ) {
 
             path =
                 path.substring(
-                    "projects/".length
+                    "stories/".length
                 );
-
         }
 
-
-        console.log(
-            "Supabase project path:",
-            path
-        );
+    }
 
 
-        // ======================================
-        // CREATE SIGNED URL
-        // ======================================
+    if (
+        path.startsWith(
+            "shortfilms/"
+        )
+    ) {
+
+        if (
+            bucket === "shortfilms"
+        ) {
+
+            path =
+                path.substring(
+                    "shortfilms/".length
+                );
+        }
+
+    }
+
+
+    if (
+        path.startsWith(
+            "music/"
+        )
+    ) {
+
+        if (
+            bucket === "music"
+        ) {
+
+            path =
+                path.substring(
+                    "music/".length
+                );
+        }
+
+    }
+
+
+    if (
+        path.startsWith(
+            "artwork/"
+        )
+    ) {
+
+        if (
+            bucket === "artwork"
+        ) {
+
+            path =
+                path.substring(
+                    "artwork/".length
+                );
+        }
+
+    }
+
+
+    if (
+        path.startsWith(
+            "manga/"
+        )
+    ) {
+
+        if (
+            bucket === "manga"
+        ) {
+
+            path =
+                path.substring(
+                    "manga/".length
+                );
+        }
+
+    }
+
+
+    console.log(
+        "Final Storage bucket:",
+        bucket
+    );
+
+
+    console.log(
+        "Final Storage path:",
+        path
+    );
+
+
+    // ======================================
+    // CREATE SIGNED URL
+    // ======================================
+
+    try {
 
         const {
             data,
@@ -713,7 +997,7 @@ async function viewProject(
         } = await sb.storage
 
             .from(
-                PROJECT_BUCKET
+                bucket
             )
 
             .createSignedUrl(
@@ -725,55 +1009,66 @@ async function viewProject(
         if (error) {
 
             console.error(
-                "Signed URL error:",
+                "Storage error:",
                 error
             );
 
+
             alert(
-                "Unable to view project:\n" +
+                "File could not be opened.\n\n" +
+                "Bucket: " +
+                bucket +
+                "\n\n" +
+                "Path: " +
+                path +
+                "\n\n" +
                 error.message
             );
+
 
             return;
         }
 
 
         if (
-            !data?.signedUrl
+            !data ||
+            !data.signedUrl
         ) {
 
             alert(
                 "Supabase did not return a file URL."
             );
 
+
             return;
         }
 
 
         console.log(
-            "Signed URL created successfully."
+            "Signed URL created."
         );
 
 
-        // ======================================
-        // OPEN
-        // ======================================
+        // ==================================
+        // OPEN FILE
+        // ==================================
 
         window.open(
             data.signedUrl,
             "_blank"
         );
 
+
     } catch (error) {
 
         console.error(
-            "View error:",
+            "View project error:",
             error
         );
 
 
         alert(
-            "Unable to view project:\n" +
+            "Unable to open project:\n\n" +
             error.message
         );
 
@@ -846,6 +1141,7 @@ async function approveProject(
 
 
         if (updateError) {
+
             throw updateError;
         }
 
@@ -856,6 +1152,7 @@ async function approveProject(
 
 
         await loadProjects();
+
         await loadStats();
 
 
@@ -891,7 +1188,10 @@ async function rejectProject(
         );
 
 
-    if (note === null) {
+    if (
+        note === null
+    ) {
+
         return;
     }
 
@@ -945,6 +1245,7 @@ async function rejectProject(
 
 
         if (updateError) {
+
             throw updateError;
         }
 
@@ -955,6 +1256,7 @@ async function rejectProject(
 
 
         await loadProjects();
+
         await loadStats();
 
 
@@ -977,98 +1279,115 @@ async function rejectProject(
 
 
 // ==========================================
-// STATISTICS
+// LOAD STATISTICS
 // ==========================================
 
 async function loadStats() {
 
-    const {
-        data,
-        error
-    } = await sb
+    try {
 
-        .from("projects")
+        const {
+            data,
+            error
+        } = await sb
 
-        .select(
-            "status"
+            .from("projects")
+
+            .select(
+                "status"
+            );
+
+
+        if (error) {
+
+            throw error;
+        }
+
+
+        const projects =
+            data || [];
+
+
+        const pending =
+            projects.filter(
+                project =>
+                    project.status ===
+                    "Pending"
+            ).length;
+
+
+        const approved =
+            projects.filter(
+                project =>
+                    project.status ===
+                    "Approved"
+            ).length;
+
+
+        const rejected =
+            projects.filter(
+                project =>
+                    project.status ===
+                    "Rejected"
+            ).length;
+
+
+        const pendingElement =
+            document.getElementById(
+                "pendingCount"
+            );
+
+
+        const approvedElement =
+            document.getElementById(
+                "approvedCount"
+            );
+
+
+        const rejectedElement =
+            document.getElementById(
+                "rejectedCount"
+            );
+
+
+        if (pendingElement) {
+
+            pendingElement.textContent =
+                pending;
+        }
+
+
+        if (approvedElement) {
+
+            approvedElement.textContent =
+                approved;
+        }
+
+
+        if (rejectedElement) {
+
+            rejectedElement.textContent =
+                rejected;
+        }
+
+
+        console.log(
+            "Stats:",
+            {
+                pending,
+                approved,
+                rejected
+            }
         );
 
 
-    if (error) {
+    } catch (error) {
 
         console.error(
             "Stats error:",
             error
         );
 
-        return;
-    }
-
-
-    const projects =
-        data || [];
-
-
-    const pending =
-        projects.filter(
-            project =>
-                project.status ===
-                "Pending"
-        ).length;
-
-
-    const approved =
-        projects.filter(
-            project =>
-                project.status ===
-                "Approved"
-        ).length;
-
-
-    const rejected =
-        projects.filter(
-            project =>
-                project.status ===
-                "Rejected"
-        ).length;
-
-
-    const pendingElement =
-        document.getElementById(
-            "pendingCount"
-        );
-
-
-    const approvedElement =
-        document.getElementById(
-            "approvedCount"
-        );
-
-
-    const rejectedElement =
-        document.getElementById(
-            "rejectedCount"
-        );
-
-
-    if (pendingElement) {
-
-        pendingElement.textContent =
-            pending;
-    }
-
-
-    if (approvedElement) {
-
-        approvedElement.textContent =
-            approved;
-    }
-
-
-    if (rejectedElement) {
-
-        rejectedElement.textContent =
-            rejected;
     }
 
 }
@@ -1110,7 +1429,9 @@ function escapeHTML(
     value
 ) {
 
-    return String(value)
+    return String(
+        value
+    )
 
         .replace(
             /&/g,
@@ -1181,7 +1502,7 @@ async function startDashboard() {
     } catch (error) {
 
         console.error(
-            "Dashboard error:",
+            "Dashboard startup error:",
             error
         );
 
