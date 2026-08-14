@@ -2,566 +2,299 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Vidlyra Creator Portal</title>
 
-<link
-    rel="preconnect"
-    href="https://fonts.googleapis.com"
->
-
-<link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
->
-
-<link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet"
->
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
 }
 
-
-body {
-    background: #050505;
-    color: white;
+body{
+    background:#050505;
+    color:white;
+    min-height:100vh;
 }
 
-
-/* ==========================================
-   HEADER
-========================================== */
-
-header {
-
-    background: #111;
-
-    padding: 18px 8%;
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    border-bottom: 1px solid #222;
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 100;
-
+header{
+    background:#111;
+    padding:18px 8%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid #222;
+    position:sticky;
+    top:0;
+    z-index:100;
 }
 
-
-.logo {
-
-    font-size: 28px;
-
-    font-weight: 700;
-
-    color: #ff7a00;
-
+.logo{
+    font-size:28px;
+    font-weight:700;
+    color:#ff7a00;
+    letter-spacing:1px;
 }
 
-
-nav {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 25px;
-
+nav{
+    display:flex;
+    align-items:center;
+    gap:25px;
 }
 
-
-nav a {
-
-    text-decoration: none;
-
-    color: white;
-
-    transition: .3s;
-
+nav a{
+    color:#ddd;
+    text-decoration:none;
+    font-size:14px;
+    transition:.3s;
 }
 
-
-nav a:hover {
-
-    color: #ff7a00;
-
+nav a:hover{
+    color:#ff7a00;
 }
 
-
-/* ==========================================
-   AUTH AREA
-========================================== */
-
-.auth-area {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
+.auth-area{
+    display:flex;
+    align-items:center;
+    gap:12px;
 }
 
-
-.auth-name {
-
-    color: #bbb;
-
-    font-size: 13px;
-
+.auth-name{
+    color:#bbb;
+    font-size:13px;
+    max-width:130px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
 }
 
-
-.logout-btn {
-
-    padding: 9px 18px;
-
-    background: transparent;
-
-    color: #ff7a00;
-
-    border: 1px solid #ff7a00;
-
-    border-radius: 20px;
-
-    cursor: pointer;
-
-    font-family: inherit;
-
-    font-weight: 500;
-
-    transition: .3s;
-
+.logout-btn{
+    padding:9px 18px;
+    background:transparent;
+    color:#ff7a00;
+    border:1px solid #ff7a00;
+    border-radius:20px;
+    cursor:pointer;
+    font-weight:500;
 }
 
-
-.logout-btn:hover {
-
-    background: #ff7a00;
-
-    color: white;
-
+.logout-btn:hover{
+    background:#ff7a00;
+    color:white;
 }
 
-
-/* ==========================================
-   HERO
-========================================== */
-
-.hero {
-
-    padding: 90px 8%;
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    gap: 50px;
-
+.hero{
+    padding:90px 8%;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:50px;
 }
 
-
-.left {
-
-    flex: 1;
-
-    min-width: 300px;
-
+.left{
+    flex:1;
+    min-width:300px;
 }
 
-
-.left h1 {
-
-    font-size: 55px;
-
-    line-height: 1.1;
-
-    margin-bottom: 20px;
-
+.left h1{
+    font-size:55px;
+    line-height:1.1;
+    margin-bottom:20px;
 }
 
-
-.left h1 span {
-
-    color: #ff7a00;
-
+.left h1 span{
+    color:#ff7a00;
 }
 
-
-.left p {
-
-    color: #bbb;
-
-    line-height: 1.8;
-
-    margin-bottom: 35px;
-
+.left p{
+    color:#bbb;
+    line-height:1.8;
+    margin-bottom:35px;
+    max-width:700px;
 }
 
-
-.buttons {
-
-    display: flex;
-
-    gap: 20px;
-
-    flex-wrap: wrap;
-
+.buttons{
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
 }
 
-
-.btn {
-
-    padding: 14px 30px;
-
-    background: #ff7a00;
-
-    color: white;
-
-    text-decoration: none;
-
-    border-radius: 50px;
-
-    font-weight: 600;
-
-    transition: .3s;
-
+.btn{
+    padding:14px 30px;
+    background:#ff7a00;
+    color:white;
+    text-decoration:none;
+    border-radius:50px;
+    font-weight:600;
+    transition:.3s;
 }
 
-
-.btn:hover {
-
-    background: #ff9200;
-
+.btn:hover{
+    background:#ff9200;
+    transform:translateY(-2px);
 }
 
-
-.btn2 {
-
-    background: #222;
-
+.btn2{
+    background:#222;
+    border:1px solid #333;
 }
 
-
-.btn2:hover {
-
-    background: #333;
-
+.btn2:hover{
+    background:#333;
 }
 
-
-/* ==========================================
-   LOGGED IN MESSAGE
-========================================== */
-
-.welcome-box {
-
-    display: none;
-
-    margin-top: 25px;
-
-    padding: 15px 20px;
-
-    background: #111;
-
-    border: 1px solid #292929;
-
-    border-left: 3px solid #ff7a00;
-
-    border-radius: 10px;
-
-    color: #bbb;
-
-    font-size: 13px;
-
+.welcome-box{
+    display:none;
+    margin-top:25px;
+    padding:18px 20px;
+    background:#111;
+    border:1px solid #292929;
+    border-left:3px solid #ff7a00;
+    border-radius:10px;
+    color:#aaa;
+    font-size:13px;
 }
 
-
-.welcome-box strong {
-
-    color: #ff7a00;
-
+.welcome-box strong{
+    color:#ff7a00;
 }
 
-
-/* ==========================================
-   RIGHT CARD
-========================================== */
-
-.right {
-
-    flex: 1;
-
-    min-width: 280px;
-
-    display: flex;
-
-    justify-content: center;
-
+.right{
+    flex:1;
+    min-width:280px;
+    display:flex;
+    justify-content:center;
 }
 
-
-.card {
-
-    width: 100%;
-
-    max-width: 420px;
-
-    background: #111;
-
-    border: 1px solid #222;
-
-    padding: 40px;
-
-    border-radius: 20px;
-
+.card{
+    width:100%;
+    max-width:420px;
+    background:#111;
+    border:1px solid #222;
+    padding:40px;
+    border-radius:20px;
 }
 
-
-.card h2 {
-
-    margin-bottom: 20px;
-
-    color: #ff7a00;
-
+.card h2{
+    margin-bottom:20px;
+    color:#ff7a00;
 }
 
-
-.card ul {
-
-    list-style: none;
-
+.card ul{
+    list-style:none;
 }
 
-
-.card li {
-
-    padding: 12px 0;
-
-    border-bottom: 1px solid #222;
-
-    color: #ccc;
-
+.card li{
+    padding:12px 0;
+    border-bottom:1px solid #222;
+    color:#ccc;
 }
 
-
-/* ==========================================
-   FEATURES
-========================================== */
-
-.features {
-
-    padding: 80px 8%;
-
+.features{
+    padding:80px 8%;
 }
 
-
-.title {
-
-    text-align: center;
-
-    font-size: 38px;
-
-    margin-bottom: 60px;
-
+.title{
+    text-align:center;
+    font-size:38px;
+    margin-bottom:60px;
 }
 
-
-.grid {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(260px, 1fr)
-        );
-
-    gap: 30px;
-
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:30px;
 }
 
-
-.box {
-
-    background: #111;
-
-    padding: 30px;
-
-    border-radius: 15px;
-
-    border: 1px solid #222;
-
-    transition: .3s;
-
+.box{
+    background:#111;
+    padding:30px;
+    border-radius:15px;
+    border:1px solid #222;
+    transition:.3s;
 }
 
-
-.box:hover {
-
-    transform: translateY(-8px);
-
-    border-color: #ff7a00;
-
+.box:hover{
+    transform:translateY(-8px);
+    border-color:#ff7a00;
 }
 
-
-.box h3 {
-
-    color: #ff7a00;
-
-    margin-bottom: 15px;
-
+.box h3{
+    color:#ff7a00;
+    margin-bottom:15px;
 }
 
-
-.box p {
-
-    color: #aaa;
-
-    line-height: 1.6;
-
+.box p{
+    color:#aaa;
+    line-height:1.6;
 }
 
-
-/* ==========================================
-   FOOTER
-========================================== */
-
-footer {
-
-    padding: 40px;
-
-    text-align: center;
-
-    color: #888;
-
-    border-top: 1px solid #222;
-
-    margin-top: 80px;
-
+footer{
+    padding:40px;
+    text-align:center;
+    color:#666;
+    border-top:1px solid #222;
+    margin-top:80px;
 }
 
+@media(max-width:768px){
 
-/* ==========================================
-   MOBILE
-========================================== */
-
-@media(max-width: 768px) {
-
-    .left h1 {
-
-        font-size: 40px;
-
+    header{
+        flex-direction:column;
+        gap:15px;
     }
 
-
-    header {
-
-        flex-direction: column;
-
-        gap: 15px;
-
+    nav{
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:12px;
     }
 
-
-    nav {
-
-        flex-wrap: wrap;
-
-        justify-content: center;
-
-        gap: 12px;
-
+    .left h1{
+        font-size:40px;
     }
 
-
-    nav a {
-
-        margin: 0;
-
+    .hero{
+        padding:60px 6%;
     }
 
-
-    .auth-area {
-
-        justify-content: center;
-
+    .features{
+        padding:60px 6%;
     }
-
 }
-
 </style>
-
 </head>
-
 
 <body>
 
-
-<!-- ==========================================
-     HEADER
-========================================== -->
-
 <header>
-
 
     <div class="logo">
         VIDLYRA
     </div>
 
-
     <nav>
 
+        <a href="index.html">Home</a>
 
-        <a href="index.html">
-            Home
-        </a>
+        <a href="projects.html">Explore</a>
 
+        <a href="upload.html">Upload</a>
 
-        <a href="upload.html">
-            Upload
-        </a>
+        <a href="dashboard.html">Dashboard</a>
 
+        <!-- GUEST -->
 
-        <a href="dashboard.html">
-            Dashboard
-        </a>
-
-
-        <!-- NOT LOGGED IN -->
-
-        <div
-            id="guestAuth"
-            class="auth-area"
-        >
+        <div id="guestAuth" class="auth-area">
 
             <a href="login.html">
                 Login
@@ -572,7 +305,6 @@ footer {
             </a>
 
         </div>
-
 
         <!-- LOGGED IN -->
 
@@ -589,7 +321,6 @@ footer {
                 Creator
             </span>
 
-
             <button
                 id="logoutButton"
                 class="logout-btn"
@@ -600,41 +331,25 @@ footer {
 
         </div>
 
-
     </nav>
 
 </header>
 
 
-<!-- ==========================================
-     HERO
-========================================== -->
-
 <section class="hero">
-
 
     <div class="left">
 
-
         <h1>
-
             Creator
-            <span>
-                Portal
-            </span>
-
+            <span>Portal</span>
         </h1>
 
-
         <p>
-
             Welcome to the official Vidlyra Creator Portal.
-
-            Upload your animations, artwork, podcasts,
-            videos, music, stories, and creative projects.
-
+            Upload your animations, artwork, videos, music,
+            stories, manga and creative projects.
             Share your imagination with the Vidlyra community.
-
         </p>
 
 
@@ -652,7 +367,6 @@ footer {
                 Login
             </a>
 
-
             <a
                 href="signup.html"
                 class="btn btn2"
@@ -663,7 +377,7 @@ footer {
         </div>
 
 
-        <!-- LOGGED-IN MESSAGE -->
+        <!-- LOGGED IN -->
 
         <div
             id="welcomeBox"
@@ -679,85 +393,49 @@ footer {
 
         </div>
 
-
     </div>
 
 
     <div class="right">
 
-
         <div class="card">
-
 
             <h2>
                 Portal Features
             </h2>
 
-
             <ul>
 
+                <li>🎬 Upload Anime Videos</li>
 
-                <li>
-                    🎬 Upload Anime Videos
-                </li>
+                <li>🎨 Upload Artwork</li>
 
+                <li>🎵 Upload Music</li>
 
-                <li>
-                    🎨 Upload Artwork
-                </li>
+                <li>📖 Publish Stories</li>
 
+                <li>👤 Official Avatar System</li>
 
-                <li>
-                    🎵 Upload Music
-                </li>
+                <li>⭐ Creator Dashboard</li>
 
-
-                <li>
-                    📖 Publish Stories
-                </li>
-
-
-                <li>
-                    👤 Official Avatar System
-                </li>
-
-
-                <li>
-                    ⭐ Creator Dashboard
-                </li>
-
-
-                <li>
-                    🛡 Secure Cloud Storage
-                </li>
-
+                <li>🛡 Secure Cloud Storage</li>
 
             </ul>
 
-
         </div>
 
-
     </div>
-
 
 </section>
 
 
-<!-- ==========================================
-     FEATURES
-========================================== -->
-
 <section class="features">
-
 
     <h2 class="title">
         Why Join Vidlyra?
     </h2>
 
-
     <div class="grid">
-
 
         <div class="box">
 
@@ -767,7 +445,7 @@ footer {
 
             <p>
                 Create and publish original content
-                for the community.
+                for the Vidlyra community.
             </p>
 
         </div>
@@ -780,7 +458,7 @@ footer {
             </h3>
 
             <p>
-                Customize your creator page with
+                Build your creator identity with
                 official Vidlyra avatars.
             </p>
 
@@ -790,12 +468,12 @@ footer {
         <div class="box">
 
             <h3>
-                Community
+                Explore
             </h3>
 
             <p>
-                Discover creators, collaborate,
-                and grow together.
+                Discover approved projects from
+                creators across Vidlyra.
             </p>
 
         </div>
@@ -808,12 +486,11 @@ footer {
             </h3>
 
             <p>
-                Protected authentication powered
-                by Supabase.
+                Authentication and cloud storage
+                powered by Supabase.
             </p>
 
         </div>
-
 
     </div>
 
@@ -821,239 +498,114 @@ footer {
 
 
 <footer>
-
     © 2026 Vidlyra Creator Portal
-
 </footer>
 
 
-<!-- ==========================================
-     SUPABASE
-========================================== -->
-
-<script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-></script>
-
-
-<!-- ==========================================
-     YOUR CONFIG
-========================================== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="js/config.js"></script>
 
-
-<!-- ==========================================
-     AUTH STATE
-========================================== -->
-
 <script>
 
-console.log(
-    "Vidlyra Home Auth loaded"
-);
+console.log("Vidlyra Home Auth loaded");
 
-
-/* ==========================================
-   ELEMENTS
-========================================== */
 
 const guestAuth =
-    document.getElementById(
-        "guestAuth"
-    );
-
+    document.getElementById("guestAuth");
 
 const userAuth =
-    document.getElementById(
-        "userAuth"
-    );
-
+    document.getElementById("userAuth");
 
 const guestButtons =
-    document.getElementById(
-        "guestButtons"
-    );
-
+    document.getElementById("guestButtons");
 
 const welcomeBox =
-    document.getElementById(
-        "welcomeBox"
-    );
-
+    document.getElementById("welcomeBox");
 
 const welcomeUser =
-    document.getElementById(
-        "welcomeUser"
-    );
-
+    document.getElementById("welcomeUser");
 
 const userName =
-    document.getElementById(
-        "userName"
-    );
-
+    document.getElementById("userName");
 
 const logoutButton =
-    document.getElementById(
-        "logoutButton"
-    );
+    document.getElementById("logoutButton");
 
 
-/* ==========================================
-   SHOW GUEST
-========================================== */
+function showGuest(){
 
-function showGuest() {
+    guestAuth.style.display = "flex";
 
-    if (guestAuth) {
+    userAuth.style.display = "none";
 
-        guestAuth.style.display =
-            "flex";
+    guestButtons.style.display = "flex";
 
-    }
-
-
-    if (userAuth) {
-
-        userAuth.style.display =
-            "none";
-
-    }
-
-
-    if (guestButtons) {
-
-        guestButtons.style.display =
-            "flex";
-
-    }
-
-
-    if (welcomeBox) {
-
-        welcomeBox.style.display =
-            "none";
-
-    }
-
+    welcomeBox.style.display = "none";
 }
 
 
-/* ==========================================
-   SHOW LOGGED IN USER
-========================================== */
+function showLoggedIn(user){
 
-function showLoggedIn(user) {
+    guestAuth.style.display = "none";
 
-    if (guestAuth) {
+    userAuth.style.display = "flex";
 
-        guestAuth.style.display =
-            "none";
+    guestButtons.style.display = "none";
 
-    }
+    welcomeBox.style.display = "block";
 
 
-    if (userAuth) {
+    /*
+       Do NOT show Gmail/email.
+       Keep the interface as Creator.
+    */
 
-        userAuth.style.display =
-            "flex";
-
-    }
-
-
-    if (guestButtons) {
-
-        guestButtons.style.display =
-            "none";
-
-    }
+    const name = "Creator";
 
 
-    if (welcomeBox) {
+    userName.textContent = name;
 
-        welcomeBox.style.display =
-            "block";
-
-    }
-
-
-    const email =
-        user?.email ||
-        "Creator";
-
-
-    if (userName) {
-
-        userName.textContent =
-            email;
-
-    }
-
-
-    if (welcomeUser) {
-
-        welcomeUser.textContent =
-            email;
-
-    }
-
+    welcomeUser.textContent = name;
 }
 
 
-/* ==========================================
-   CHECK LOGIN
-========================================== */
+async function checkLogin(){
 
-async function checkLogin() {
-
-    try {
+    try{
 
         const {
-            data: {
-                user
-            },
+            data,
             error
-        } =
-            await sb.auth.getUser();
+        } = await sb.auth.getUser();
 
 
-        if (error) {
+        if(error){
 
             console.error(
-                "Auth error:",
+                "Auth check error:",
                 error
             );
 
             showGuest();
 
             return;
-
         }
 
 
-        if (user) {
-
-            console.log(
-                "User logged in:",
-                user.id
-            );
+        if(data && data.user){
 
             showLoggedIn(
-                user
+                data.user
             );
 
-        } else {
-
-            console.log(
-                "No user logged in"
-            );
+        }else{
 
             showGuest();
 
         }
 
-    } catch (error) {
+    }catch(error){
 
         console.error(
             "Login check failed:",
@@ -1061,56 +613,43 @@ async function checkLogin() {
         );
 
         showGuest();
-
     }
-
 }
 
 
-/* ==========================================
-   LOGOUT
-========================================== */
+async function logout(){
 
-async function logout() {
-
-    try {
+    try{
 
         const {
             error
-        } =
-            await sb.auth.signOut();
+        } = await sb.auth.signOut();
 
 
-        if (error) {
+        if(error){
 
             console.error(
                 "Logout error:",
                 error
             );
 
-            alert(
-                "Logout failed."
-            );
+            alert("Logout failed.");
 
             return;
-
         }
-
-
-        console.log(
-            "Logged out successfully"
-        );
 
 
         showGuest();
 
+        /*
+           Stay on index.html after logout.
+        */
 
-        // Optional: return to home
         window.location.href =
             "index.html";
 
 
-    } catch (error) {
+    }catch(error){
 
         console.error(
             "Logout error:",
@@ -1118,33 +657,17 @@ async function logout() {
         );
 
     }
-
 }
 
 
-/* ==========================================
-   LOGOUT BUTTON
-========================================== */
+logoutButton.addEventListener(
+    "click",
+    logout
+);
 
-if (logoutButton) {
-
-    logoutButton.addEventListener(
-        "click",
-        logout
-    );
-
-}
-
-
-/* ==========================================
-   AUTH STATE LISTENER
-========================================== */
 
 sb.auth.onAuthStateChange(
-    function (
-        event,
-        session
-    ) {
+    (event, session) => {
 
         console.log(
             "Auth event:",
@@ -1152,16 +675,16 @@ sb.auth.onAuthStateChange(
         );
 
 
-        if (
+        if(
             session &&
             session.user
-        ) {
+        ){
 
             showLoggedIn(
                 session.user
             );
 
-        } else {
+        }else{
 
             showGuest();
 
@@ -1171,15 +694,9 @@ sb.auth.onAuthStateChange(
 );
 
 
-/* ==========================================
-   START
-========================================== */
-
 checkLogin();
 
 </script>
 
-
 </body>
-
 </html>
