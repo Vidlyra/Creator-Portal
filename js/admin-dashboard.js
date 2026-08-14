@@ -23,7 +23,15 @@ const errorBox =
 
 
 // ==========================================
-// CATEGORY → STORAGE BUCKET
+// SUPABASE STORAGE URL
+// ==========================================
+
+const SUPABASE_URL =
+    "https://sfehwodlybnvrbotrtyc.supabase.co";
+
+
+// ==========================================
+// CATEGORY → BUCKET
 // ==========================================
 
 function getBucket(category) {
@@ -52,6 +60,38 @@ function getBucket(category) {
 
 
 // ==========================================
+// THUMBNAIL URL
+// ==========================================
+
+function getThumbnailUrl(
+    thumbnail
+) {
+
+    if (!thumbnail) {
+        return "";
+    }
+
+
+    // Already a complete URL
+    if (
+        thumbnail.startsWith("http://") ||
+        thumbnail.startsWith("https://")
+    ) {
+
+        return thumbnail;
+    }
+
+
+    // Database contains only storage path
+    return (
+        SUPABASE_URL +
+        "/storage/v1/object/public/thumbnails/" +
+        thumbnail
+    );
+}
+
+
+// ==========================================
 // CHECK ADMIN
 // ==========================================
 
@@ -62,6 +102,7 @@ async function checkAdmin() {
         error
     } = await sb.auth.getUser();
 
+
     if (error || !user) {
 
         window.location.href =
@@ -69,6 +110,7 @@ async function checkAdmin() {
 
         return null;
     }
+
 
     console.log(
         "Logged in user:",
@@ -92,6 +134,7 @@ async function checkAdmin() {
 
 
     if (profileError) {
+
         throw profileError;
     }
 
@@ -117,7 +160,7 @@ async function checkAdmin() {
 
 
 // ==========================================
-// LOAD STATISTICS
+// LOAD STATS
 // ==========================================
 
 async function loadStats() {
@@ -183,18 +226,21 @@ async function loadStats() {
 
 
     if (pendingCount) {
+
         pendingCount.textContent =
             pending;
     }
 
 
     if (approvedCount) {
+
         approvedCount.textContent =
             approved;
     }
 
 
     if (rejectedCount) {
+
         rejectedCount.textContent =
             rejected;
     }
@@ -220,7 +266,7 @@ async function loadProjects() {
     if (!projectsContainer) {
 
         console.error(
-            "ERROR: #projects not found in HTML."
+            "#projects element not found."
         );
 
         return;
@@ -228,18 +274,21 @@ async function loadProjects() {
 
 
     if (loading) {
+
         loading.style.display =
             "block";
     }
 
 
     if (emptyBox) {
+
         emptyBox.style.display =
             "none";
     }
 
 
     if (errorBox) {
+
         errorBox.style.display =
             "none";
     }
@@ -279,6 +328,7 @@ async function loadProjects() {
 
 
     if (loading) {
+
         loading.style.display =
             "none";
     }
@@ -311,6 +361,7 @@ async function loadProjects() {
     ) {
 
         if (emptyBox) {
+
             emptyBox.style.display =
                 "block";
         }
@@ -384,42 +435,49 @@ function renderProject(
             : "Unknown";
 
 
+    // ----------------------------------
+    // FIXED THUMBNAIL URL
+    // ----------------------------------
+
     const thumbnail =
-        project.thumbnail ||
-        "";
+        getThumbnailUrl(
+            project.thumbnail
+        );
 
-
-    console.log(
-        "=============================="
-    );
 
     console.log(
         "Project:",
         project.title
     );
 
+
     console.log(
         "Category:",
         category
     );
+
 
     console.log(
         "Bucket:",
         getBucket(category)
     );
 
+
     console.log(
         "File path:",
         project.file_path
     );
 
-    console.log(
-        "Thumbnail:",
-        thumbnail
-    );
 
     console.log(
-        "=============================="
+        "Original thumbnail:",
+        project.thumbnail
+    );
+
+
+    console.log(
+        "Final thumbnail URL:",
+        thumbnail
     );
 
 
@@ -542,7 +600,7 @@ function thumbnailError(
     image
 ) {
 
-    console.warn(
+    console.error(
         "Thumbnail failed:",
         image.src
     );
@@ -562,7 +620,8 @@ async function viewProject(
 ) {
 
     console.log(
-        "VIEW BUTTON CLICKED"
+        "VIEW PROJECT:",
+        projectId
     );
 
 
@@ -587,6 +646,7 @@ async function viewProject(
 
 
         if (error) {
+
             throw error;
         }
 
@@ -618,29 +678,22 @@ async function viewProject(
 
 
         console.log(
-            "Project:",
+            "Opening project:",
             project.title
         );
 
-        console.log(
-            "Category:",
-            project.category
-        );
 
         console.log(
             "Bucket:",
             bucket
         );
 
+
         console.log(
-            "File path:",
+            "Path:",
             project.file_path
         );
 
-
-        // ----------------------------------
-        // CREATE SIGNED URL
-        // ----------------------------------
 
         const {
             data,
@@ -662,14 +715,12 @@ async function viewProject(
 
 
             alert(
-                "Cannot open this file.\n\n" +
+                "File not found in Supabase Storage.\n\n" +
                 "Bucket: " +
                 bucket +
                 "\n\n" +
                 "Path: " +
-                project.file_path +
-                "\n\n" +
-                "The file path does not exist in this bucket."
+                project.file_path
             );
 
             return;
@@ -682,17 +733,11 @@ async function viewProject(
         ) {
 
             alert(
-                "No file URL returned by Supabase."
+                "Could not create file URL."
             );
 
             return;
         }
-
-
-        console.log(
-            "Opening project:",
-            data.signedUrl
-        );
 
 
         window.open(
@@ -703,7 +748,7 @@ async function viewProject(
     } catch (error) {
 
         console.error(
-            "View project error:",
+            "View error:",
             error
         );
 
@@ -717,7 +762,7 @@ async function viewProject(
 
 
 // ==========================================
-// APPROVE PROJECT
+// APPROVE
 // ==========================================
 
 async function approveProject(
@@ -775,6 +820,7 @@ async function approveProject(
 
 
         if (error) {
+
             throw error;
         }
 
@@ -805,7 +851,7 @@ async function approveProject(
 
 
 // ==========================================
-// REJECT PROJECT
+// REJECT
 // ==========================================
 
 async function rejectProject(
@@ -819,6 +865,7 @@ async function rejectProject(
 
 
     if (note === null) {
+
         return;
     }
 
@@ -867,6 +914,7 @@ async function rejectProject(
 
 
         if (error) {
+
             throw error;
         }
 
