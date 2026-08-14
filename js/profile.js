@@ -6,16 +6,30 @@ console.log("Profile JS loaded");
 
 
 // ==========================================
+// STORAGE BUCKETS
+// ==========================================
+
+const AVATAR_BUCKET =
+    "avatars";
+
+const THUMBNAIL_BUCKET =
+    "thumbnails";
+
+
+// ==========================================
 // GET CREATOR ID
 // ==========================================
 
-const params = new URLSearchParams(
-    window.location.search
-);
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
 
 const creatorId =
     params.get("user") ||
     params.get("user_id");
+
 
 console.log(
     "Creator ID:",
@@ -28,10 +42,15 @@ console.log(
 // ==========================================
 
 const profileHero =
-    document.getElementById("profileHero");
+    document.getElementById(
+        "profileHero"
+    );
+
 
 const projectsContainer =
-    document.getElementById("projects");
+    document.getElementById(
+        "projects"
+    );
 
 
 // ==========================================
@@ -90,6 +109,7 @@ async function loadProfile() {
         if (creatorError) {
 
             throw creatorError;
+
         }
 
 
@@ -105,6 +125,7 @@ async function loadProfile() {
             );
 
             return;
+
         }
 
 
@@ -139,11 +160,68 @@ async function loadProfile() {
             error
         );
 
+
         showError(
             error.message
         );
 
     }
+
+}
+
+
+// ==========================================
+// STORAGE URL HELPER
+// ==========================================
+
+function getStorageUrl(
+    bucket,
+    filePath
+) {
+
+    if (!filePath) {
+
+        return "";
+
+    }
+
+
+    // ======================================
+    // ALREADY A URL
+    // ======================================
+
+    if (
+        filePath.startsWith(
+            "http://"
+        ) ||
+        filePath.startsWith(
+            "https://"
+        )
+    ) {
+
+        return filePath;
+
+    }
+
+
+    // ======================================
+    // SUPABASE STORAGE
+    // ======================================
+
+    const {
+        data
+    } = sb.storage
+
+        .from(
+            bucket
+        )
+
+        .getPublicUrl(
+            filePath
+        );
+
+
+    return data?.publicUrl || "";
 
 }
 
@@ -156,24 +234,24 @@ function renderCreator(
     creator
 ) {
 
+    if (!profileHero) {
+
+        console.error(
+            "profileHero element not found."
+        );
+
+        return;
+
+    }
+
+
+    // ======================================
+    // NAME
+    // ======================================
+
     const nameElement =
         profileHero.querySelector(
             ".creator-name"
-        );
-
-    const rankElement =
-        profileHero.querySelector(
-            ".rank"
-        );
-
-    const stats =
-        profileHero.querySelectorAll(
-            ".stat strong"
-        );
-
-    const levelElement =
-        profileHero.querySelector(
-            ".level"
         );
 
 
@@ -182,7 +260,18 @@ function renderCreator(
         nameElement.textContent =
             creator.full_name ||
             "Vidlyra Creator";
+
     }
+
+
+    // ======================================
+    // RANK
+    // ======================================
+
+    const rankElement =
+        profileHero.querySelector(
+            ".rank"
+        );
 
 
     if (rankElement) {
@@ -190,37 +279,64 @@ function renderCreator(
         rankElement.textContent =
             creator.creator_rank ||
             "New Creator";
+
     }
+
+
+    // ======================================
+    // STATS
+    // ======================================
+
+    const stats =
+        profileHero.querySelectorAll(
+            ".stat strong"
+        );
 
 
     if (stats[0]) {
 
         stats[0].textContent =
-            creator.approved_projects || 0;
+            creator.approved_projects ||
+            0;
+
     }
 
 
     if (stats[1]) {
 
         stats[1].textContent =
-            creator.creator_level || 1;
+            creator.creator_level ||
+            1;
+
     }
+
+
+    // ======================================
+    // LEVEL
+    // ======================================
+
+    const levelElement =
+        profileHero.querySelector(
+            ".level"
+        );
 
 
     if (levelElement) {
 
         levelElement.textContent =
             `Level ${
-                creator.creator_level || 1
+                creator.creator_level ||
+                1
             } • ${
                 creator.creator_rank ||
                 "New Creator"
             }`;
+
     }
 
 
     // ======================================
-    // AVATAR
+    // CREATOR AVATAR
     // ======================================
 
     const placeholder =
@@ -229,51 +345,101 @@ function renderCreator(
         );
 
 
-    if (
-        creator.avatar_url &&
-        placeholder
-    ) {
+    if (!placeholder) {
+
+        console.warn(
+            "Avatar placeholder not found."
+        );
+
+        return;
+
+    }
+
+
+    const avatarPath =
+        creator.avatar_url ||
+        "";
+
+
+    const avatarUrl =
+        getStorageUrl(
+            AVATAR_BUCKET,
+            avatarPath
+        );
+
+
+    console.log(
+        "Creator avatar:",
+        avatarUrl
+    );
+
+
+    if (avatarUrl) {
 
         const image =
             document.createElement(
                 "img"
             );
 
+
         image.className =
             "avatar";
 
+
         image.src =
-            creator.avatar_url;
+            avatarUrl;
+
 
         image.alt =
-            "Creator avatar";
+            creator.full_name
+                ? `${creator.full_name} avatar`
+                : "Creator avatar";
 
 
         image.onerror =
             function () {
 
+                console.error(
+                    "Creator avatar failed:",
+                    avatarUrl
+                );
+
+
                 image.remove();
 
                 placeholder.style.display =
                     "flex";
+
             };
 
 
         placeholder.replaceWith(
             image
         );
+
     }
 
 }
 
 
 // ==========================================
-// LOAD PROJECTS
+// LOAD APPROVED PROJECTS
 // ==========================================
 
 async function loadProjects(
     userId
 ) {
+
+    if (!projectsContainer) {
+
+        console.error(
+            "Projects container not found."
+        );
+
+        return;
+
+    }
+
 
     projectsContainer.innerHTML = `
         <div class="loading">
@@ -321,7 +487,14 @@ async function loadProjects(
     if (error) {
 
         throw error;
+
     }
+
+
+    console.log(
+        "Creator approved projects:",
+        projects
+    );
 
 
     if (
@@ -336,10 +509,12 @@ async function loadProjects(
         `;
 
         return;
+
     }
 
 
-    projectsContainer.innerHTML = "";
+    projectsContainer.innerHTML =
+        "";
 
 
     projects.forEach(
@@ -348,6 +523,7 @@ async function loadProjects(
             renderProject(
                 project
             );
+
         }
     );
 
@@ -367,17 +543,42 @@ function renderProject(
             "article"
         );
 
+
     card.className =
         "project-card";
 
 
+    // ======================================
+    // THUMBNAIL URL
+    // ======================================
+
+    const thumbnailUrl =
+        getStorageUrl(
+            THUMBNAIL_BUCKET,
+            project.thumbnail
+        );
+
+
+    console.log(
+        "Profile project thumbnail:",
+        project.title,
+        thumbnailUrl
+    );
+
+
+    // ======================================
+    // IMAGE
+    // ======================================
+
     const image =
-        project.thumbnail
+        thumbnailUrl
         ?
         `
         <img
             class="project-image"
-            src="${safeAttribute(project.thumbnail)}"
+            src="${safeAttribute(
+                thumbnailUrl
+            )}"
             alt="${safeHTML(
                 project.title ||
                 "Project"
@@ -390,35 +591,83 @@ function renderProject(
         `;
 
 
+    // ======================================
+    // CARD HTML
+    // ======================================
+
     card.innerHTML = `
 
         ${image}
 
+
         <div class="project-content">
 
+
             <h3 class="project-title">
+
                 ${safeHTML(
                     project.title ||
                     "Untitled Project"
                 )}
+
             </h3>
 
+
             <div class="project-category">
+
                 ${safeHTML(
                     project.category ||
                     "Anime"
                 )}
+
             </div>
 
+
             <div class="project-date">
+
                 ${formatDate(
                     project.created_at
                 )}
+
             </div>
+
 
         </div>
 
     `;
+
+
+    // ======================================
+    // IMAGE ERROR
+    // ======================================
+
+    const imageElement =
+        card.querySelector(
+            ".project-image"
+        );
+
+
+    if (
+        imageElement &&
+        imageElement.tagName === "IMG"
+    ) {
+
+        imageElement.addEventListener(
+            "error",
+            function () {
+
+                console.error(
+                    "Profile thumbnail failed:",
+                    thumbnailUrl
+                );
+
+                imageElement.style.display =
+                    "none";
+
+            }
+        );
+
+    }
 
 
     projectsContainer.appendChild(
@@ -436,13 +685,26 @@ function showError(
     message
 ) {
 
-    profileHero.innerHTML = `
-        <div class="error">
-            ${safeHTML(message)}
-        </div>
-    `;
+    if (profileHero) {
 
-    projectsContainer.innerHTML = "";
+        profileHero.innerHTML = `
+            <div class="error">
+                ${safeHTML(
+                    message
+                )}
+            </div>
+        `;
+
+    }
+
+
+    if (projectsContainer) {
+
+        projectsContainer.innerHTML =
+            "";
+
+    }
+
 }
 
 
@@ -455,7 +717,9 @@ function formatDate(
 ) {
 
     if (!value) {
+
         return "";
+
     }
 
 
@@ -482,11 +746,32 @@ function safeHTML(
 ) {
 
     return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
 }
 
 
@@ -494,7 +779,10 @@ function safeAttribute(
     value
 ) {
 
-    return safeHTML(value);
+    return safeHTML(
+        value
+    );
+
 }
 
 
