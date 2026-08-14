@@ -1,17 +1,26 @@
 // ==========================================
-// VIDLYRA ADMIN DASHBOARD - SIMPLE VERSION
+// VIDLYRA ADMIN DASHBOARD
 // ==========================================
 
 console.log("Admin Dashboard loaded");
+
 
 // ==========================================
 // ELEMENTS
 // ==========================================
 
-const loading = document.getElementById("loading");
-const projectsContainer = document.getElementById("projects");
-const emptyBox = document.getElementById("empty");
-const errorBox = document.getElementById("error");
+const loading =
+    document.getElementById("loading");
+
+const projectsContainer =
+    document.getElementById("projects");
+
+const emptyBox =
+    document.getElementById("empty");
+
+const errorBox =
+    document.getElementById("error");
+
 
 // ==========================================
 // CATEGORY → STORAGE BUCKET
@@ -19,16 +28,28 @@ const errorBox = document.getElementById("error");
 
 function getBucket(category) {
 
-    const buckets = {
-        "Anime": "stories",
-        "Short Film": "shortfilms",
-        "Music": "music",
-        "Artwork": "artwork",
-        "Manga": "manga"
-    };
+    switch (category) {
 
-    return buckets[category] || "stories";
+        case "Anime":
+            return "stories";
+
+        case "Short Film":
+            return "shortfilms";
+
+        case "Music":
+            return "music";
+
+        case "Artwork":
+            return "artwork";
+
+        case "Manga":
+            return "manga";
+
+        default:
+            return "stories";
+    }
 }
+
 
 // ==========================================
 // CHECK ADMIN
@@ -43,36 +64,57 @@ async function checkAdmin() {
 
     if (error || !user) {
 
-        window.location.href = "login.html";
+        window.location.href =
+            "login.html";
+
         return null;
     }
 
-    console.log("Logged in user:", user.id);
+    console.log(
+        "Logged in user:",
+        user.id
+    );
+
 
     const {
         data: profile,
         error: profileError
     } = await sb
         .from("profiles")
-        .select("user_id,is_admin")
-        .eq("user_id", user.id)
+        .select(
+            "user_id,is_admin"
+        )
+        .eq(
+            "user_id",
+            user.id
+        )
         .maybeSingle();
+
 
     if (profileError) {
         throw profileError;
     }
 
-    if (!profile || profile.is_admin !== true) {
 
-        alert("Admin access required.");
+    if (
+        !profile ||
+        profile.is_admin !== true
+    ) {
 
-        window.location.href = "dashboard.html";
+        alert(
+            "Admin access required."
+        );
+
+        window.location.href =
+            "dashboard.html";
 
         return null;
     }
 
+
     return user;
 }
+
 
 // ==========================================
 // LOAD STATISTICS
@@ -87,57 +129,87 @@ async function loadStats() {
         .from("projects")
         .select("status");
 
+
     if (error) {
 
-        console.error("Stats error:", error);
+        console.error(
+            "Stats error:",
+            error
+        );
 
         return;
     }
 
-    const projects = data || [];
+
+    const projects =
+        data || [];
+
 
     const pending =
         projects.filter(
-            p => p.status === "Pending"
+            project =>
+                project.status === "Pending"
         ).length;
+
 
     const approved =
         projects.filter(
-            p => p.status === "Approved"
+            project =>
+                project.status === "Approved"
         ).length;
+
 
     const rejected =
         projects.filter(
-            p => p.status === "Rejected"
+            project =>
+                project.status === "Rejected"
         ).length;
 
-    const pendingElement =
-        document.getElementById("pendingCount");
 
-    const approvedElement =
-        document.getElementById("approvedCount");
+    const pendingCount =
+        document.getElementById(
+            "pendingCount"
+        );
 
-    const rejectedElement =
-        document.getElementById("rejectedCount");
+    const approvedCount =
+        document.getElementById(
+            "approvedCount"
+        );
 
-    if (pendingElement) {
-        pendingElement.textContent = pending;
+    const rejectedCount =
+        document.getElementById(
+            "rejectedCount"
+        );
+
+
+    if (pendingCount) {
+        pendingCount.textContent =
+            pending;
     }
 
-    if (approvedElement) {
-        approvedElement.textContent = approved;
+
+    if (approvedCount) {
+        approvedCount.textContent =
+            approved;
     }
 
-    if (rejectedElement) {
-        rejectedElement.textContent = rejected;
+
+    if (rejectedCount) {
+        rejectedCount.textContent =
+            rejected;
     }
 
-    console.log("Stats:", {
-        pending,
-        approved,
-        rejected
-    });
+
+    console.log(
+        "Stats:",
+        {
+            pending,
+            approved,
+            rejected
+        }
+    );
 }
+
 
 // ==========================================
 // LOAD PENDING PROJECTS
@@ -148,25 +220,34 @@ async function loadProjects() {
     if (!projectsContainer) {
 
         console.error(
-            "Projects container not found."
+            "ERROR: #projects not found in HTML."
         );
 
         return;
     }
 
+
     if (loading) {
-        loading.style.display = "block";
+        loading.style.display =
+            "block";
     }
+
 
     if (emptyBox) {
-        emptyBox.style.display = "none";
+        emptyBox.style.display =
+            "none";
     }
+
 
     if (errorBox) {
-        errorBox.style.display = "none";
+        errorBox.style.display =
+            "none";
     }
 
-    projectsContainer.innerHTML = "";
+
+    projectsContainer.innerHTML =
+        "";
+
 
     const {
         data: projects,
@@ -185,14 +266,23 @@ async function loadProjects() {
             file_path,
             admin_note
         `)
-        .eq("status", "Pending")
-        .order("created_at", {
-            ascending: false
-        });
+        .eq(
+            "status",
+            "Pending"
+        )
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
+
 
     if (loading) {
-        loading.style.display = "none";
+        loading.style.display =
+            "none";
     }
+
 
     if (error) {
 
@@ -201,40 +291,63 @@ async function loadProjects() {
             error
         );
 
-        showError(error.message);
+        showError(
+            error.message
+        );
 
         return;
     }
+
 
     console.log(
         "Pending projects:",
         projects
     );
 
-    if (!projects || projects.length === 0) {
+
+    if (
+        !projects ||
+        projects.length === 0
+    ) {
 
         if (emptyBox) {
-            emptyBox.style.display = "block";
+            emptyBox.style.display =
+                "block";
         }
 
         return;
     }
 
+
     projects.forEach(
-        project => renderProject(project)
+        project => {
+
+            renderProject(
+                project
+            );
+
+        }
     );
 }
+
 
 // ==========================================
 // RENDER PROJECT
 // ==========================================
 
-function renderProject(project) {
+function renderProject(
+    project
+) {
 
     const card =
-        document.createElement("article");
+        document.createElement(
+            "article"
+        );
 
-    card.className = "project-card";
+
+    card.className =
+        "project-card";
+
 
     const title =
         escapeHTML(
@@ -242,28 +355,43 @@ function renderProject(project) {
             "Untitled Project"
         );
 
+
     const description =
         escapeHTML(
             project.description ||
             "No description."
         );
 
+
     const category =
         project.category ||
         "Anime";
 
+
     const safeCategory =
-        escapeHTML(category);
+        escapeHTML(
+            category
+        );
+
 
     const date =
         project.created_at
             ? new Date(
                 project.created_at
-            ).toLocaleDateString("en-IN")
+            ).toLocaleDateString(
+                "en-IN"
+            )
             : "Unknown";
 
+
     const thumbnail =
-        project.thumbnail || "";
+        project.thumbnail ||
+        "";
+
+
+    console.log(
+        "=============================="
+    );
 
     console.log(
         "Project:",
@@ -290,23 +418,33 @@ function renderProject(project) {
         thumbnail
     );
 
+    console.log(
+        "=============================="
+    );
+
+
     card.innerHTML = `
 
         ${
             thumbnail
-                ? `
-                    <img
-                        class="thumbnail"
-                        src="${escapeAttribute(thumbnail)}"
-                        alt="${title}"
-                        onerror="this.style.display='none'"
-                    >
-                  `
-                : `
-                    <div class="thumbnail">
-                    </div>
-                  `
+                ?
+                `
+                <img
+                    class="thumbnail"
+                    src="${escapeAttribute(thumbnail)}"
+                    alt="${title}"
+                    loading="lazy"
+                    onerror="thumbnailError(this)"
+                >
+                `
+                :
+                `
+                <div class="thumbnail">
+                    No Thumbnail
+                </div>
+                `
         }
+
 
         <div class="project-info">
 
@@ -314,9 +452,11 @@ function renderProject(project) {
                 ${title}
             </h3>
 
+
             <p class="description">
                 ${description}
             </p>
+
 
             <div class="meta">
 
@@ -324,9 +464,11 @@ function renderProject(project) {
                     ${safeCategory}
                 </span>
 
+
                 <span class="badge pending">
                     Pending
                 </span>
+
 
                 <span class="badge">
                     ${date}
@@ -334,33 +476,46 @@ function renderProject(project) {
 
             </div>
 
+
             <div class="actions">
 
                 ${
                     project.file_path
-                        ? `
-                            <button
-                                class="view"
-                                type="button"
-                                onclick="viewProject('${project.id}')"
-                            >
-                                👁 View
-                            </button>
-                          `
-                        : ""
+                        ?
+                        `
+                        <button
+                            type="button"
+                            class="view"
+                            onclick="viewProject('${project.id}')"
+                        >
+                            👁 View
+                        </button>
+                        `
+                        :
+                        `
+                        <button
+                            type="button"
+                            class="view"
+                            disabled
+                        >
+                            No File
+                        </button>
+                        `
                 }
 
+
                 <button
-                    class="approve"
                     type="button"
+                    class="approve"
                     onclick="approveProject('${project.id}')"
                 >
                     ✓ Approve
                 </button>
 
+
                 <button
-                    class="reject"
                     type="button"
+                    class="reject"
                     onclick="rejectProject('${project.id}')"
                 >
                     ✕ Reject
@@ -369,27 +524,53 @@ function renderProject(project) {
             </div>
 
         </div>
+
     `;
 
-    projectsContainer.appendChild(card);
+
+    projectsContainer.appendChild(
+        card
+    );
 }
+
+
+// ==========================================
+// THUMBNAIL ERROR
+// ==========================================
+
+function thumbnailError(
+    image
+) {
+
+    console.warn(
+        "Thumbnail failed:",
+        image.src
+    );
+
+
+    image.style.display =
+        "none";
+}
+
 
 // ==========================================
 // VIEW PROJECT
 // ==========================================
 
-async function viewProject(projectId) {
+async function viewProject(
+    projectId
+) {
 
     console.log(
-        "VIEW PROJECT:",
-        projectId
+        "VIEW BUTTON CLICKED"
     );
+
 
     try {
 
         const {
             data: project,
-            error: projectError
+            error
         } = await sb
             .from("projects")
             .select(`
@@ -398,12 +579,17 @@ async function viewProject(projectId) {
                 category,
                 file_path
             `)
-            .eq("id", projectId)
+            .eq(
+                "id",
+                projectId
+            )
             .maybeSingle();
 
-        if (projectError) {
-            throw projectError;
+
+        if (error) {
+            throw error;
         }
+
 
         if (!project) {
 
@@ -414,6 +600,7 @@ async function viewProject(projectId) {
             return;
         }
 
+
         if (!project.file_path) {
 
             alert(
@@ -423,8 +610,17 @@ async function viewProject(projectId) {
             return;
         }
 
+
         const bucket =
-            getBucket(project.category);
+            getBucket(
+                project.category
+            );
+
+
+        console.log(
+            "Project:",
+            project.title
+        );
 
         console.log(
             "Category:",
@@ -441,13 +637,14 @@ async function viewProject(projectId) {
             project.file_path
         );
 
+
         // ----------------------------------
-        // Create signed URL
+        // CREATE SIGNED URL
         // ----------------------------------
 
         const {
             data,
-            error
+            error: storageError
         } = await sb.storage
             .from(bucket)
             .createSignedUrl(
@@ -455,40 +652,48 @@ async function viewProject(projectId) {
                 3600
             );
 
-        if (error) {
+
+        if (storageError) {
 
             console.error(
                 "Storage error:",
-                error
+                storageError
             );
 
+
             alert(
-                "File could not be opened.\n\n" +
+                "Cannot open this file.\n\n" +
                 "Bucket: " +
                 bucket +
-                "\n" +
+                "\n\n" +
                 "Path: " +
                 project.file_path +
                 "\n\n" +
-                "Check this file in Supabase Storage."
+                "The file path does not exist in this bucket."
             );
 
             return;
         }
 
-        if (!data || !data.signedUrl) {
+
+        if (
+            !data ||
+            !data.signedUrl
+        ) {
 
             alert(
-                "Supabase did not return a file URL."
+                "No file URL returned by Supabase."
             );
 
             return;
         }
 
+
         console.log(
-            "Opening:",
+            "Opening project:",
             data.signedUrl
         );
+
 
         window.open(
             data.signedUrl,
@@ -502,6 +707,7 @@ async function viewProject(projectId) {
             error
         );
 
+
         alert(
             "Unable to open project:\n\n" +
             error.message
@@ -509,26 +715,33 @@ async function viewProject(projectId) {
     }
 }
 
+
 // ==========================================
 // APPROVE PROJECT
 // ==========================================
 
-async function approveProject(projectId) {
+async function approveProject(
+    projectId
+) {
 
-    const confirmed =
-        confirm(
+    if (
+        !confirm(
             "Approve this project?"
-        );
+        )
+    ) {
 
-    if (!confirmed) {
         return;
     }
+
 
     try {
 
         const {
-            data: { user }
+            data: {
+                user
+            }
         } = await sb.auth.getUser();
+
 
         if (!user) {
 
@@ -538,31 +751,41 @@ async function approveProject(projectId) {
             return;
         }
 
+
         const {
             error
         } = await sb
             .from("projects")
             .update({
-                status: "Approved",
+
+                status:
+                    "Approved",
+
                 reviewed_at:
                     new Date().toISOString(),
+
                 reviewed_by:
                     user.id
+
             })
             .eq(
                 "id",
                 projectId
             );
 
+
         if (error) {
             throw error;
         }
+
 
         alert(
             "Project approved! ✓"
         );
 
+
         await loadStats();
+
         await loadProjects();
 
     } catch (error) {
@@ -572,6 +795,7 @@ async function approveProject(projectId) {
             error
         );
 
+
         showError(
             "Approval failed: " +
             error.message
@@ -579,26 +803,34 @@ async function approveProject(projectId) {
     }
 }
 
+
 // ==========================================
 // REJECT PROJECT
 // ==========================================
 
-async function rejectProject(projectId) {
+async function rejectProject(
+    projectId
+) {
 
     const note =
         prompt(
             "Reason for rejection:"
         );
 
+
     if (note === null) {
         return;
     }
 
+
     try {
 
         const {
-            data: { user }
+            data: {
+                user
+            }
         } = await sb.auth.getUser();
+
 
         if (!user) {
 
@@ -608,33 +840,44 @@ async function rejectProject(projectId) {
             return;
         }
 
+
         const {
             error
         } = await sb
             .from("projects")
             .update({
-                status: "Rejected",
+
+                status:
+                    "Rejected",
+
                 admin_note:
                     note.trim(),
+
                 reviewed_at:
                     new Date().toISOString(),
+
                 reviewed_by:
                     user.id
+
             })
             .eq(
                 "id",
                 projectId
             );
 
+
         if (error) {
             throw error;
         }
+
 
         alert(
             "Project rejected."
         );
 
+
         await loadStats();
+
         await loadProjects();
 
     } catch (error) {
@@ -644,6 +887,7 @@ async function rejectProject(projectId) {
             error
         );
 
+
         showError(
             "Rejection failed: " +
             error.message
@@ -651,15 +895,21 @@ async function rejectProject(projectId) {
     }
 }
 
+
 // ==========================================
 // ERROR
 // ==========================================
 
-function showError(message) {
+function showError(
+    message
+) {
 
     if (loading) {
-        loading.style.display = "none";
+
+        loading.style.display =
+            "none";
     }
+
 
     if (errorBox) {
 
@@ -671,24 +921,53 @@ function showError(message) {
     }
 }
 
+
 // ==========================================
 // SECURITY
 // ==========================================
 
-function escapeHTML(value) {
+function escapeHTML(
+    value
+) {
 
     return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
-function escapeAttribute(value) {
 
-    return escapeHTML(value);
+function escapeAttribute(
+    value
+) {
+
+    return escapeHTML(
+        value
+    );
 }
+
 
 // ==========================================
 // START
@@ -701,13 +980,16 @@ async function startDashboard() {
         const user =
             await checkAdmin();
 
+
         if (!user) {
             return;
         }
 
+
         await loadStats();
 
         await loadProjects();
+
 
         console.log(
             "Admin dashboard ready."
@@ -720,10 +1002,12 @@ async function startDashboard() {
             error
         );
 
+
         showError(
             error.message
         );
     }
 }
+
 
 startDashboard();
