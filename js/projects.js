@@ -340,7 +340,7 @@ function renderProjects(
 
                     <a
                         class="view-profile"
-                        href="profile.html?user=${encodeURIComponent(project.user_id)}"
+                        href="profile.html?user=${project.user_id}"
                     >
                         View Creator Profile →
                     </a>
