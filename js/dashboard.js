@@ -1,96 +1,162 @@
 // ==========================================
-// VIDLYRA PROJECTS
-// Explore + My Projects
+// VIDLYRA CREATOR DASHBOARD
 // ==========================================
 
-console.log("Vidlyra Projects loaded");
+console.log("Vidlyra Dashboard JS loaded");
 
 
 // ==========================================
 // ELEMENTS
 // ==========================================
 
-const projectsContainer =
-    document.getElementById("projects");
+const loading =
+    document.getElementById("loading");
 
-const searchInput =
-    document.getElementById("search");
+const errorBox =
+    document.getElementById("error");
 
-const categorySelect =
-    document.getElementById("category");
-
-
-// ==========================================
-// MODE
-// ==========================================
-
-const urlParams =
-    new URLSearchParams(
-        window.location.search
+const dashboardContent =
+    document.getElementById(
+        "dashboardContent"
     );
 
-const mineMode =
-    urlParams.get("mine") === "true";
+const headerName =
+    document.getElementById("headerName");
 
+const headerAvatar =
+    document.getElementById("headerAvatar");
 
-console.log(
-    "Projects mode:",
-    mineMode
-        ? "MY PROJECTS"
-        : "EXPLORE"
-);
+const welcomeName =
+    document.getElementById("welcomeName");
+
+const creatorRank =
+    document.getElementById("creatorRank");
+
+const creatorLevel =
+    document.getElementById("creatorLevel");
+
+const approvedProjects =
+    document.getElementById("approvedProjects");
+
+const nextLevelTarget =
+    document.getElementById("nextLevelTarget");
+
+const levelProgress =
+    document.getElementById("levelProgress");
+
+const nextLevelText =
+    document.getElementById("nextLevelText");
+
+const totalProjects =
+    document.getElementById("totalProjects");
+
+const approvedCount =
+    document.getElementById("approvedCount");
+
+const pendingCount =
+    document.getElementById("pendingCount");
+
+const creatorAvatar =
+    document.getElementById("creatorAvatar");
+
+const creatorProfileName =
+    document.getElementById(
+        "creatorProfileName"
+    );
+
+const creatorProfileRank =
+    document.getElementById(
+        "creatorProfileRank"
+    );
 
 
 // ==========================================
-// DATA
+// CHECK REQUIRED ELEMENTS
 // ==========================================
 
-let allProjects = [];
-
-let currentUser = null;
+console.log("Dashboard elements:", {
+    loading,
+    errorBox,
+    dashboardContent,
+    headerName,
+    headerAvatar,
+    welcomeName,
+    creatorRank,
+    creatorLevel,
+    approvedProjects,
+    nextLevelTarget,
+    levelProgress,
+    nextLevelText,
+    totalProjects,
+    approvedCount,
+    pendingCount,
+    creatorAvatar,
+    creatorProfileName,
+    creatorProfileRank
+});
 
 
 // ==========================================
-// PAGE TITLE
+// SHOW / HIDE
 // ==========================================
 
-function updatePageTitle() {
+function showLoading() {
 
-    const heroTitle =
-        document.querySelector(".hero h1");
+    if (loading) {
+        loading.style.display = "block";
+    }
 
-    const heroDescription =
-        document.querySelector(".hero p");
+    if (errorBox) {
+        errorBox.style.display = "none";
+    }
 
-    if (mineMode) {
+    if (dashboardContent) {
+        dashboardContent.style.display = "none";
+    }
 
-        if (heroTitle) {
-            heroTitle.textContent =
-                "My Projects";
-        }
+}
 
-        if (heroDescription) {
-            heroDescription.textContent =
-                "View and manage your submitted projects.";
-        }
 
-        document.title =
-            "My Projects | Vidlyra";
+function showDashboard() {
 
-    } else {
+    if (loading) {
+        loading.style.display = "none";
+    }
 
-        if (heroTitle) {
-            heroTitle.textContent =
-                "Anime";
-        }
+    if (errorBox) {
+        errorBox.style.display = "none";
+    }
 
-        if (heroDescription) {
-            heroDescription.textContent =
-                "Discover approved creations from Vidlyra creators.";
-        }
+    if (dashboardContent) {
+        dashboardContent.style.display = "block";
+    }
 
-        document.title =
-            "Anime | Vidlyra";
+}
+
+
+function showError(message) {
+
+    console.error(
+        "Dashboard error:",
+        message
+    );
+
+    if (loading) {
+        loading.style.display = "none";
+    }
+
+    if (dashboardContent) {
+        dashboardContent.style.display = "none";
+    }
+
+    if (errorBox) {
+
+        errorBox.textContent =
+            message ||
+            "Something went wrong.";
+
+        errorBox.style.display =
+            "block";
     }
 
 }
@@ -110,138 +176,534 @@ async function getCurrentUser() {
 
     if (error) {
 
-        console.error(
-            "Auth error:",
-            error
-        );
+        throw error;
 
-        return null;
     }
 
 
-    return data?.user || null;
+    if (!data || !data.user) {
+
+        return null;
+
+    }
+
+
+    return data.user;
 
 }
 
 
 // ==========================================
-// LOAD PROJECTS
+// LOAD PROFILE
 // ==========================================
 
-async function loadProjects() {
+async function loadProfile(
+    userId
+) {
 
-    projectsContainer.innerHTML = `
-        <div class="loading">
-            Loading projects...
-        </div>
-    `;
+    console.log(
+        "Loading profile:",
+        userId
+    );
 
+
+    const {
+        data: profile,
+        error
+    } = await sb
+
+        .from("profiles")
+
+        .select(`
+            user_id,
+            full_name,
+            email,
+            avatar_url,
+            selected_avatar,
+            approved_projects,
+            creator_level,
+            creator_rank,
+            creator_avatar,
+            creator_avatar_unlocked
+        `)
+
+        .eq(
+            "user_id",
+            userId
+        )
+
+        .maybeSingle();
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    if (!profile) {
+
+        throw new Error(
+            "Creator profile does not exist."
+        );
+
+    }
+
+
+    console.log(
+        "Creator profile:",
+        profile
+    );
+
+
+    return profile;
+
+}
+
+
+// ==========================================
+// GET AVATAR
+// ==========================================
+
+function getAvatar(
+    profile
+) {
+
+    // Creator avatar from GitHub
+    if (
+        profile.creator_avatar &&
+        Number(profile.creator_avatar) >= 1 &&
+        Number(profile.creator_avatar) <= 7
+    ) {
+
+        return (
+            "assets/creator-avatars/creator" +
+            Number(profile.creator_avatar) +
+            ".png"
+        );
+
+    }
+
+
+    // Frequency avatar from GitHub
+    if (
+        profile.selected_avatar &&
+        Number(profile.selected_avatar) >= 1 &&
+        Number(profile.selected_avatar) <= 12
+    ) {
+
+        return (
+            "assets/avatars/avatar" +
+            Number(profile.selected_avatar) +
+            ".png"
+        );
+
+    }
+
+
+    // Supabase avatar URL
+    if (
+        profile.avatar_url
+    ) {
+
+        return profile.avatar_url;
+
+    }
+
+
+    // Default
+    return (
+        "assets/creator-avatars/creator1.png"
+    );
+
+}
+
+
+// ==========================================
+// UPDATE PROFILE UI
+// ==========================================
+
+function renderProfile(
+    profile
+) {
+
+    const name =
+        profile.full_name ||
+        "Creator";
+
+
+    const rank =
+        profile.creator_rank ||
+        "New Creator";
+
+
+    const level =
+        Number(
+            profile.creator_level
+        ) || 1;
+
+
+    const avatar =
+        getAvatar(profile);
+
+
+    // Header
+    if (headerName) {
+        headerName.textContent =
+            name;
+    }
+
+
+    if (headerAvatar) {
+
+        headerAvatar.src =
+            avatar;
+
+        headerAvatar.onerror =
+            function () {
+
+                this.onerror = null;
+
+                this.src =
+                    "assets/creator-avatars/creator1.png";
+
+            };
+
+    }
+
+
+    // Welcome
+    if (welcomeName) {
+
+        welcomeName.textContent =
+            name;
+
+    }
+
+
+    // Rank
+    if (creatorRank) {
+
+        creatorRank.textContent =
+            rank;
+
+    }
+
+
+    // Level
+    if (creatorLevel) {
+
+        creatorLevel.textContent =
+            "LEVEL " + level;
+
+    }
+
+
+    // Creator card
+    if (creatorProfileName) {
+
+        creatorProfileName.textContent =
+            name;
+
+    }
+
+
+    if (creatorProfileRank) {
+
+        creatorProfileRank.textContent =
+            rank +
+            " • Level " +
+            level;
+
+    }
+
+
+    // Creator avatar
+    if (creatorAvatar) {
+
+        creatorAvatar.src =
+            avatar;
+
+        creatorAvatar.onerror =
+            function () {
+
+                this.onerror = null;
+
+                this.src =
+                    "assets/creator-avatars/creator1.png";
+
+            };
+
+    }
+
+
+    // Profile links
+    const profileLinks =
+        document.querySelectorAll(
+            'a[href="profile.html"]'
+        );
+
+
+    profileLinks.forEach(
+        link => {
+
+            link.href =
+                "profile.html?user=" +
+                encodeURIComponent(
+                    profile.user_id
+                );
+
+        }
+    );
+
+
+    return {
+        level,
+        approved:
+            Number(
+                profile.approved_projects
+            ) || 0
+    };
+
+}
+
+
+// ==========================================
+// LOAD PROJECT STATS
+// ==========================================
+
+async function loadProjectStats(
+    userId
+) {
+
+    console.log(
+        "Loading project statistics..."
+    );
+
+
+    const {
+        data: projects,
+        error
+    } = await sb
+
+        .from("projects")
+
+        .select(`
+            id,
+            status
+        `)
+
+        .eq(
+            "user_id",
+            userId
+        );
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    const projectList =
+        projects || [];
+
+
+    const total =
+        projectList.length;
+
+
+    const approved =
+        projectList.filter(
+            project =>
+                String(
+                    project.status || ""
+                ).toLowerCase() ===
+                "approved"
+        ).length;
+
+
+    const pending =
+        projectList.filter(
+            project =>
+                String(
+                    project.status || ""
+                ).toLowerCase() ===
+                "pending"
+        ).length;
+
+
+    console.log(
+        "Project stats:",
+        {
+            total,
+            approved,
+            pending
+        }
+    );
+
+
+    if (totalProjects) {
+
+        totalProjects.textContent =
+            total;
+
+    }
+
+
+    if (approvedCount) {
+
+        approvedCount.textContent =
+            approved;
+
+    }
+
+
+    if (pendingCount) {
+
+        pendingCount.textContent =
+            pending;
+
+    }
+
+
+    return {
+        total,
+        approved,
+        pending
+    };
+
+}
+
+
+// ==========================================
+// LEVEL PROGRESS
+// ==========================================
+
+function updateLevelProgress(
+    profileApproved,
+    actualApproved
+) {
+
+    /*
+        Use actual database project count
+        when available.
+
+        This keeps the dashboard accurate.
+    */
+
+    const approved =
+        Number(
+            actualApproved
+        ) || Number(
+            profileApproved
+        ) || 0;
+
+
+    let target;
+
+
+    if (approved < 3) {
+
+        target = 3;
+
+    } else if (approved < 6) {
+
+        target = 6;
+
+    } else if (approved < 10) {
+
+        target = 10;
+
+    } else {
+
+        target = approved + 5;
+
+    }
+
+
+    if (approvedProjects) {
+
+        approvedProjects.textContent =
+            approved;
+
+    }
+
+
+    if (nextLevelTarget) {
+
+        nextLevelTarget.textContent =
+            target;
+
+    }
+
+
+    const percentage =
+        Math.min(
+            100,
+            (approved / target) * 100
+        );
+
+
+    if (levelProgress) {
+
+        levelProgress.style.width =
+            percentage + "%";
+
+    }
+
+
+    const remaining =
+        Math.max(
+            0,
+            target - approved
+        );
+
+
+    if (nextLevelText) {
+
+        if (remaining === 0) {
+
+            nextLevelText.textContent =
+                "Next creator level unlocked!";
+
+        } else {
+
+            nextLevelText.textContent =
+                remaining +
+                " approved project" +
+                (
+                    remaining === 1
+                        ? ""
+                        : "s"
+                ) +
+                " needed for the next level.";
+
+        }
+
+    }
+
+}
+
+
+// ==========================================
+// LOGOUT
+// ==========================================
+
+async function logout() {
 
     try {
 
-        // ======================================
-        // GET LOGIN USER
-        // ======================================
+        console.log(
+            "Logging out..."
+        );
 
-        currentUser =
-            await getCurrentUser();
-
-
-        // ======================================
-        // MY PROJECTS MODE
-        // ======================================
-
-        if (
-            mineMode &&
-            !currentUser
-        ) {
-
-            projectsContainer.innerHTML = `
-                <div class="error">
-                    Please login to view your projects.
-                </div>
-            `;
-
-            return;
-
-        }
-
-
-        // ======================================
-        // BASE QUERY
-        // ======================================
-
-        let query =
-            sb
-
-                .from("projects")
-
-                .select(`
-                    id,
-                    user_id,
-                    title,
-                    description,
-                    category,
-                    thumbnail,
-                    status,
-                    created_at
-                `);
-
-
-        // ======================================
-        // EXPLORE
-        // ======================================
-
-        if (!mineMode) {
-
-            query =
-                query.eq(
-                    "status",
-                    "Approved"
-                );
-
-        }
-
-
-        // ======================================
-        // MY PROJECTS
-        // ======================================
-
-        if (
-            mineMode &&
-            currentUser
-        ) {
-
-            query =
-                query.eq(
-                    "user_id",
-                    currentUser.id
-                );
-
-        }
-
-
-        // ======================================
-        // ORDER
-        // ======================================
-
-        query =
-            query.order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
-
-
-        // ======================================
-        // EXECUTE
-        // ======================================
 
         const {
-            data: projects,
             error
-        } = await query;
+        } = await sb.auth.signOut();
 
 
         if (error) {
@@ -251,756 +713,149 @@ async function loadProjects() {
         }
 
 
-        allProjects =
-            projects || [];
+        window.location.href =
+            "login.html";
 
 
-        console.log(
-            mineMode
-                ? "My projects:"
-                : "Approved projects:",
-            allProjects
+    } catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
         );
 
 
-        // ======================================
-        // ATTACH CREATORS
-        // ======================================
+        showError(
+            "Unable to logout. Please try again."
+        );
 
-        await attachCreators();
+    }
+
+}
 
 
-        // ======================================
-        // RENDER
-        // ======================================
+// ==========================================
+// START DASHBOARD
+// ==========================================
 
-        renderProjects(
-            allProjects
+async function loadDashboard() {
+
+    showLoading();
+
+
+    try {
+
+        // --------------------------------------
+        // Check Supabase
+        // --------------------------------------
+
+        if (
+            typeof sb === "undefined" ||
+            !sb
+        ) {
+
+            throw new Error(
+                "Supabase client is not available. Check config.js."
+            );
+
+        }
+
+
+        // --------------------------------------
+        // Get logged-in user
+        // --------------------------------------
+
+        const user =
+            await getCurrentUser();
+
+
+        if (!user) {
+
+            console.warn(
+                "No logged-in user."
+            );
+
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        console.log(
+            "Logged-in user:",
+            user.id
+        );
+
+
+        // --------------------------------------
+        // Profile
+        // --------------------------------------
+
+        const profile =
+            await loadProfile(
+                user.id
+            );
+
+
+        // --------------------------------------
+        // Render profile
+        // --------------------------------------
+
+        const profileData =
+            renderProfile(
+                profile
+            );
+
+
+        // --------------------------------------
+        // Project statistics
+        // --------------------------------------
+
+        const stats =
+            await loadProjectStats(
+                user.id
+            );
+
+
+        // --------------------------------------
+        // Progress
+        // --------------------------------------
+
+        updateLevelProgress(
+            profileData.approved,
+            stats.approved
+        );
+
+
+        // --------------------------------------
+        // Show dashboard
+        // --------------------------------------
+
+        showDashboard();
+
+
+        console.log(
+            "Dashboard loaded successfully."
         );
 
 
     } catch (error) {
 
         console.error(
-            "Projects error:",
+            "Dashboard loading error:",
             error
         );
 
 
-        projectsContainer.innerHTML = `
-            <div class="error">
-                ${escapeHTML(
-                    error.message ||
-                    "Unable to load projects."
-                )}
-            </div>
-        `;
-
-    }
-
-}
-
-
-// ==========================================
-// ATTACH CREATOR INFORMATION
-// ==========================================
-
-async function attachCreators() {
-
-    const userIds = [
-        ...new Set(
-            allProjects
-                .map(
-                    project =>
-                        project.user_id
-                )
-                .filter(Boolean)
-        )
-    ];
-
-
-    if (
-        userIds.length === 0
-    ) {
-
-        return;
-
-    }
-
-
-    const {
-        data: profiles,
-        error
-    } = await sb
-
-        .from("profiles")
-
-        .select(`
-            user_id,
-            full_name,
-            avatar_url,
-            selected_avatar,
-            creator_avatar,
-            creator_level,
-            creator_rank
-        `)
-
-        .in(
-            "user_id",
-            userIds
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Creator profiles error:",
-            error
-        );
-
-        return;
-
-    }
-
-
-    const profileMap =
-        new Map();
-
-
-    (profiles || []).forEach(
-        profile => {
-
-            profileMap.set(
-                profile.user_id,
-                profile
-            );
-
-        }
-    );
-
-
-    allProjects =
-        allProjects.map(
-            project => ({
-
-                ...project,
-
-                creator:
-                    profileMap.get(
-                        project.user_id
-                    ) || null
-
-            })
-        );
-
-}
-
-
-// ==========================================
-// CREATOR AVATAR
-// ==========================================
-
-function getCreatorAvatar(
-    creator
-) {
-
-    if (!creator) {
-
-        return "";
-
-    }
-
-
-    // --------------------------------------
-    // GitHub creator avatar
-    // --------------------------------------
-
-    if (
-        creator.creator_avatar &&
-        Number(creator.creator_avatar) >= 1 &&
-        Number(creator.creator_avatar) <= 7
-    ) {
-
-        return (
-            "assets/creator-avatars/creator" +
-            Number(creator.creator_avatar) +
-            ".png"
+        showError(
+            error.message ||
+            "Unable to load dashboard."
         );
 
     }
-
-
-    // --------------------------------------
-    // GitHub Frequency avatar
-    // --------------------------------------
-
-    if (
-        creator.selected_avatar &&
-        Number(creator.selected_avatar) >= 1 &&
-        Number(creator.selected_avatar) <= 12
-    ) {
-
-        return (
-            "assets/avatars/avatar" +
-            Number(creator.selected_avatar) +
-            ".png"
-        );
-
-    }
-
-
-    // --------------------------------------
-    // Supabase avatar URL
-    // --------------------------------------
-
-    if (
-        creator.avatar_url
-    ) {
-
-        return creator.avatar_url;
-
-    }
-
-
-    return "";
-
-}
-
-
-// ==========================================
-// RENDER PROJECTS
-// ==========================================
-
-function renderProjects(
-    projects
-) {
-
-    projectsContainer.innerHTML = "";
-
-
-    if (
-        !projects ||
-        projects.length === 0
-    ) {
-
-        projectsContainer.innerHTML = `
-
-            <div class="empty">
-
-                ${
-                    mineMode
-                    ?
-                    "You have not submitted any projects yet."
-                    :
-                    "No approved projects found."
-                }
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    projects.forEach(
-        project => {
-
-            renderProject(
-                project
-            );
-
-        }
-    );
-
-}
-
-
-// ==========================================
-// RENDER PROJECT CARD
-// ==========================================
-
-function renderProject(
-    project
-) {
-
-    const card =
-        document.createElement(
-            "article"
-        );
-
-
-    card.className =
-        "card";
-
-
-    const creator =
-        project.creator;
-
-
-    const creatorName =
-        creator?.full_name ||
-        "Vidlyra Creator";
-
-
-    const creatorLevel =
-        creator?.creator_level ||
-        1;
-
-
-    const creatorRank =
-        creator?.creator_rank ||
-        "New Creator";
-
-
-    const avatar =
-        getCreatorAvatar(
-            creator
-        );
-
-
-    // ======================================
-    // THUMBNAIL
-    // ======================================
-
-    let thumbnailHTML = "";
-
-
-    if (
-        project.thumbnail
-    ) {
-
-        thumbnailHTML = `
-
-            <img
-                class="poster"
-                src="${safeAttribute(
-                    project.thumbnail
-                )}"
-                alt="${escapeHTML(
-                    project.title ||
-                    "Anime"
-                )}"
-                loading="lazy"
-            >
-
-        `;
-
-    } else {
-
-        thumbnailHTML = `
-
-            <div class="poster"></div>
-
-        `;
-
-    }
-
-
-    // ======================================
-    // CREATOR AVATAR
-    // ======================================
-
-    let avatarHTML = "";
-
-
-    if (avatar) {
-
-        avatarHTML = `
-
-            <img
-                class="creator-avatar"
-                src="${safeAttribute(
-                    avatar
-                )}"
-                alt="Creator avatar"
-                loading="lazy"
-            >
-
-        `;
-
-    } else {
-
-        avatarHTML = `
-
-            <div class="creator-avatar"></div>
-
-        `;
-
-    }
-
-
-    // ======================================
-    // STATUS
-    // ======================================
-
-    const statusHTML =
-        mineMode
-        ?
-        `
-
-        <div
-            class="project-status"
-            style="
-                margin-top:10px;
-                font-size:11px;
-                color:${
-                    project.status === "Approved"
-                    ? "#63d471"
-                    : "#ffb347"
-                };
-            "
-        >
-            Status:
-            ${escapeHTML(
-                project.status ||
-                "Pending"
-            )}
-        </div>
-
-        `
-        :
-        "";
-
-
-    // ======================================
-    // CARD
-    // ======================================
-
-    card.innerHTML = `
-
-        ${thumbnailHTML}
-
-
-        <div class="card-body">
-
-
-            <div class="title">
-
-                ${escapeHTML(
-                    project.title ||
-                    "Untitled"
-                )}
-
-            </div>
-
-
-            <div class="category">
-
-                ${escapeHTML(
-                    project.category ||
-                    "Anime"
-                )}
-
-            </div>
-
-
-            ${
-                mineMode
-                ?
-                `
-                <div
-                    style="
-                        color:#777;
-                        font-size:11px;
-                        line-height:1.5;
-                    "
-                >
-                    ${
-                        escapeHTML(
-                            project.description ||
-                            "No description available."
-                        )
-                    }
-                </div>
-                `
-                :
-                ""
-            }
-
-
-            <div class="creator">
-
-
-                ${avatarHTML}
-
-
-                <div>
-
-                    <div class="creator-name">
-
-                        ${escapeHTML(
-                            creatorName
-                        )}
-
-                    </div>
-
-
-                    <div class="creator-level">
-
-                        Level
-                        ${creatorLevel}
-
-                        •
-
-                        ${escapeHTML(
-                            creatorRank
-                        )}
-
-                    </div>
-
-                </div>
-
-
-            </div>
-
-
-            ${statusHTML}
-
-
-            <a
-                class="view-profile"
-                href="profile.html?user=${encodeURIComponent(
-                    project.user_id
-                )}"
-            >
-
-                View Creator Profile →
-
-            </a>
-
-
-        </div>
-
-    `;
-
-
-    // ======================================
-    // THUMBNAIL ERROR
-    // ======================================
-
-    const image =
-        card.querySelector(
-            ".poster"
-        );
-
-
-    if (
-        image &&
-        image.tagName === "IMG"
-    ) {
-
-        image.addEventListener(
-            "error",
-            function () {
-
-                console.error(
-                    "Thumbnail failed:",
-                    project.thumbnail
-                );
-
-
-                image.style.display =
-                    "none";
-
-            }
-        );
-
-    }
-
-
-    // ======================================
-    // AVATAR ERROR
-    // ======================================
-
-    const avatarImage =
-        card.querySelector(
-            ".creator-avatar"
-        );
-
-
-    if (
-        avatarImage &&
-        avatarImage.tagName === "IMG"
-    ) {
-
-        avatarImage.addEventListener(
-            "error",
-            function () {
-
-                console.error(
-                    "Creator avatar failed:",
-                    avatarImage.src
-                );
-
-
-                avatarImage.style.display =
-                    "block";
-
-                avatarImage.src =
-                    "assets/avatars/avatar1.png";
-
-            }
-        );
-
-    }
-
-
-    projectsContainer.appendChild(
-        card
-    );
-
-}
-
-
-// ==========================================
-// SEARCH + FILTER
-// ==========================================
-
-function filterProjects() {
-
-    const search =
-        searchInput
-            ? searchInput.value
-                .trim()
-                .toLowerCase()
-            : "";
-
-
-    const category =
-        categorySelect
-            ? categorySelect.value
-            : "all";
-
-
-    const filtered =
-        allProjects.filter(
-            project => {
-
-                const title =
-                    (
-                        project.title ||
-                        ""
-                    ).toLowerCase();
-
-
-                const description =
-                    (
-                        project.description ||
-                        ""
-                    ).toLowerCase();
-
-
-                const projectCategory =
-                    project.category ||
-                    "";
-
-
-                const creatorName =
-                    (
-                        project.creator?.full_name ||
-                        ""
-                    ).toLowerCase();
-
-
-                const matchesSearch =
-                    !search ||
-                    title.includes(search) ||
-                    description.includes(search) ||
-                    creatorName.includes(search);
-
-
-                const matchesCategory =
-                    category === "all" ||
-                    projectCategory === category;
-
-
-                return (
-                    matchesSearch &&
-                    matchesCategory
-                );
-
-            }
-        );
-
-
-    renderProjects(
-        filtered
-    );
-
-}
-
-
-// ==========================================
-// EVENTS
-// ==========================================
-
-if (searchInput) {
-
-    searchInput.addEventListener(
-        "input",
-        filterProjects
-    );
-
-}
-
-
-if (categorySelect) {
-
-    categorySelect.addEventListener(
-        "change",
-        filterProjects
-    );
-
-}
-
-
-// ==========================================
-// SECURITY
-// ==========================================
-
-function escapeHTML(
-    value
-) {
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-function safeAttribute(
-    value
-) {
-
-    return escapeHTML(
-        value
-    );
 
 }
 
@@ -1009,6 +864,4 @@ function safeAttribute(
 // START
 // ==========================================
 
-updatePageTitle();
-
-loadProjects();
+loadDashboard();
