@@ -3,390 +3,230 @@
 
 <head>
 
-<meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Creator Profile | Vidlyra</title>
-
-<link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet"
->
-
-<style>
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-
-body {
-    min-height: 100vh;
-    background: #050505;
-    color: white;
-}
-
-
-/* HEADER */
-
-header {
-    height: 70px;
-    padding: 0 30px;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    background: #111;
-    border-bottom: 1px solid #252525;
-}
-
-.logo {
-    color: #ff7a00;
-    font-size: 25px;
-    font-weight: 700;
-    letter-spacing: 1px;
-}
-
-.back-btn {
-    padding: 9px 16px;
-
-    background: transparent;
-    border: 1px solid #333;
-    border-radius: 8px;
-
-    color: #ccc;
-    cursor: pointer;
-}
-
-.back-btn:hover {
-    border-color: #ff7a00;
-    color: #ff7a00;
-}
-
-
-/* CONTAINER */
-
-.container {
-    width: 100%;
-    max-width: 700px;
-
-    margin: 45px auto;
-    padding: 0 20px;
-}
-
-
-/* PROFILE CARD */
-
-.profile-card {
-    background: #111;
-
-    border: 1px solid #252525;
-    border-radius: 18px;
-
-    padding: 35px;
-
-    box-shadow:
-        0 0 30px rgba(255,122,0,.10);
-}
-
-
-/* LOADING */
-
-.loading {
-    text-align: center;
-    color: #888;
-    padding: 50px;
-}
-
-
-/* ERROR */
-
-.error {
-    display: none;
-
-    padding: 20px;
-
-    text-align: center;
-
-    color: #ff5555;
-}
-
-
-/* AVATAR */
-
-.avatar-section {
-    text-align: center;
-}
-
-.avatar-image {
-    width: 140px;
-    height: 140px;
-
-    border-radius: 50%;
-
-    object-fit: cover;
-
-    background: #1a1a1a;
-
-    border: 3px solid #ff7a00;
-
-    box-shadow:
-        0 0 25px rgba(255,122,0,.20);
-}
-
-.creator-name {
-    margin-top: 15px;
-
-    font-size: 25px;
-    font-weight: 600;
-}
-
-.creator-email {
-    margin-top: 4px;
-
-    color: #888;
-    font-size: 14px;
-}
-
-.avatar-number {
-    margin-top: 8px;
-
-    color: #ff7a00;
-    font-size: 13px;
-}
-
-
-/* LEVEL CARD */
-
-.creator-level-card {
-    margin-top: 30px;
-
-    padding: 22px;
-
-    background: #0d0d0d;
-
-    border: 1px solid #292929;
-
-    border-radius: 15px;
-}
-
-.level-header {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-}
-
-.level-label {
-    color: #777;
-
-    font-size: 11px;
-
-    letter-spacing: 1px;
-}
-
-.creator-rank {
-    margin-top: 4px;
-
-    color: #ff7a00;
-
-    font-size: 20px;
-
-    font-weight: 600;
-}
-
-.creator-level {
-    font-size: 18px;
-
-    font-weight: 700;
-}
-
-
-/* PROGRESS */
-
-.progress-info {
-    display: flex;
-
-    justify-content: space-between;
-
-    margin-top: 20px;
-
-    color: #aaa;
-
-    font-size: 13px;
-}
-
-.progress-bar {
-    width: 100%;
-
-    height: 9px;
-
-    margin-top: 8px;
-
-    background: #252525;
-
-    border-radius: 20px;
-
-    overflow: hidden;
-}
-
-.progress-fill {
-    width: 0%;
-
-    height: 100%;
-
-    background: #ff7a00;
-
-    border-radius: 20px;
-
-    transition: width .5s ease;
-}
-
-.next-level {
-    margin-top: 9px;
-
-    color: #777;
-
-    font-size: 12px;
-}
-
-
-/* INFO */
-
-.info-section {
-    margin-top: 30px;
-}
-
-.info-row {
-    display: flex;
-
-    justify-content: space-between;
-
-    gap: 15px;
-
-    padding: 14px 0;
-
-    border-bottom: 1px solid #222;
-}
-
-.info-label {
-    color: #777;
-
-    font-size: 13px;
-}
-
-.info-value {
-    color: #ddd;
-
-    font-size: 13px;
-
-    text-align: right;
-
-    word-break: break-all;
-}
-
-
-/* BUTTONS */
-
-.actions {
-    margin-top: 30px;
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(2, 1fr);
-
-    gap: 12px;
-}
-
-.action-btn {
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    padding: 13px;
-
-    background: #191919;
-
-    border: 1px solid #333;
-
-    border-radius: 10px;
-
-    color: #ddd;
-
-    text-decoration: none;
-
-    font-size: 14px;
-}
-
-.action-btn:hover {
-    border-color: #ff7a00;
-
-    color: #ff7a00;
-}
-
-.logout-btn {
-    width: 100%;
-
-    margin-top: 15px;
-
-    padding: 13px;
-
-    background: transparent;
-
-    border: 1px solid #552222;
-
-    border-radius: 10px;
-
-    color: #ff6666;
-
-    cursor: pointer;
-
-    font-size: 14px;
-}
-
-.logout-btn:hover {
-    background: #241010;
-
-    border-color: #ff5555;
-}
-
-
-/* MOBILE */
-
-@media(max-width:600px) {
-
-    header {
-        padding: 0 18px;
-    }
-
-    .container {
-        margin-top: 25px;
-    }
-
-    .profile-card {
-        padding: 25px;
-    }
-
-    .actions {
-        grid-template-columns: 1fr;
-    }
-
-    .level-header {
-        align-items: flex-start;
-    }
-
-}
-
-</style>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Creator Profile | Vidlyra</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #070707;
+            color: #fff;
+        }
+
+        header {
+            height: 70px;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #242424;
+            background: #090909;
+        }
+
+        .logo {
+            color: #ff7a00;
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .back-btn {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            color: #ff7a00;
+        }
+
+        .profile-hero {
+            width: min(1100px, 94%);
+            margin: 40px auto 30px;
+            padding: 35px;
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 20px;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #1c1c1c;
+            border: 3px solid #ff7a00;
+        }
+
+        .avatar-placeholder {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: #1c1c1c;
+            border: 3px solid #ff7a00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 55px;
+        }
+
+        .creator-info {
+            flex: 1;
+        }
+
+        .creator-name {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .rank {
+            color: #ff9b45;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 24px;
+        }
+
+        .stat span {
+            color: #777;
+            font-size: 12px;
+        }
+
+        .level {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 7px 12px;
+            border-radius: 20px;
+            background: #21170f;
+            color: #ff9b45;
+            font-size: 13px;
+        }
+
+        .content {
+            width: min(1100px, 94%);
+            margin: auto;
+        }
+
+        .section-title {
+            font-size: 24px;
+            margin: 30px 0 18px;
+        }
+
+        .projects {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fill, minmax(230px, 1fr));
+            gap: 20px;
+            padding-bottom: 50px;
+        }
+
+        .project-card {
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 14px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 145px;
+            object-fit: cover;
+            background: #1a1a1a;
+        }
+
+        .project-content {
+            padding: 15px;
+        }
+
+        .project-title {
+            font-size: 17px;
+            margin-bottom: 7px;
+        }
+
+        .project-category {
+            color: #ff8a24;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .project-date {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .empty {
+            padding: 50px;
+            text-align: center;
+            color: #777;
+            background: #111;
+            border: 1px solid #242424;
+            border-radius: 15px;
+        }
+
+        .loading {
+            padding: 50px;
+            text-align: center;
+            color: #888;
+        }
+
+        .error {
+            padding: 30px;
+            text-align: center;
+            color: #ff6262;
+        }
+
+        @media (max-width: 650px) {
+
+            .profile-hero {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .creator-name {
+                font-size: 25px;
+            }
+
+            .stats {
+                justify-content: center;
+            }
+
+            header {
+                padding: 0 18px;
+            }
+
+        }
+
+    </style>
 
 </head>
 
@@ -400,242 +240,115 @@ header {
         VIDLYRA
     </div>
 
-    <button
-        type="button"
+    <a
+        href="javascript:history.back()"
         class="back-btn"
-        onclick="window.location.href='dashboard.html'"
     >
-        ← Dashboard
-    </button>
+        ← Back
+    </a>
 
 </header>
 
 
-<main class="container">
+<main>
 
 
-    <div
-        id="loading"
-        class="loading"
-    >
-        Loading creator profile...
-    </div>
+    <!-- CREATOR PROFILE -->
 
-
-    <div
-        id="error"
-        class="error"
-    ></div>
-
-
-    <div
-        id="profileContent"
-        class="profile-card"
-        style="display:none;"
+    <section
+        class="profile-hero"
+        id="profileHero"
     >
 
+        <div class="avatar-placeholder">
+            👤
+        </div>
 
-        <!-- CREATOR AVATAR -->
+        <div class="creator-info">
 
-        <div class="avatar-section">
+            <h1 class="creator-name">
+                Loading Creator...
+            </h1>
 
-            <img
-                id="creatorAvatarImage"
-                class="avatar-image"
-                src="assets/creator-avatars/creator1.png"
-                alt="Creator Avatar"
-            >
+            <div class="rank">
+                Loading rank...
+            </div>
 
-            <div
-                id="creatorName"
-                class="creator-name"
-            >
+            <div class="stats">
+
+                <div class="stat">
+
+                    <strong>
+                        0
+                    </strong>
+
+                    <span>
+                        APPROVED PROJECTS
+                    </span>
+
+                </div>
+
+                <div class="stat">
+
+                    <strong>
+                        1
+                    </strong>
+
+                    <span>
+                        LEVEL
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="level">
                 Creator
             </div>
 
-            <div
-                id="creatorEmail"
-                class="creator-email"
-            >
-                creator@email.com
-            </div>
-
-            <div
-                id="avatarNumber"
-                class="avatar-number"
-            >
-                Creator Avatar #1
-            </div>
-
         </div>
 
-
-        <!-- CREATOR LEVEL -->
-
-        <div class="creator-level-card">
-
-            <div class="level-header">
-
-                <div>
-
-                    <div class="level-label">
-                        CREATOR LEVEL
-                    </div>
-
-                    <div
-                        id="creatorRank"
-                        class="creator-rank"
-                    >
-                        New Creator
-                    </div>
-
-                </div>
-
-                <div
-                    id="creatorLevel"
-                    class="creator-level"
-                >
-                    LEVEL 1
-                </div>
-
-            </div>
+    </section>
 
 
-            <div class="progress-info">
+    <!-- PROJECTS -->
 
-                <span>
-                    Approved Projects
-                </span>
+    <section class="content">
 
-                <span>
+        <h2 class="section-title">
+            Approved Projects
+        </h2>
 
-                    <span id="approvedProjects">
-                        0
-                    </span>
-
-                    /
-
-                    <span id="nextLevelTarget">
-                        3
-                    </span>
-
-                </span>
-
-            </div>
-
-
-            <div class="progress-bar">
-
-                <div
-                    id="levelProgress"
-                    class="progress-fill"
-                ></div>
-
-            </div>
-
-
-            <div
-                id="nextLevelText"
-                class="next-level"
-            >
-                3 approved projects needed for the next level.
-            </div>
-
-        </div>
-
-
-        <!-- ACCOUNT -->
-
-        <div class="info-section">
-
-            <div class="info-row">
-
-                <span class="info-label">
-                    User ID
-                </span>
-
-                <span
-                    id="userId"
-                    class="info-value"
-                >
-                    —
-                </span>
-
-            </div>
-
-
-            <div class="info-row">
-
-                <span class="info-label">
-                    Account Created
-                </span>
-
-                <span
-                    id="createdAt"
-                    class="info-value"
-                >
-                    —
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <!-- ACTIONS -->
-
-        <div class="actions">
-
-            <a
-                href="creator-avatars.html"
-                class="action-btn"
-            >
-                🎨 Creator Avatars
-            </a>
-
-            <a
-                href="avatars.html"
-                class="action-btn"
-            >
-                ✨ Frequency Avatars
-            </a>
-
-            <a
-                href="projects.html"
-                class="action-btn"
-            >
-                📁 My Projects
-            </a>
-
-            <a
-                href="upload.html"
-                class="action-btn"
-            >
-                ⬆️ Upload Project
-            </a>
-
-        </div>
-
-
-        <button
-            type="button"
-            class="logout-btn"
-            onclick="logout()"
+        <div
+            id="projects"
+            class="projects"
         >
-            🚪 Logout
-        </button>
 
+            <div class="loading">
+                Loading projects...
+            </div>
 
-    </div>
+        </div>
+
+    </section>
+
 
 </main>
 
+
+<!-- SUPABASE -->
 
 <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
 ></script>
 
+
+<!-- EXISTING CONFIG -->
+
 <script src="js/config.js"></script>
+
+
+<!-- PROFILE JS -->
 
 <script src="js/profile.js"></script>
 
