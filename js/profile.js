@@ -6,14 +6,91 @@ console.log("Profile JS loaded");
 
 
 // ==========================================
-// STORAGE BUCKETS
+// GITHUB AVATAR SYSTEM
 // ==========================================
 
-const AVATAR_BUCKET =
-    "avatars";
+// Your GitHub Pages structure:
+//
+// assets/
+// ├── avatars/
+// │   ├── avatar1.png
+// │   ├── avatar2.png
+// │   └── avatar12.png
+// │
+// └── creator-avatars/
+//     ├── creator1.png
+//     ├── creator2.png
+//     └── creator7.png
+//
+// These are official Vidlyra avatars.
+// No Supabase avatar storage is needed.
 
-const THUMBNAIL_BUCKET =
-    "thumbnails";
+const AVATAR_BASE =
+    "assets/avatars/";
+
+const CREATOR_AVATAR_BASE =
+    "assets/creator-avatars/";
+
+
+// ==========================================
+// GET OFFICIAL AVATAR
+// ==========================================
+
+function getOfficialAvatar(profile) {
+
+    // Creator avatar gets priority
+    // when it has been unlocked.
+
+    if (
+        profile.creator_avatar_unlocked === true &&
+        profile.creator_avatar
+    ) {
+
+        const creatorNumber =
+            Number(profile.creator_avatar);
+
+        if (
+            creatorNumber >= 1 &&
+            creatorNumber <= 7
+        ) {
+
+            return (
+                CREATOR_AVATAR_BASE +
+                `creator${creatorNumber}.png`
+            );
+
+        }
+
+    }
+
+
+    // Normal Vidlyra avatar.
+
+    if (profile.selected_avatar) {
+
+        const avatarNumber =
+            Number(profile.selected_avatar);
+
+        if (
+            avatarNumber >= 1 &&
+            avatarNumber <= 12
+        ) {
+
+            return (
+                AVATAR_BASE +
+                `avatar${avatarNumber}.png`
+            );
+
+        }
+
+    }
+
+
+    // No avatar selected.
+
+    return "";
+
+}
 
 
 // ==========================================
@@ -70,6 +147,7 @@ async function loadProfile() {
         );
 
         return;
+
     }
 
 
@@ -160,7 +238,6 @@ async function loadProfile() {
             error
         );
 
-
         showError(
             error.message
         );
@@ -174,6 +251,9 @@ async function loadProfile() {
 // STORAGE URL HELPER
 // ==========================================
 
+// Used ONLY for project thumbnails.
+// Creator avatars are from GitHub.
+
 function getStorageUrl(
     bucket,
     filePath
@@ -186,9 +266,7 @@ function getStorageUrl(
     }
 
 
-    // ======================================
-    // ALREADY A URL
-    // ======================================
+    // Already a complete URL.
 
     if (
         filePath.startsWith(
@@ -203,10 +281,6 @@ function getStorageUrl(
 
     }
 
-
-    // ======================================
-    // SUPABASE STORAGE
-    // ======================================
 
     const {
         data
@@ -336,7 +410,7 @@ function renderCreator(
 
 
     // ======================================
-    // CREATOR AVATAR
+    // OFFICIAL GITHUB AVATAR
     // ======================================
 
     const placeholder =
@@ -356,68 +430,77 @@ function renderCreator(
     }
 
 
-    const avatarPath =
-        creator.avatar_url ||
-        "";
-
-
     const avatarUrl =
-        getStorageUrl(
-            AVATAR_BUCKET,
-            avatarPath
+        getOfficialAvatar(
+            creator
         );
 
 
     console.log(
-        "Creator avatar:",
+        "Official GitHub avatar:",
         avatarUrl
     );
 
 
-    if (avatarUrl) {
+    if (!avatarUrl) {
 
-        const image =
-            document.createElement(
-                "img"
+        console.warn(
+            "No official avatar selected."
+        );
+
+        return;
+
+    }
+
+
+    const image =
+        document.createElement(
+            "img"
+        );
+
+
+    image.className =
+        "avatar";
+
+
+    image.src =
+        avatarUrl;
+
+
+    image.alt =
+        creator.full_name
+            ? `${creator.full_name} avatar`
+            : "Creator avatar";
+
+
+    // ======================================
+    // AVATAR ERROR
+    // ======================================
+
+    image.onerror =
+        function () {
+
+            console.error(
+                "GitHub avatar failed:",
+                avatarUrl
             );
 
 
-        image.className =
-            "avatar";
+            image.remove();
+
+            placeholder.style.display =
+                "flex";
+
+        };
 
 
-        image.src =
-            avatarUrl;
+    // ======================================
+    // SHOW AVATAR
+    // ======================================
 
-
-        image.alt =
-            creator.full_name
-                ? `${creator.full_name} avatar`
-                : "Creator avatar";
-
-
-        image.onerror =
-            function () {
-
-                console.error(
-                    "Creator avatar failed:",
-                    avatarUrl
-                );
-
-
-                image.remove();
-
-                placeholder.style.display =
-                    "flex";
-
-            };
-
-
-        placeholder.replaceWith(
-            image
-        );
-
-    }
+    placeholder.replaceWith(
+        image
+    );
 
 }
 
@@ -549,12 +632,12 @@ function renderProject(
 
 
     // ======================================
-    // THUMBNAIL URL
+    // THUMBNAIL
     // ======================================
 
     const thumbnailUrl =
         getStorageUrl(
-            THUMBNAIL_BUCKET,
+            "thumbnails",
             project.thumbnail
         );
 
@@ -565,10 +648,6 @@ function renderProject(
         thumbnailUrl
     );
 
-
-    // ======================================
-    // IMAGE
-    // ======================================
 
     const image =
         thumbnailUrl
@@ -592,16 +671,14 @@ function renderProject(
 
 
     // ======================================
-    // CARD HTML
+    // CARD
     // ======================================
 
     card.innerHTML = `
 
         ${image}
 
-
         <div class="project-content">
-
 
             <h3 class="project-title">
 
@@ -630,7 +707,6 @@ function renderProject(
                 )}
 
             </div>
-
 
         </div>
 
