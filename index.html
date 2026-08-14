@@ -12,265 +12,295 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
-body{
-    background:#050505;
-    color:white;
-    min-height:100vh;
+body {
+    background: #050505;
+    color: white;
 }
 
-header{
-    background:#111;
-    padding:18px 8%;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    border-bottom:1px solid #222;
-    position:sticky;
-    top:0;
-    z-index:100;
+/* HEADER */
+
+header {
+    background: #111;
+    padding: 18px 8%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #222;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.logo{
-    font-size:28px;
-    font-weight:700;
-    color:#ff7a00;
-    letter-spacing:1px;
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ff7a00;
 }
 
-nav{
-    display:flex;
-    align-items:center;
-    gap:25px;
+nav {
+    display: flex;
+    align-items: center;
+    gap: 25px;
 }
 
-nav a{
-    color:#ddd;
-    text-decoration:none;
-    font-size:14px;
-    transition:.3s;
+nav a {
+    text-decoration: none;
+    color: white;
+    transition: .3s;
 }
 
-nav a:hover{
-    color:#ff7a00;
+nav a:hover {
+    color: #ff7a00;
 }
 
-.auth-area{
-    display:flex;
-    align-items:center;
-    gap:12px;
+/* AUTH */
+
+.auth-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.auth-name{
-    color:#bbb;
-    font-size:13px;
-    max-width:130px;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+.auth-name {
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
 }
 
-.logout-btn{
-    padding:9px 18px;
-    background:transparent;
-    color:#ff7a00;
-    border:1px solid #ff7a00;
-    border-radius:20px;
-    cursor:pointer;
-    font-weight:500;
+.phrase {
+    color: #777;
+    font-size: 11px;
+    font-style: italic;
+    max-width: 260px;
 }
 
-.logout-btn:hover{
-    background:#ff7a00;
-    color:white;
+.logout-btn {
+    padding: 9px 18px;
+    background: transparent;
+    color: #ff7a00;
+    border: 1px solid #ff7a00;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    transition: .3s;
 }
 
-.hero{
-    padding:90px 8%;
-    display:flex;
-    flex-wrap:wrap;
-    align-items:center;
-    justify-content:space-between;
-    gap:50px;
+.logout-btn:hover {
+    background: #ff7a00;
+    color: white;
 }
 
-.left{
-    flex:1;
-    min-width:300px;
+/* HERO */
+
+.hero {
+    padding: 90px 8%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
 }
 
-.left h1{
-    font-size:55px;
-    line-height:1.1;
-    margin-bottom:20px;
+.left {
+    flex: 1;
+    min-width: 300px;
 }
 
-.left h1 span{
-    color:#ff7a00;
+.left h1 {
+    font-size: 55px;
+    line-height: 1.1;
+    margin-bottom: 20px;
 }
 
-.left p{
-    color:#bbb;
-    line-height:1.8;
-    margin-bottom:35px;
-    max-width:700px;
+.left h1 span {
+    color: #ff7a00;
 }
 
-.buttons{
-    display:flex;
-    gap:15px;
-    flex-wrap:wrap;
+.left p {
+    color: #bbb;
+    line-height: 1.8;
+    margin-bottom: 35px;
 }
 
-.btn{
-    padding:14px 30px;
-    background:#ff7a00;
-    color:white;
-    text-decoration:none;
-    border-radius:50px;
-    font-weight:600;
-    transition:.3s;
+.buttons {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
-.btn:hover{
-    background:#ff9200;
-    transform:translateY(-2px);
+.btn {
+    padding: 14px 30px;
+    background: #ff7a00;
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: .3s;
 }
 
-.btn2{
-    background:#222;
-    border:1px solid #333;
+.btn:hover {
+    background: #ff9200;
 }
 
-.btn2:hover{
-    background:#333;
+.btn2 {
+    background: #222;
 }
 
-.welcome-box{
-    display:none;
-    margin-top:25px;
-    padding:18px 20px;
-    background:#111;
-    border:1px solid #292929;
-    border-left:3px solid #ff7a00;
-    border-radius:10px;
-    color:#aaa;
-    font-size:13px;
+.btn2:hover {
+    background: #333;
 }
 
-.welcome-box strong{
-    color:#ff7a00;
+/* WELCOME */
+
+.welcome-box {
+    display: none;
+    margin-top: 25px;
+    padding: 18px 20px;
+    background: #111;
+    border: 1px solid #292929;
+    border-left: 3px solid #ff7a00;
+    border-radius: 10px;
+    color: #bbb;
+    font-size: 13px;
 }
 
-.right{
-    flex:1;
-    min-width:280px;
-    display:flex;
-    justify-content:center;
+.welcome-box strong {
+    color: #ff7a00;
 }
 
-.card{
-    width:100%;
-    max-width:420px;
-    background:#111;
-    border:1px solid #222;
-    padding:40px;
-    border-radius:20px;
+/* RIGHT CARD */
+
+.right {
+    flex: 1;
+    min-width: 280px;
+    display: flex;
+    justify-content: center;
 }
 
-.card h2{
-    margin-bottom:20px;
-    color:#ff7a00;
+.card {
+    width: 100%;
+    max-width: 420px;
+    background: #111;
+    border: 1px solid #222;
+    padding: 40px;
+    border-radius: 20px;
 }
 
-.card ul{
-    list-style:none;
+.card h2 {
+    margin-bottom: 20px;
+    color: #ff7a00;
 }
 
-.card li{
-    padding:12px 0;
-    border-bottom:1px solid #222;
-    color:#ccc;
+.card ul {
+    list-style: none;
 }
 
-.features{
-    padding:80px 8%;
+.card li {
+    padding: 12px 0;
+    border-bottom: 1px solid #222;
+    color: #ccc;
 }
 
-.title{
-    text-align:center;
-    font-size:38px;
-    margin-bottom:60px;
+/* FEATURES */
+
+.features {
+    padding: 80px 8%;
 }
 
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:30px;
+.title {
+    text-align: center;
+    font-size: 38px;
+    margin-bottom: 60px;
 }
 
-.box{
-    background:#111;
-    padding:30px;
-    border-radius:15px;
-    border:1px solid #222;
-    transition:.3s;
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
 }
 
-.box:hover{
-    transform:translateY(-8px);
-    border-color:#ff7a00;
+.box {
+    background: #111;
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid #222;
+    transition: .3s;
 }
 
-.box h3{
-    color:#ff7a00;
-    margin-bottom:15px;
+.box:hover {
+    transform: translateY(-8px);
+    border-color: #ff7a00;
 }
 
-.box p{
-    color:#aaa;
-    line-height:1.6;
+.box h3 {
+    color: #ff7a00;
+    margin-bottom: 15px;
 }
 
-footer{
-    padding:40px;
-    text-align:center;
-    color:#666;
-    border-top:1px solid #222;
-    margin-top:80px;
+.box p {
+    color: #aaa;
+    line-height: 1.6;
 }
 
-@media(max-width:768px){
+/* FOOTER */
 
-    header{
-        flex-direction:column;
-        gap:15px;
+footer {
+    padding: 40px;
+    text-align: center;
+    color: #888;
+    border-top: 1px solid #222;
+    margin-top: 80px;
+}
+
+/* MOBILE */
+
+@media(max-width: 900px) {
+
+    header {
+        padding: 16px 5%;
     }
 
-    nav{
-        flex-wrap:wrap;
-        justify-content:center;
-        gap:12px;
+    nav {
+        gap: 12px;
     }
 
-    .left h1{
-        font-size:40px;
+    .phrase {
+        display: none;
     }
 
-    .hero{
-        padding:60px 6%;
-    }
-
-    .features{
-        padding:60px 6%;
-    }
 }
+
+@media(max-width: 768px) {
+
+    .left h1 {
+        font-size: 40px;
+    }
+
+    header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .auth-area {
+        justify-content: center;
+    }
+
+}
+
 </style>
 </head>
 
@@ -284,13 +314,17 @@ footer{
 
     <nav>
 
-        <a href="index.html">Home</a>
+        <a href="index.html">
+            Home
+        </a>
 
-        <a href="projects.html">Explore</a>
+        <a href="upload.html">
+            Upload
+        </a>
 
-        <a href="upload.html">Upload</a>
-
-        <a href="dashboard.html">Dashboard</a>
+        <a href="dashboard.html">
+            Dashboard
+        </a>
 
         <!-- GUEST -->
 
@@ -321,6 +355,13 @@ footer{
                 Creator
             </span>
 
+            <span
+                id="userPhrase"
+                class="phrase"
+            >
+                Keep moving.
+            </span>
+
             <button
                 id="logoutButton"
                 class="logout-btn"
@@ -347,11 +388,10 @@ footer{
 
         <p>
             Welcome to the official Vidlyra Creator Portal.
-            Upload your animations, artwork, videos, music,
-            stories, manga and creative projects.
+            Upload your animations, artwork, podcasts,
+            videos, music, stories, and creative projects.
             Share your imagination with the Vidlyra community.
         </p>
-
 
         <!-- GUEST BUTTONS -->
 
@@ -376,7 +416,6 @@ footer{
 
         </div>
 
-
         <!-- LOGGED IN -->
 
         <div
@@ -389,7 +428,11 @@ footer{
                 Creator
             </strong>!
 
-            Your creator account is active.
+            <br>
+
+            <span id="welcomePhrase">
+                Your journey continues.
+            </span>
 
         </div>
 
@@ -438,58 +481,35 @@ footer{
     <div class="grid">
 
         <div class="box">
-
-            <h3>
-                Unlimited Creativity
-            </h3>
-
+            <h3>Unlimited Creativity</h3>
             <p>
                 Create and publish original content
-                for the Vidlyra community.
+                for the community.
             </p>
-
         </div>
 
-
         <div class="box">
-
-            <h3>
-                Creator Profile
-            </h3>
-
+            <h3>Creator Profile</h3>
             <p>
-                Build your creator identity with
+                Customize your creator page with
                 official Vidlyra avatars.
             </p>
-
         </div>
 
-
         <div class="box">
-
-            <h3>
-                Explore
-            </h3>
-
+            <h3>Community</h3>
             <p>
-                Discover approved projects from
-                creators across Vidlyra.
+                Discover creators, collaborate,
+                and grow together.
             </p>
-
         </div>
 
-
         <div class="box">
-
-            <h3>
-                Secure Platform
-            </h3>
-
+            <h3>Secure Platform</h3>
             <p>
-                Authentication and cloud storage
-                powered by Supabase.
+                Protected authentication powered
+                by Supabase.
             </p>
-
         </div>
 
     </div>
@@ -502,11 +522,20 @@ footer{
 </footer>
 
 
+<!-- SUPABASE -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- YOUR CONFIG -->
 
 <script src="js/config.js"></script>
 
+
 <script>
+
+/* ==========================================
+   VIDLYRA HOME AUTH
+========================================== */
 
 console.log("Vidlyra Home Auth loaded");
 
@@ -526,86 +555,274 @@ const welcomeBox =
 const welcomeUser =
     document.getElementById("welcomeUser");
 
+const welcomePhrase =
+    document.getElementById("welcomePhrase");
+
 const userName =
     document.getElementById("userName");
+
+const userPhrase =
+    document.getElementById("userPhrase");
 
 const logoutButton =
     document.getElementById("logoutButton");
 
 
-function showGuest(){
+/* ==========================================
+   RANDOM PHRASES
+========================================== */
 
-    guestAuth.style.display = "flex";
+const phrases = [
 
-    userAuth.style.display = "none";
+    "Time's up. Take the pen.",
 
-    guestButtons.style.display = "flex";
+    "Don't drop it. Keep moving.",
 
-    welcomeBox.style.display = "none";
+    "The journey has now started.",
+
+    "Your story is still being written.",
+
+    "Keep creating. Keep moving.",
+
+    "One idea can change everything.",
+
+    "The next chapter is yours.",
+
+    "Never stop building your world.",
+
+    "Start again. Move forward.",
+
+    "Your journey has never ended.",
+
+    "Keep the dream alive.",
+
+    "Create something only you can create.",
+
+    "The next scene belongs to you.",
+
+    "Your imagination has no finish line."
+
+];
+
+
+function getRandomPhrase() {
+
+    const index =
+        Math.floor(
+            Math.random() * phrases.length
+        );
+
+    return phrases[index];
+
 }
 
 
-function showLoggedIn(user){
+/* ==========================================
+   SHOW GUEST
+========================================== */
 
-    guestAuth.style.display = "none";
+function showGuest() {
 
-    userAuth.style.display = "flex";
+    if (guestAuth)
+        guestAuth.style.display = "flex";
 
-    guestButtons.style.display = "none";
+    if (userAuth)
+        userAuth.style.display = "none";
 
-    welcomeBox.style.display = "block";
+    if (guestButtons)
+        guestButtons.style.display = "flex";
 
+    if (welcomeBox)
+        welcomeBox.style.display = "none";
 
-    /*
-       Do NOT show Gmail/email.
-       Keep the interface as Creator.
-    */
-
-    const name = "Creator";
-
-
-    userName.textContent = name;
-
-    welcomeUser.textContent = name;
 }
 
 
-async function checkLogin(){
+/* ==========================================
+   GET CREATOR NAME
+========================================== */
 
-    try{
+async function getCreatorName(user) {
+
+    try {
+
+        const { data, error } = await sb
+            .from("profiles")
+            .select("*")
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+        if (error) {
+
+            console.error(
+                "Profile error:",
+                error
+            );
+
+            return (
+                user.user_metadata?.full_name ||
+                user.user_metadata?.name ||
+                "Creator"
+            );
+
+        }
+
+        if (!data) {
+
+            console.warn(
+                "No profile found for:",
+                user.id
+            );
+
+            return (
+                user.user_metadata?.full_name ||
+                user.user_metadata?.name ||
+                "Creator"
+            );
+
+        }
+
+        /*
+         * Supports common profile column names.
+         */
+
+        return (
+            data.display_name ||
+            data.username ||
+            data.full_name ||
+            data.name ||
+            user.user_metadata?.full_name ||
+            user.user_metadata?.name ||
+            "Creator"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Creator name error:",
+            error
+        );
+
+        return "Creator";
+
+    }
+
+}
+
+
+/* ==========================================
+   SHOW LOGGED-IN USER
+========================================== */
+
+async function showLoggedIn(user) {
+
+    if (guestAuth)
+        guestAuth.style.display = "none";
+
+    if (userAuth)
+        userAuth.style.display = "flex";
+
+    if (guestButtons)
+        guestButtons.style.display = "none";
+
+    if (welcomeBox)
+        welcomeBox.style.display = "block";
+
+
+    const creatorName =
+        await getCreatorName(user);
+
+
+    const phrase =
+        getRandomPhrase();
+
+
+    /* TOP RIGHT NAME */
+
+    if (userName) {
+
+        userName.textContent =
+            creatorName;
+
+    }
+
+
+    /* TOP RIGHT RANDOM PHRASE */
+
+    if (userPhrase) {
+
+        userPhrase.textContent =
+            "— " + phrase;
+
+    }
+
+
+    /* WELCOME MESSAGE */
+
+    if (welcomeUser) {
+
+        welcomeUser.textContent =
+            creatorName;
+
+    }
+
+
+    if (welcomePhrase) {
+
+        welcomePhrase.textContent =
+            phrase;
+
+    }
+
+}
+
+
+/* ==========================================
+   CHECK CURRENT LOGIN
+========================================== */
+
+async function checkLogin() {
+
+    try {
 
         const {
-            data,
+            data: {
+                user
+            },
             error
         } = await sb.auth.getUser();
 
 
-        if(error){
+        if (error) {
 
             console.error(
-                "Auth check error:",
+                "Auth error:",
                 error
             );
 
             showGuest();
 
             return;
+
         }
 
 
-        if(data && data.user){
+        if (user) {
 
-            showLoggedIn(
-                data.user
+            console.log(
+                "Logged in:",
+                user.id
             );
 
-        }else{
+            await showLoggedIn(user);
+
+        } else {
 
             showGuest();
 
         }
 
-    }catch(error){
+    } catch (error) {
 
         console.error(
             "Login check failed:",
@@ -613,43 +830,51 @@ async function checkLogin(){
         );
 
         showGuest();
+
     }
+
 }
 
 
-async function logout(){
+/* ==========================================
+   LOGOUT
+========================================== */
 
-    try{
+async function logout() {
+
+    try {
 
         const {
             error
         } = await sb.auth.signOut();
 
 
-        if(error){
+        if (error) {
 
             console.error(
                 "Logout error:",
                 error
             );
 
-            alert("Logout failed.");
+            alert(
+                "Logout failed."
+            );
 
             return;
+
         }
 
 
         showGuest();
 
-        /*
-           Stay on index.html after logout.
-        */
+        console.log(
+            "Logged out successfully"
+        );
 
         window.location.href =
             "index.html";
 
-
-    }catch(error){
+    } catch (error) {
 
         console.error(
             "Logout error:",
@@ -657,17 +882,30 @@ async function logout(){
         );
 
     }
+
 }
 
 
-logoutButton.addEventListener(
-    "click",
-    logout
-);
+/* ==========================================
+   LOGOUT BUTTON
+========================================== */
 
+if (logoutButton) {
+
+    logoutButton.addEventListener(
+        "click",
+        logout
+    );
+
+}
+
+
+/* ==========================================
+   AUTH STATE LISTENER
+========================================== */
 
 sb.auth.onAuthStateChange(
-    (event, session) => {
+    async function(event, session) {
 
         console.log(
             "Auth event:",
@@ -675,16 +913,16 @@ sb.auth.onAuthStateChange(
         );
 
 
-        if(
+        if (
             session &&
             session.user
-        ){
+        ) {
 
-            showLoggedIn(
+            await showLoggedIn(
                 session.user
             );
 
-        }else{
+        } else {
 
             showGuest();
 
@@ -693,6 +931,10 @@ sb.auth.onAuthStateChange(
     }
 );
 
+
+/* ==========================================
+   START
+========================================== */
 
 checkLogin();
 
