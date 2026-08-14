@@ -27,6 +27,17 @@ let allProjects = [];
 
 
 // ==========================================
+// SUPABASE STORAGE
+// ==========================================
+
+// Your project thumbnail files are stored
+// inside the Supabase "projects" bucket.
+
+const PROJECT_BUCKET =
+    "projects";
+
+
+// ==========================================
 // LOAD APPROVED PROJECTS
 // ==========================================
 
@@ -83,7 +94,18 @@ async function loadProjects() {
             projects || [];
 
 
+        console.log(
+            "Approved projects:",
+            allProjects
+        );
+
+
+        // Get creator information
+
         await attachCreators();
+
+
+        // Display projects
 
         renderProjects(
             allProjects
@@ -100,7 +122,9 @@ async function loadProjects() {
 
         projectsContainer.innerHTML = `
             <div class="error">
-                ${escapeHTML(error.message)}
+                ${escapeHTML(
+                    error.message
+                )}
             </div>
         `;
 
@@ -117,10 +141,12 @@ async function attachCreators() {
 
     const userIds = [
         ...new Set(
-            allProjects.map(
-                project =>
-                    project.user_id
-            )
+            allProjects
+                .map(
+                    project =>
+                        project.user_id
+                )
+                .filter(Boolean)
         )
     ];
 
@@ -147,7 +173,8 @@ async function attachCreators() {
             avatar_url,
             creator_avatar,
             creator_level,
-            creator_rank
+            creator_rank,
+            creator_avatar_unlocked
         `)
 
         .in(
@@ -197,7 +224,60 @@ async function attachCreators() {
 
 
 // ==========================================
-// RENDER
+// GET THUMBNAIL URL
+// ==========================================
+
+function getThumbnailUrl(
+    thumbnail
+) {
+
+    if (!thumbnail) {
+
+        return "";
+
+    }
+
+
+    // If database already contains
+    // a complete URL, use it directly.
+
+    if (
+        thumbnail.startsWith(
+            "http://"
+        ) ||
+        thumbnail.startsWith(
+            "https://"
+        )
+    ) {
+
+        return thumbnail;
+
+    }
+
+
+    // Otherwise treat it as a
+    // Supabase Storage path.
+
+    const {
+        data
+    } = sb.storage
+
+        .from(
+            PROJECT_BUCKET
+        )
+
+        .getPublicUrl(
+            thumbnail
+        );
+
+
+    return data?.publicUrl || "";
+
+}
+
+
+// ==========================================
+// RENDER PROJECTS
 // ==========================================
 
 function renderProjects(
@@ -236,6 +316,10 @@ function renderProjects(
                 "card";
 
 
+            // ==================================
+            // CREATOR
+            // ==================================
+
             const creator =
                 project.creator;
 
@@ -260,16 +344,54 @@ function renderProjects(
                 "";
 
 
+            // ==================================
+            // THUMBNAIL
+            // ==================================
+
+            const thumbnailUrl =
+                getThumbnailUrl(
+                    project.thumbnail
+                );
+
+
+            console.log(
+                "Thumbnail:",
+                project.title,
+                thumbnailUrl
+            );
+
+
+            // ==================================
+            // CREATOR PROFILE URL
+            // ==================================
+
+            const creatorProfileUrl =
+                project.user_id
+                    ? `profile.html?user=${encodeURIComponent(
+                        project.user_id
+                    )}`
+                    : "profile.html";
+
+
+            // ==================================
+            // CARD
+            // ==================================
+
             card.innerHTML = `
 
                 ${
-                    project.thumbnail
+                    thumbnailUrl
                     ?
                     `
                     <img
                         class="poster"
-                        src="${safeAttribute(project.thumbnail)}"
-                        alt="${escapeHTML(project.title || "Anime")}"
+                        src="${safeAttribute(
+                            thumbnailUrl
+                        )}"
+                        alt="${escapeHTML(
+                            project.title ||
+                            "Anime"
+                        )}"
                     >
                     `
                     :
@@ -281,23 +403,35 @@ function renderProjects(
 
                 <div class="card-body">
 
+
+                    <!-- PROJECT TITLE -->
+
                     <div class="title">
+
                         ${escapeHTML(
                             project.title ||
                             "Untitled"
                         )}
+
                     </div>
 
 
+                    <!-- CATEGORY -->
+
                     <div class="category">
+
                         ${escapeHTML(
                             project.category ||
                             "Anime"
                         )}
+
                     </div>
 
 
+                    <!-- CREATOR -->
+
                     <div class="creator">
+
 
                         ${
                             avatar
@@ -305,7 +439,9 @@ function renderProjects(
                             `
                             <img
                                 class="creator-avatar"
-                                src="${safeAttribute(avatar)}"
+                                src="${safeAttribute(
+                                    avatar
+                                )}"
                                 alt="Creator avatar"
                             >
                             `
@@ -319,35 +455,83 @@ function renderProjects(
 
                         <div>
 
+
                             <div class="creator-name">
+
                                 ${escapeHTML(
                                     creatorName
                                 )}
+
                             </div>
 
+
                             <div class="creator-level">
-                                Level ${creatorLevel}
+
+                                Level
+                                ${creatorLevel}
+
                                 •
+                                
                                 ${escapeHTML(
                                     creatorRank
                                 )}
+
                             </div>
 
+
                         </div>
+
 
                     </div>
 
 
+                    <!-- PROFILE LINK -->
+
                     <a
                         class="view-profile"
-                        href="profile.html?user=${project.user_id}"
+                        href="${creatorProfileUrl}"
                     >
                         View Creator Profile →
                     </a>
 
+
                 </div>
 
             `;
+
+
+            // ==================================
+            // IMAGE ERROR HANDLER
+            // ==================================
+
+            const image =
+                card.querySelector(
+                    ".poster"
+                );
+
+
+            if (
+                image &&
+                image.tagName === "IMG"
+            ) {
+
+                image.addEventListener(
+                    "error",
+                    function () {
+
+                        console.error(
+                            "Thumbnail failed:",
+                            thumbnailUrl
+                        );
+
+
+                        image.style.display =
+                            "none";
+
+                    }
+                );
+
+            }
 
 
             projectsContainer.appendChild(
@@ -361,7 +545,7 @@ function renderProjects(
 
 
 // ==========================================
-// SEARCH + FILTER
+// SEARCH + CATEGORY FILTER
 // ==========================================
 
 function filterProjects() {
@@ -379,6 +563,7 @@ function filterProjects() {
     const filtered =
         allProjects.filter(
             project => {
+
 
                 const title =
                     (
@@ -401,21 +586,33 @@ function filterProjects() {
 
                 const creatorName =
                     (
-                        project.creator?.full_name ||
+                        project.creator
+                            ?.full_name ||
                         ""
                     ).toLowerCase();
 
 
                 const matchesSearch =
                     !search ||
-                    title.includes(search) ||
-                    description.includes(search) ||
-                    creatorName.includes(search);
+
+                    title.includes(
+                        search
+                    ) ||
+
+                    description.includes(
+                        search
+                    ) ||
+
+                    creatorName.includes(
+                        search
+                    );
 
 
                 const matchesCategory =
                     category === "all" ||
-                    projectCategory === category;
+
+                    projectCategory ===
+                    category;
 
 
                 return (
@@ -435,23 +632,35 @@ function filterProjects() {
 
 
 // ==========================================
-// EVENTS
+// SEARCH EVENT
 // ==========================================
 
-searchInput.addEventListener(
-    "input",
-    filterProjects
-);
+if (searchInput) {
 
+    searchInput.addEventListener(
+        "input",
+        filterProjects
+    );
 
-categorySelect.addEventListener(
-    "change",
-    filterProjects
-);
+}
 
 
 // ==========================================
-// SECURITY HELPERS
+// CATEGORY EVENT
+// ==========================================
+
+if (categorySelect) {
+
+    categorySelect.addEventListener(
+        "change",
+        filterProjects
+    );
+
+}
+
+
+// ==========================================
+// SECURITY
 // ==========================================
 
 function escapeHTML(
