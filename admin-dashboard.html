@@ -3,399 +3,211 @@
 
 <head>
 
-<meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Vidlyra Admin Dashboard</title>
-
-<link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet"
->
-
-<style>
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Poppins, sans-serif;
-}
-
-body {
-    min-height: 100vh;
-    background: #050505;
-    color: white;
-}
-
-
-/* HEADER */
-
-header {
-    height: 70px;
-    padding: 0 30px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    background: #111;
-
-    border-bottom: 1px solid #292929;
-}
-
-.logo {
-    color: #ff7a00;
-
-    font-size: 25px;
-    font-weight: 700;
-
-    letter-spacing: 1px;
-}
-
-.admin-label {
-    color: #aaa;
-    font-size: 13px;
-}
-
-
-/* CONTAINER */
-
-.container {
-    width: 100%;
-    max-width: 1200px;
-
-    margin: 40px auto;
-
-    padding: 0 20px;
-}
-
-
-/* TITLE */
-
-.page-title {
-    margin-bottom: 25px;
-}
-
-.page-title h1 {
-    font-size: 30px;
-}
-
-.page-title p {
-    margin-top: 6px;
-    color: #777;
-}
-
-
-/* STATS */
-
-.stats {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 15px;
-
-    margin-bottom: 30px;
-}
-
-.stat-card {
-    padding: 20px;
-
-    background: #111;
-
-    border: 1px solid #292929;
-
-    border-radius: 15px;
-}
-
-.stat-label {
-    color: #777;
-    font-size: 12px;
-}
-
-.stat-number {
-    margin-top: 5px;
-
-    color: #ff7a00;
-
-    font-size: 27px;
-
-    font-weight: 700;
-}
-
-
-/* PROJECT LIST */
-
-.section-title {
-    margin-bottom: 15px;
-
-    font-size: 20px;
-}
-
-.projects {
-    display: grid;
-
-    gap: 15px;
-}
-
-
-/* PROJECT CARD */
-
-.project-card {
-
-    display: grid;
-
-    grid-template-columns:
-        180px 1fr;
-
-    gap: 20px;
-
-    padding: 20px;
-
-    background: #111;
-
-    border: 1px solid #292929;
-
-    border-radius: 15px;
-
-}
-
-
-.thumbnail {
-
-    width: 180px;
-    height: 120px;
-
-    border-radius: 10px;
-
-    object-fit: cover;
-
-    background: #1b1b1b;
-
-}
-
-
-.project-info h3 {
-
-    font-size: 18px;
-
-}
-
-
-.project-description {
-
-    margin-top: 6px;
-
-    color: #888;
-
-    font-size: 13px;
-
-    line-height: 1.5;
-
-}
-
-
-.project-meta {
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 8px;
-
-    margin-top: 12px;
-
-}
-
-
-.badge {
-
-    padding: 5px 9px;
-
-    background: #1b1b1b;
-
-    border: 1px solid #333;
-
-    border-radius: 6px;
-
-    color: #bbb;
-
-    font-size: 11px;
-
-}
-
-
-.status {
-
-    color: #ffb000;
-
-}
-
-
-/* ACTIONS */
-
-.actions {
-
-    display: flex;
-
-    gap: 10px;
-
-    margin-top: 15px;
-
-}
-
-
-button {
-
-    padding: 10px 16px;
-
-    border-radius: 8px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-}
-
-
-.approve {
-
-    background: #ff7a00;
-
-    border: none;
-
-    color: white;
-
-}
-
-
-.approve:hover {
-
-    background: #ff9500;
-
-}
-
-
-.reject {
-
-    background: transparent;
-
-    border: 1px solid #6b2929;
-
-    color: #ff6666;
-
-}
-
-
-.reject:hover {
-
-    background: #241010;
-
-}
-
-
-/* EMPTY */
-
-.empty {
-
-    padding: 50px;
-
-    text-align: center;
-
-    background: #111;
-
-    border: 1px solid #292929;
-
-    border-radius: 15px;
-
-    color: #777;
-
-}
-
-
-/* LOADING */
-
-.loading {
-
-    padding: 50px;
-
-    text-align: center;
-
-    color: #777;
-
-}
-
-
-/* ERROR */
-
-.error {
-
-    display: none;
-
-    padding: 20px;
-
-    margin-bottom: 20px;
-
-    background: #241010;
-
-    border: 1px solid #552222;
-
-    border-radius: 10px;
-
-    color: #ff6666;
-
-}
-
-
-/* MOBILE */
-
-@media(max-width:700px) {
-
-    .stats {
-
-        grid-template-columns: 1fr;
-
-    }
-
-
-    .project-card {
-
-        grid-template-columns: 1fr;
-
-    }
-
-
-    .thumbnail {
-
-        width: 100%;
-
-        height: 200px;
-
-    }
-
-
-    .actions {
-
-        flex-direction: column;
-
-    }
-
-
-    button {
-
-        width: 100%;
-
-    }
-
-}
-
-</style>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin Dashboard | Vidlyra</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #070707;
+            color: #fff;
+        }
+
+        header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #252525;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: #ff7a00;
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .admin-label {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .container {
+            width: min(1200px, 94%);
+            margin: 30px auto;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 25px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns:
+                repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .stat {
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .stat-title {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .projects {
+            display: grid;
+            gap: 18px;
+        }
+
+        .project-card {
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 16px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 220px 1fr;
+        }
+
+        .thumbnail {
+            width: 100%;
+            height: 100%;
+            min-height: 190px;
+            object-fit: cover;
+            background: #181818;
+        }
+
+        .project-info {
+            padding: 22px;
+        }
+
+        .project-info h3 {
+            font-size: 21px;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            padding: 6px 10px;
+            background: #202020;
+            border-radius: 20px;
+            color: #ccc;
+            font-size: 12px;
+        }
+
+        .pending {
+            color: #ffb15c;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .view {
+            background: #242424;
+            color: white;
+        }
+
+        .approve {
+            background: #16834b;
+            color: white;
+        }
+
+        .reject {
+            background: #9b2929;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        #loading,
+        #empty,
+        #error {
+            text-align: center;
+            padding: 40px;
+        }
+
+        #empty {
+            color: #888;
+            display: none;
+        }
+
+        #error {
+            color: #ff6464;
+            display: none;
+        }
+
+        @media (max-width: 700px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .project-card {
+                grid-template-columns: 1fr;
+            }
+
+            .thumbnail {
+                height: 200px;
+            }
+
+        }
+
+    </style>
 
 </head>
 
@@ -410,7 +222,7 @@ button {
     </div>
 
     <div class="admin-label">
-        ADMIN CONTROL CENTER
+        🛡️ Admin Dashboard
     </div>
 
 </header>
@@ -418,43 +230,28 @@ button {
 
 <main class="container">
 
+    <h1>
+        Project Approval
+    </h1>
 
-    <!-- TITLE -->
-
-    <section class="page-title">
-
-        <h1>
-            Project Approval
-        </h1>
-
-        <p>
-            Review creator submissions before they appear publicly.
-        </p>
-
-    </section>
+    <p class="subtitle">
+        Review and manage creator submissions.
+    </p>
 
 
-    <!-- ERROR -->
-
-    <div
-        id="error"
-        class="error"
-    ></div>
-
-
-    <!-- STATS -->
+    <!-- STATISTICS -->
 
     <section class="stats">
 
-        <div class="stat-card">
+        <div class="stat">
 
-            <div class="stat-label">
-                PENDING
+            <div class="stat-title">
+                Pending
             </div>
 
             <div
+                class="stat-number"
                 id="pendingCount"
-                class="stat-number"
             >
                 0
             </div>
@@ -462,15 +259,15 @@ button {
         </div>
 
 
-        <div class="stat-card">
+        <div class="stat">
 
-            <div class="stat-label">
-                APPROVED
+            <div class="stat-title">
+                Approved
             </div>
 
             <div
+                class="stat-number"
                 id="approvedCount"
-                class="stat-number"
             >
                 0
             </div>
@@ -478,15 +275,15 @@ button {
         </div>
 
 
-        <div class="stat-card">
+        <div class="stat">
 
-            <div class="stat-label">
-                REJECTED
+            <div class="stat-title">
+                Rejected
             </div>
 
             <div
-                id="rejectedCount"
                 class="stat-number"
+                id="rejectedCount"
             >
                 0
             </div>
@@ -496,34 +293,25 @@ button {
     </section>
 
 
-    <!-- PENDING -->
-
-    <h2 class="section-title">
-        Pending Projects
-    </h2>
-
-
-    <div
-        id="loading"
-        class="loading"
-    >
+    <div id="loading">
         Loading projects...
     </div>
 
 
-    <section
-        id="projects"
-        class="projects"
-    ></section>
+    <div id="error"></div>
 
 
     <div
         id="empty"
-        class="empty"
-        style="display:none;"
     >
-        🎉 No pending projects right now.
+        🎉 No pending projects.
     </div>
+
+
+    <section
+        class="projects"
+        id="projects"
+    ></section>
 
 
 </main>
@@ -531,15 +319,17 @@ button {
 
 <!-- SUPABASE -->
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
 
 
-<!-- CONFIG -->
+<!-- YOUR CONFIG -->
 
 <script src="js/config.js"></script>
 
 
-<!-- ADMIN JS -->
+<!-- ADMIN DASHBOARD -->
 
 <script src="js/admin-dashboard.js"></script>
 
