@@ -1,137 +1,108 @@
 // ==========================================
-// VIDLYRA CREATOR PROJECTS
+// VIDLYRA ANIME EXPLORE
 // ==========================================
 
-console.log("Projects JS loaded");
+console.log("Vidlyra Projects loaded");
 
 
 // ==========================================
-// LOAD PROJECTS
+// ELEMENTS
+// ==========================================
+
+const projectsContainer =
+    document.getElementById("projects");
+
+const searchInput =
+    document.getElementById("search");
+
+const categorySelect =
+    document.getElementById("category");
+
+
+// ==========================================
+// DATA
+// ==========================================
+
+let allProjects = [];
+
+
+// ==========================================
+// LOAD APPROVED PROJECTS
 // ==========================================
 
 async function loadProjects() {
 
-    const loading =
-        document.getElementById("loading");
-
-    const grid =
-        document.getElementById("projectsGrid");
-
-    const empty =
-        document.getElementById("empty");
-
-    const errorBox =
-        document.getElementById("error");
+    projectsContainer.innerHTML = `
+        <div class="loading">
+            Loading anime...
+        </div>
+    `;
 
 
     try {
 
-        // ======================================
-        // CHECK LOGIN
-        // ======================================
-
-        const {
-            data: userData,
-            error: userError
-        } = await sb.auth.getUser();
-
-
-        if (userError || !userData.user) {
-
-            window.location.href =
-                "login.html";
-
-            return;
-        }
-
-
-        const user =
-            userData.user;
-
-
-        // ======================================
-        // GET CREATOR PROJECTS
-        // ======================================
-
         const {
             data: projects,
-            error: projectsError
+            error
         } = await sb
+
             .from("projects")
-            .select("*")
-            .eq("user_id", user.id)
-            .order("created_at", {
-                ascending: false
-            });
+
+            .select(`
+                id,
+                user_id,
+                title,
+                description,
+                category,
+                thumbnail,
+                status,
+                created_at
+            `)
+
+            .eq(
+                "status",
+                "Approved"
+            )
+
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
 
 
-        if (projectsError) {
+        if (error) {
 
-            throw projectsError;
+            throw error;
 
         }
 
 
-        console.log(
-            "Projects:",
-            projects
+        allProjects =
+            projects || [];
+
+
+        await attachCreators();
+
+        renderProjects(
+            allProjects
         );
-
-
-        // ======================================
-        // STOP LOADING
-        // ======================================
-
-        loading.style.display =
-            "none";
-
-
-        // ======================================
-        // NO PROJECTS
-        // ======================================
-
-        if (!projects || projects.length === 0) {
-
-            empty.style.display =
-                "block";
-
-            return;
-
-        }
-
-
-        // ======================================
-        // DISPLAY PROJECTS
-        // ======================================
-
-        grid.innerHTML = "";
-
-
-        projects.forEach(project => {
-
-            const card =
-                createProjectCard(project);
-
-            grid.appendChild(card);
-
-        });
 
 
     } catch (error) {
 
         console.error(
-            "Projects loading error:",
+            "Projects error:",
             error
         );
 
 
-        loading.style.display =
-            "none";
-
-
-        errorBox.textContent =
-            "Unable to load projects: " +
-            error.message;
+        projectsContainer.innerHTML = `
+            <div class="error">
+                ${escapeHTML(error.message)}
+            </div>
+        `;
 
     }
 
@@ -139,110 +110,391 @@ async function loadProjects() {
 
 
 // ==========================================
-// CREATE PROJECT CARD
+// ATTACH CREATOR INFORMATION
 // ==========================================
 
-function createProjectCard(project) {
+async function attachCreators() {
 
-    const card =
-        document.createElement("div");
-
-
-    card.className =
-        "project-card";
-
-
-    // ======================================
-    // THUMBNAIL
-    // ======================================
-
-    let thumbnailURL =
-        "assets/default-thumbnail.png";
+    const userIds = [
+        ...new Set(
+            allProjects.map(
+                project =>
+                    project.user_id
+            )
+        )
+    ];
 
 
-    if (project.thumbnail) {
+    if (
+        userIds.length === 0
+    ) {
 
-        const {
-            data
-        } = sb.storage
-            .from("thumbnails")
-            .getPublicUrl(
-                project.thumbnail
-            );
-
-
-        if (data && data.publicUrl) {
-
-            thumbnailURL =
-                data.publicUrl;
-
-        }
+        return;
 
     }
 
 
-    // ======================================
-    // SAFE TEXT
-    // ======================================
+    const {
+        data: profiles,
+        error
+    } = await sb
 
-    const title =
-        project.title || "Untitled Project";
+        .from("profiles")
+
+        .select(`
+            user_id,
+            full_name,
+            avatar_url,
+            creator_avatar,
+            creator_level,
+            creator_rank
+        `)
+
+        .in(
+            "user_id",
+            userIds
+        );
 
 
-    const description =
-        project.description ||
-        "No description";
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    const profileMap =
+        new Map();
+
+
+    (profiles || []).forEach(
+        profile => {
+
+            profileMap.set(
+                profile.user_id,
+                profile
+            );
+
+        }
+    );
+
+
+    allProjects =
+        allProjects.map(
+            project => ({
+
+                ...project,
+
+                creator:
+                    profileMap.get(
+                        project.user_id
+                    ) || null
+
+            })
+        );
+
+}
+
+
+// ==========================================
+// RENDER
+// ==========================================
+
+function renderProjects(
+    projects
+) {
+
+    projectsContainer.innerHTML = "";
+
+
+    if (
+        !projects ||
+        projects.length === 0
+    ) {
+
+        projectsContainer.innerHTML = `
+            <div class="empty">
+                No approved projects found.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    projects.forEach(
+        project => {
+
+            const card =
+                document.createElement(
+                    "article"
+                );
+
+
+            card.className =
+                "card";
+
+
+            const creator =
+                project.creator;
+
+
+            const creatorName =
+                creator?.full_name ||
+                "Vidlyra Creator";
+
+
+            const creatorLevel =
+                creator?.creator_level ||
+                1;
+
+
+            const creatorRank =
+                creator?.creator_rank ||
+                "New Creator";
+
+
+            const avatar =
+                creator?.avatar_url ||
+                "";
+
+
+            card.innerHTML = `
+
+                ${
+                    project.thumbnail
+                    ?
+                    `
+                    <img
+                        class="poster"
+                        src="${safeAttribute(project.thumbnail)}"
+                        alt="${escapeHTML(project.title || "Anime")}"
+                    >
+                    `
+                    :
+                    `
+                    <div class="poster"></div>
+                    `
+                }
+
+
+                <div class="card-body">
+
+                    <div class="title">
+                        ${escapeHTML(
+                            project.title ||
+                            "Untitled"
+                        )}
+                    </div>
+
+
+                    <div class="category">
+                        ${escapeHTML(
+                            project.category ||
+                            "Anime"
+                        )}
+                    </div>
+
+
+                    <div class="creator">
+
+                        ${
+                            avatar
+                            ?
+                            `
+                            <img
+                                class="creator-avatar"
+                                src="${safeAttribute(avatar)}"
+                                alt="Creator avatar"
+                            >
+                            `
+                            :
+                            `
+                            <div class="creator-avatar">
+                            </div>
+                            `
+                        }
+
+
+                        <div>
+
+                            <div class="creator-name">
+                                ${escapeHTML(
+                                    creatorName
+                                )}
+                            </div>
+
+                            <div class="creator-level">
+                                Level ${creatorLevel}
+                                •
+                                ${escapeHTML(
+                                    creatorRank
+                                )}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <a
+                        class="view-profile"
+                        href="profile.html?user=${encodeURIComponent(project.user_id)}"
+                    >
+                        View Creator Profile →
+                    </a>
+
+                </div>
+
+            `;
+
+
+            projectsContainer.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// SEARCH + FILTER
+// ==========================================
+
+function filterProjects() {
+
+    const search =
+        searchInput.value
+            .trim()
+            .toLowerCase();
 
 
     const category =
-        project.category ||
-        "Unknown";
+        categorySelect.value;
 
 
-    const status =
-        project.status ||
-        "Pending";
+    const filtered =
+        allProjects.filter(
+            project => {
+
+                const title =
+                    (
+                        project.title ||
+                        ""
+                    ).toLowerCase();
 
 
-    // ======================================
-    // CARD
-    // ======================================
-
-    card.innerHTML = `
-
-        <img
-            class="thumbnail"
-            src="${thumbnailURL}"
-            alt="${title}"
-            onerror="
-                this.src='assets/default-thumbnail.png'
-            "
-        >
-
-        <div class="card-content">
-
-            <div class="project-title">
-                ${title}
-            </div>
-
-            <div class="category">
-                ${category}
-            </div>
-
-            <div class="status">
-                Status: ${status}
-            </div>
-
-            <div class="description">
-                ${description}
-            </div>
-
-        </div>
-
-    `;
+                const description =
+                    (
+                        project.description ||
+                        ""
+                    ).toLowerCase();
 
 
-    return card;
+                const projectCategory =
+                    project.category ||
+                    "";
+
+
+                const creatorName =
+                    (
+                        project.creator?.full_name ||
+                        ""
+                    ).toLowerCase();
+
+
+                const matchesSearch =
+                    !search ||
+                    title.includes(search) ||
+                    description.includes(search) ||
+                    creatorName.includes(search);
+
+
+                const matchesCategory =
+                    category === "all" ||
+                    projectCategory === category;
+
+
+                return (
+                    matchesSearch &&
+                    matchesCategory
+                );
+
+            }
+        );
+
+
+    renderProjects(
+        filtered
+    );
+
+}
+
+
+// ==========================================
+// EVENTS
+// ==========================================
+
+searchInput.addEventListener(
+    "input",
+    filterProjects
+);
+
+
+categorySelect.addEventListener(
+    "change",
+    filterProjects
+);
+
+
+// ==========================================
+// SECURITY HELPERS
+// ==========================================
+
+function escapeHTML(
+    value
+) {
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+function safeAttribute(
+    value
+) {
+
+    return escapeHTML(
+        value
+    );
 
 }
 
