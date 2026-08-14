@@ -34,7 +34,7 @@ let allProjects = [];
 // inside the Supabase "projects" bucket.
 
 const PROJECT_BUCKET =
-    "projects";
+    "thumbnails";
 
 
 // ==========================================
@@ -57,7 +57,7 @@ async function loadProjects() {
             error
         } = await sb
 
-            .from("projects")
+            .from("thumbnails")
 
             .select(`
                 id,
