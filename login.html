@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Login | Vidlyra Creator Portal</title>
+    <title>Login | Vidlyra</title>
 
     <link
         rel="preconnect"
@@ -28,6 +28,7 @@
         rel="stylesheet"
     >
 
+
     <style>
 
         * {
@@ -37,158 +38,217 @@
             font-family: 'Poppins', sans-serif;
         }
 
+
         body {
+
             min-height: 100vh;
-            background: #050505;
+
             display: flex;
+
             justify-content: center;
+
             align-items: center;
-            padding: 20px;
+
+            background: #050505;
+
             color: white;
+
+            padding: 20px;
+
         }
+
 
         .login-card {
+
             width: 100%;
+
             max-width: 420px;
-            background: #111;
-            border: 1px solid #252525;
-            border-radius: 18px;
+
             padding: 35px;
-            box-shadow: 0 0 30px rgba(255, 122, 0, 0.15);
+
+            background: #111;
+
+            border: 1px solid #292929;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 0 35px
+                rgba(255, 122, 0, 0.10);
+
         }
+
 
         .logo {
+
             text-align: center;
+
             color: #ff7a00;
-            font-size: 34px;
+
+            font-size: 30px;
+
             font-weight: 700;
+
             letter-spacing: 2px;
+
+            margin-bottom: 8px;
+
         }
+
+
+        h1 {
+
+            text-align: center;
+
+            font-size: 24px;
+
+            margin-bottom: 8px;
+
+        }
+
 
         .subtitle {
+
             text-align: center;
-            color: #999;
-            margin-top: 5px;
+
+            color: #777;
+
+            font-size: 13px;
+
             margin-bottom: 30px;
+
         }
+
 
         .field {
+
             margin-bottom: 18px;
+
         }
 
-        .field label {
+
+        label {
+
             display: block;
+
             color: #ccc;
-            font-size: 14px;
+
+            font-size: 13px;
+
             margin-bottom: 7px;
+
         }
 
-        input[type="email"],
-        input[type="password"],
-        input[type="text"] {
+
+        input {
+
             width: 100%;
+
             padding: 14px;
+
             background: #1a1a1a;
+
             border: 1px solid #333;
-            border-radius: 10px;
+
+            border-radius: 9px;
+
             color: white;
-            font-size: 15px;
+
             outline: none;
+
+            font-size: 14px;
+
         }
+
 
         input:focus {
+
             border-color: #ff7a00;
+
         }
 
-        .password-box {
-            position: relative;
-        }
-
-        .password-box input {
-            padding-right: 50px;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #aaa;
-            user-select: none;
-        }
-
-        .options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 22px;
-            font-size: 13px;
-            color: #999;
-        }
-
-        .remember {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .options a,
-        .signup a {
-            color: #ff7a00;
-            text-decoration: none;
-        }
 
         .login-btn {
+
             width: 100%;
-            padding: 15px;
+
+            padding: 14px;
+
+            margin-top: 8px;
+
             background: #ff7a00;
+
             border: none;
-            border-radius: 10px;
+
+            border-radius: 9px;
+
             color: white;
-            font-size: 16px;
+
+            font-size: 15px;
+
             font-weight: 600;
+
             cursor: pointer;
-            transition: 0.25s;
+
         }
+
 
         .login-btn:hover {
+
             background: #ff9500;
+
         }
+
 
         .login-btn:disabled {
+
             opacity: 0.6;
+
             cursor: not-allowed;
+
         }
 
-        .message {
-            min-height: 22px;
-            margin-top: 15px;
+
+        #message {
+
+            min-height: 24px;
+
+            margin-top: 18px;
+
             text-align: center;
-            font-size: 14px;
-            color: #ff5555;
+
+            color: #aaa;
+
+            font-size: 13px;
+
         }
 
-        .signup {
+
+        .register-link {
+
             text-align: center;
-            margin-top: 20px;
-            color: #999;
-            font-size: 14px;
+
+            margin-top: 22px;
+
+            color: #777;
+
+            font-size: 13px;
+
         }
 
-        .loading {
-            display: none;
+
+        .register-link a {
+
+            color: #ff7a00;
+
+            text-decoration: none;
+
         }
 
-        @media (max-width: 500px) {
 
-            .login-card {
-                padding: 25px;
-            }
+        .register-link a:hover {
 
-            .logo {
-                font-size: 29px;
-            }
+            text-decoration: underline;
 
         }
 
@@ -196,24 +256,38 @@
 
 </head>
 
+
 <body>
 
-    <div class="login-card">
+
+    <main class="login-card">
+
 
         <div class="logo">
             VIDLYRA
         </div>
 
+
+        <h1>
+            Welcome Back
+        </h1>
+
+
         <p class="subtitle">
-            Creator Portal Login
+            Sign in to your Vidlyra account
         </p>
 
-        <form id="loginForm">
+
+        <form
+            id="loginForm"
+            onsubmit="event.preventDefault(); loginUser();"
+        >
+
 
             <div class="field">
 
                 <label for="email">
-                    Email Address
+                    Email
                 </label>
 
                 <input
@@ -226,77 +300,42 @@
 
             </div>
 
+
             <div class="field">
 
                 <label for="password">
                     Password
                 </label>
 
-                <div class="password-box">
-
-                    <input
-                        type="password"
-                        id="password"
-                        placeholder="Enter your password"
-                        autocomplete="current-password"
-                        required
-                    >
-
-                    <span
-                        class="toggle-password"
-                        id="togglePassword"
-                    >
-                        👁
-                    </span>
-
-                </div>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
 
             </div>
 
-            <div class="options">
-
-                <label class="remember">
-
-                    <input
-                        type="checkbox"
-                        id="remember"
-                    >
-
-                    Remember Me
-
-                </label>
-
-                <a href="#">
-                    Forgot Password?
-                </a>
-
-            </div>
 
             <button
                 type="submit"
                 class="login-btn"
                 id="loginButton"
             >
-
                 Login
-
-                <span
-                    class="loading"
-                    id="loading"
-                >
-                    ...
-                </span>
-
             </button>
+
 
         </form>
 
+
         <div
-            class="message"
             id="message"
         ></div>
 
-        <div class="signup">
+
+        <div class="register-link">
 
             Don't have an account?
 
@@ -306,63 +345,26 @@
 
         </div>
 
-    </div>
+
+    </main>
 
 
-    <!-- Supabase -->
+    <!-- SUPABASE -->
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
 
 
-    <!-- Supabase Configuration -->
+    <!-- SUPABASE CONFIG -->
 
     <script src="js/config.js"></script>
 
 
-    <!-- Authentication -->
+    <!-- AUTH -->
 
     <script src="js/auth.js"></script>
 
-
-    <script>
-
-        // Password visibility
-
-        document
-            .getElementById("togglePassword")
-            .addEventListener("click", function () {
-
-                const password =
-                    document.getElementById("password");
-
-                if (password.type === "password") {
-
-                    password.type = "text";
-                    this.textContent = "🙈";
-
-                } else {
-
-                    password.type = "password";
-                    this.textContent = "👁";
-
-                }
-
-            });
-
-
-        // Login form
-
-        document
-            .getElementById("loginForm")
-            .addEventListener("submit", function (event) {
-
-                event.preventDefault();
-
-                login();
-
-            });
-
-    </script>
 
 </body>
 
