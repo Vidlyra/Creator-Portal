@@ -27,14 +27,162 @@ let allProjects = [];
 
 
 // ==========================================
-// STORAGE BUCKET
+// GITHUB AVATAR PATHS
 // ==========================================
 
-// IMPORTANT:
-// "projects" = DATABASE TABLE
-// "thumbnails" = STORAGE BUCKET
+// projects.html is inside:
+//
+// Creator-Portal/
+// ├── projects.html
+// └── assets/
+//     ├── avatars/
+//     │   ├── avatar1.png
+//     │   └── avatar12.png
+//     │
+//     └── creator-avatars/
+//         ├── creator1.png
+//         └── creator7.png
 
-const PROJECT_BUCKET = "thumbnails";
+const AVATAR_BASE =
+    "assets/avatars/";
+
+const CREATOR_AVATAR_BASE =
+    "assets/creator-avatars/";
+
+
+// ==========================================
+// GET OFFICIAL AVATAR
+// ==========================================
+
+function getOfficialAvatar(profile) {
+
+    if (!profile) {
+
+        return "";
+
+    }
+
+
+    // ======================================
+    // CREATOR AVATAR
+    // ======================================
+
+    if (
+        profile.creator_avatar_unlocked === true &&
+        profile.creator_avatar !== null &&
+        profile.creator_avatar !== undefined &&
+        profile.creator_avatar !== ""
+    ) {
+
+        const creatorNumber =
+            Number(profile.creator_avatar);
+
+
+        if (
+            Number.isInteger(creatorNumber) &&
+            creatorNumber >= 1 &&
+            creatorNumber <= 7
+        ) {
+
+            return (
+                CREATOR_AVATAR_BASE +
+                `creator${creatorNumber}.png`
+            );
+
+        }
+
+    }
+
+
+    // ======================================
+    // NORMAL AVATAR
+    // ======================================
+
+    if (
+        profile.selected_avatar !== null &&
+        profile.selected_avatar !== undefined &&
+        profile.selected_avatar !== ""
+    ) {
+
+        const avatarNumber =
+            Number(profile.selected_avatar);
+
+
+        if (
+            Number.isInteger(avatarNumber) &&
+            avatarNumber >= 1 &&
+            avatarNumber <= 12
+        ) {
+
+            return (
+                AVATAR_BASE +
+                `avatar${avatarNumber}.png`
+            );
+
+        }
+
+    }
+
+
+    return "";
+
+}
+
+
+// ==========================================
+// GET THUMBNAIL URL
+// ==========================================
+
+function getThumbnailUrl(
+    thumbnail
+) {
+
+    if (!thumbnail) {
+
+        return "";
+
+    }
+
+
+    // Already a complete URL.
+
+    if (
+        thumbnail.startsWith("http://") ||
+        thumbnail.startsWith("https://")
+    ) {
+
+        return thumbnail;
+
+    }
+
+
+    // Relative GitHub/local path.
+
+    if (
+        thumbnail.startsWith("assets/")
+    ) {
+
+        return thumbnail;
+
+    }
+
+
+    // Supabase thumbnail path.
+    //
+    // We start with the thumbnails bucket.
+    // If it fails, renderProject() will
+    // automatically try the projects bucket.
+
+    const {
+        data
+    } = sb.storage
+        .from("thumbnails")
+        .getPublicUrl(thumbnail);
+
+
+    return data?.publicUrl || "";
+
+}
 
 
 // ==========================================
@@ -44,9 +192,15 @@ const PROJECT_BUCKET = "thumbnails";
 async function loadProjects() {
 
     if (!projectsContainer) {
-        console.error("Projects container not found.");
+
+        console.error(
+            "Projects container not found."
+        );
+
         return;
+
     }
+
 
     projectsContainer.innerHTML = `
         <div class="loading">
@@ -54,17 +208,20 @@ async function loadProjects() {
         </div>
     `;
 
+
     try {
 
         // ======================================
-        // DATABASE TABLE
+        // GET APPROVED PROJECTS
         // ======================================
 
         const {
             data: projects,
             error
         } = await sb
+
             .from("projects")
+
             .select(`
                 id,
                 user_id,
@@ -75,10 +232,12 @@ async function loadProjects() {
                 status,
                 created_at
             `)
+
             .eq(
                 "status",
                 "Approved"
             )
+
             .order(
                 "created_at",
                 {
@@ -88,29 +247,31 @@ async function loadProjects() {
 
 
         if (error) {
+
             throw error;
+
         }
+
+
+        console.log(
+            "Approved projects:",
+            projects
+        );
 
 
         allProjects =
             projects || [];
 
 
-        console.log(
-            "Approved projects:",
-            allProjects
-        );
-
-
         // ======================================
-        // LOAD CREATOR PROFILES
+        // LOAD CREATOR INFORMATION
         // ======================================
 
         await attachCreators();
 
 
         // ======================================
-        // DISPLAY PROJECTS
+        // DISPLAY
         // ======================================
 
         renderProjects(
@@ -129,7 +290,8 @@ async function loadProjects() {
         projectsContainer.innerHTML = `
             <div class="error">
                 ${escapeHTML(
-                    error.message
+                    error.message ||
+                    "Unable to load projects."
                 )}
             </div>
         `;
@@ -160,24 +322,36 @@ async function attachCreators() {
     if (
         userIds.length === 0
     ) {
+
         return;
+
     }
+
+
+    console.log(
+        "Loading creator profiles:",
+        userIds
+    );
 
 
     const {
         data: profiles,
         error
     } = await sb
+
         .from("profiles")
+
         .select(`
             user_id,
             full_name,
             avatar_url,
+            selected_avatar,
             creator_avatar,
             creator_level,
             creator_rank,
             creator_avatar_unlocked
         `)
+
         .in(
             "user_id",
             userIds
@@ -185,15 +359,30 @@ async function attachCreators() {
 
 
     if (error) {
+
+        console.error(
+            "Profile loading error:",
+            error
+        );
+
         throw error;
+
     }
+
+
+    console.log(
+        "Creator profiles:",
+        profiles
+    );
 
 
     const profileMap =
         new Map();
 
 
-    (profiles || []).forEach(
+    (
+        profiles || []
+    ).forEach(
         profile => {
 
             profileMap.set(
@@ -219,108 +408,6 @@ async function attachCreators() {
             })
         );
 
-}
-
-
-// ==========================================
-// GET THUMBNAIL URL
-// ==========================================
-
-function getThumbnailUrl(
-    thumbnail
-) {
-
-    if (!thumbnail) {
-        return "";
-    }
-
-
-    // ======================================
-    // ALREADY A FULL URL
-    // ======================================
-
-    if (
-        thumbnail.startsWith(
-            "http://"
-        ) ||
-        thumbnail.startsWith(
-            "https://"
-        )
-    ) {
-
-        return thumbnail;
-
-    }
-
-
-    // ======================================
-    // SUPABASE STORAGE
-    // ======================================
-
-    const {
-        data
-    } = sb.storage
-        .from(
-            PROJECT_BUCKET
-        )
-        .getPublicUrl(
-            thumbnail
-        );
-
-
-    return data?.publicUrl || "";
-
-}
-
-
-// ==========================================
-// GET CREATOR AVATAR URL
-// ==========================================
-
-function getAvatarUrl(
-    avatar
-) {
-
-    if (!avatar) {
-        return "";
-    }
-
-
-    // ======================================
-    // FULL URL
-    // ======================================
-
-    if (
-        avatar.startsWith(
-            "http://"
-        ) ||
-        avatar.startsWith(
-            "https://"
-        )
-    ) {
-
-        return avatar;
-
-    }
-
-
-    // ======================================
-    // STORAGE PATH
-    // ======================================
-
-    // avatar_url may contain a path.
-    // Try the public avatars bucket.
-
-    const {
-        data
-    } = sb.storage
-        .from("avatars")
-        .getPublicUrl(
-            avatar
-        );
-
-
-    return data?.publicUrl || "";
 
 }
 
@@ -333,7 +420,8 @@ function renderProjects(
     projects
 ) {
 
-    projectsContainer.innerHTML = "";
+    projectsContainer.innerHTML =
+        "";
 
 
     if (
@@ -355,260 +443,8 @@ function renderProjects(
     projects.forEach(
         project => {
 
-            const card =
-                document.createElement(
-                    "article"
-                );
-
-
-            card.className =
-                "card";
-
-
-            // ==================================
-            // CREATOR
-            // ==================================
-
-            const creator =
-                project.creator;
-
-
-            const creatorName =
-                creator?.full_name ||
-                "Vidlyra Creator";
-
-
-            const creatorLevel =
-                creator?.creator_level ||
-                1;
-
-
-            const creatorRank =
-                creator?.creator_rank ||
-                "New Creator";
-
-
-            const avatar =
-                creator?.avatar_url ||
-                "";
-
-
-            // ==================================
-            // IMAGE URLS
-            // ==================================
-
-            const thumbnailUrl =
-                getThumbnailUrl(
-                    project.thumbnail
-                );
-
-
-            const avatarUrl =
-                getAvatarUrl(
-                    avatar
-                );
-
-
-            console.log(
-                "Thumbnail:",
-                project.title,
-                thumbnailUrl
-            );
-
-
-            console.log(
-                "Creator:",
-                creatorName,
-                "Avatar:",
-                avatarUrl
-            );
-
-
-            // ==================================
-            // CREATOR PROFILE URL
-            // ==================================
-
-            const creatorProfileUrl =
-                project.user_id
-                    ? `profile.html?user=${encodeURIComponent(
-                        project.user_id
-                    )}`
-                    : "profile.html";
-
-
-            // ==================================
-            // PROJECT CARD
-            // ==================================
-
-            card.innerHTML = `
-
-                <!-- PROJECT THUMBNAIL -->
-
-                ${
-                    thumbnailUrl
-                    ?
-                    `
-                    <img
-                        class="poster"
-                        src="${safeAttribute(
-                            thumbnailUrl
-                        )}"
-                        alt="${escapeHTML(
-                            project.title ||
-                            "Anime"
-                        )}"
-                    >
-                    `
-                    :
-                    `
-                    <div class="poster">
-                    </div>
-                    `
-                }
-
-
-                <div class="card-body">
-
-
-                    <!-- TITLE -->
-
-                    <div class="title">
-
-                        ${escapeHTML(
-                            project.title ||
-                            "Untitled"
-                        )}
-
-                    </div>
-
-
-                    <!-- CATEGORY -->
-
-                    <div class="category">
-
-                        ${escapeHTML(
-                            project.category ||
-                            "Anime"
-                        )}
-
-                    </div>
-
-
-                    <!-- CREATOR -->
-
-                    <div class="creator">
-
-
-                        ${
-                            avatarUrl
-                            ?
-                            `
-                            <img
-                                class="creator-avatar"
-                                src="${safeAttribute(
-                                    avatarUrl
-                                )}"
-                                alt="${escapeHTML(
-                                    creatorName
-                                )}"
-                            >
-                            `
-                            :
-                            `
-                            <div
-                                class="creator-avatar"
-                                aria-label="Creator avatar"
-                            >
-                            </div>
-                            `
-                        }
-
-
-                        <div>
-
-                            <div class="creator-name">
-
-                                ${escapeHTML(
-                                    creatorName
-                                )}
-
-                            </div>
-
-
-                            <div class="creator-level">
-
-                                Level
-                                ${creatorLevel}
-
-                                •
-
-                                ${escapeHTML(
-                                    creatorRank
-                                )}
-
-                            </div>
-
-                        </div>
-
-
-                    </div>
-
-
-                    <!-- PROFILE LINK -->
-
-                    <a
-                        class="view-profile"
-                        href="${creatorProfileUrl}"
-                    >
-                        View Creator Profile →
-                    </a>
-
-
-                </div>
-
-            `;
-
-
-            // ==================================
-            // THUMBNAIL ERROR
-            // ==================================
-
-            const image =
-                card.querySelector(
-                    ".poster"
-                );
-
-
-            if (
-                image &&
-                image.tagName === "IMG"
-            ) {
-
-                image.addEventListener(
-                    "error",
-                    function () {
-
-                        console.error(
-                            "Thumbnail failed:",
-                            thumbnailUrl
-                        );
-
-
-                        image.style.display =
-                            "none";
-
-                    }
-                );
-
-            }
-
-
-            // ==================================
-            // ADD CARD
-            // ==================================
-
-            projectsContainer.appendChild(
-                card
+            renderProject(
+                project
             );
 
         }
@@ -618,7 +454,418 @@ function renderProjects(
 
 
 // ==========================================
-// SEARCH + CATEGORY FILTER
+// RENDER SINGLE PROJECT
+// ==========================================
+
+function renderProject(
+    project
+) {
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+
+    card.className =
+        "card";
+
+
+    // ======================================
+    // CREATOR
+    // ======================================
+
+    const creator =
+        project.creator;
+
+
+    const creatorName =
+        creator?.full_name ||
+        "Vidlyra Creator";
+
+
+    const creatorLevel =
+        creator?.creator_level ||
+        1;
+
+
+    const creatorRank =
+        creator?.creator_rank ||
+        "New Creator";
+
+
+    // ======================================
+    // GITHUB AVATAR
+    // ======================================
+
+    const avatar =
+        getOfficialAvatar(
+            creator
+        );
+
+
+    console.log(
+        "Creator GitHub avatar:",
+        creatorName,
+        avatar
+    );
+
+
+    // ======================================
+    // THUMBNAIL
+    // ======================================
+
+    const thumbnailUrl =
+        getThumbnailUrl(
+            project.thumbnail
+        );
+
+
+    console.log(
+        "Thumbnail:",
+        project.title,
+        thumbnailUrl
+    );
+
+
+    // ======================================
+    // THUMBNAIL HTML
+    // ======================================
+
+    let thumbnailHTML;
+
+
+    if (thumbnailUrl) {
+
+        thumbnailHTML = `
+            <img
+                class="poster"
+                src="${safeAttribute(
+                    thumbnailUrl
+                )}"
+                alt="${escapeHTML(
+                    project.title ||
+                    "Anime"
+                )}"
+            >
+        `;
+
+    } else {
+
+        thumbnailHTML = `
+            <div class="poster placeholder">
+                <span>
+                    No Thumbnail
+                </span>
+            </div>
+        `;
+
+    }
+
+
+    // ======================================
+    // AVATAR HTML
+    // ======================================
+
+    let avatarHTML;
+
+
+    if (avatar) {
+
+        avatarHTML = `
+            <img
+                class="creator-avatar"
+                src="${safeAttribute(
+                    avatar
+                )}"
+                alt="${escapeHTML(
+                    creatorName
+                )} avatar"
+            >
+        `;
+
+    } else {
+
+        avatarHTML = `
+            <div
+                class="creator-avatar avatar-placeholder"
+                aria-label="Creator avatar unavailable"
+            ></div>
+        `;
+
+    }
+
+
+    // ======================================
+    // PROFILE LINK
+    // ======================================
+
+    const profileLink =
+        project.user_id
+            ? `profile.html?user=${encodeURIComponent(
+                project.user_id
+            )}`
+            : "#";
+
+
+    // ======================================
+    // CARD HTML
+    // ======================================
+
+    card.innerHTML = `
+
+        ${thumbnailHTML}
+
+
+        <div class="card-body">
+
+
+            <div class="title">
+
+                ${escapeHTML(
+                    project.title ||
+                    "Untitled"
+                )}
+
+            </div>
+
+
+            <div class="category">
+
+                ${escapeHTML(
+                    project.category ||
+                    "Anime"
+                )}
+
+            </div>
+
+
+            <div class="creator">
+
+
+                ${avatarHTML}
+
+
+                <div class="creator-info">
+
+
+                    <div class="creator-name">
+
+                        ${escapeHTML(
+                            creatorName
+                        )}
+
+                    </div>
+
+
+                    <div class="creator-level">
+
+                        Level ${escapeHTML(
+                            creatorLevel
+                        )}
+
+                        •
+
+                        ${escapeHTML(
+                            creatorRank
+                        )}
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+            <a
+                class="view-profile"
+                href="${safeAttribute(
+                    profileLink
+                )}"
+            >
+                View Creator Profile →
+            </a>
+
+
+        </div>
+
+    `;
+
+
+    // ======================================
+    // THUMBNAIL FALLBACK
+    // ======================================
+
+    const image =
+        card.querySelector(
+            ".poster"
+        );
+
+
+    if (
+        image &&
+        image.tagName === "IMG"
+    ) {
+
+        image.addEventListener(
+            "error",
+            function () {
+
+                console.warn(
+                    "Thumbnail failed:",
+                    image.src
+                );
+
+
+                // Try projects bucket
+                // if thumbnails bucket failed.
+
+                if (
+                    !image.dataset.fallbackUsed &&
+                    project.thumbnail &&
+                    !project.thumbnail.startsWith(
+                        "http://"
+                    ) &&
+                    !project.thumbnail.startsWith(
+                        "https://"
+                    )
+                ) {
+
+                    image.dataset.fallbackUsed =
+                        "true";
+
+
+                    const {
+                        data
+                    } = sb.storage
+                        .from("projects")
+                        .getPublicUrl(
+                            project.thumbnail
+                        );
+
+
+                    const fallbackUrl =
+                        data?.publicUrl;
+
+
+                    if (fallbackUrl) {
+
+                        console.log(
+                            "Trying projects bucket:",
+                            fallbackUrl
+                        );
+
+
+                        image.src =
+                            fallbackUrl;
+
+
+                        return;
+
+                    }
+
+                }
+
+
+                // Final fallback.
+
+                image.style.display =
+                    "none";
+
+
+                const placeholder =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                placeholder.className =
+                    "poster placeholder";
+
+
+                placeholder.innerHTML = `
+                    <span>
+                        Thumbnail unavailable
+                    </span>
+                `;
+
+
+                image.parentNode.insertBefore(
+                    placeholder,
+                    image
+                );
+
+            }
+        );
+
+    }
+
+
+    // ======================================
+    // AVATAR ERROR
+    // ======================================
+
+    const avatarImage =
+        card.querySelector(
+            ".creator-avatar"
+        );
+
+
+    if (
+        avatarImage &&
+        avatarImage.tagName === "IMG"
+    ) {
+
+        avatarImage.addEventListener(
+            "error",
+            function () {
+
+                console.error(
+                    "GitHub avatar failed:",
+                    avatarImage.src
+                );
+
+
+                avatarImage.style.display =
+                    "none";
+
+
+                const avatarFallback =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                avatarFallback.className =
+                    "creator-avatar avatar-placeholder";
+
+
+                avatarImage.parentNode.insertBefore(
+                    avatarFallback,
+                    avatarImage
+                );
+
+            }
+        );
+
+    }
+
+
+    // ======================================
+    // ADD CARD
+    // ======================================
+
+    projectsContainer.appendChild(
+        card
+    );
+
+}
+
+
+// ==========================================
+// SEARCH + FILTER
 // ==========================================
 
 function filterProjects() {
@@ -645,14 +892,16 @@ function filterProjects() {
                     (
                         project.title ||
                         ""
-                    ).toLowerCase();
+                    )
+                    .toLowerCase();
 
 
                 const description =
                     (
                         project.description ||
                         ""
-                    ).toLowerCase();
+                    )
+                    .toLowerCase();
 
 
                 const projectCategory =
@@ -662,23 +911,20 @@ function filterProjects() {
 
                 const creatorName =
                     (
-                        project.creator
-                            ?.full_name ||
+                        project.creator?.full_name ||
                         ""
-                    ).toLowerCase();
+                    )
+                    .toLowerCase();
 
 
                 const matchesSearch =
                     !search ||
-
                     title.includes(
                         search
                     ) ||
-
                     description.includes(
                         search
                     ) ||
-
                     creatorName.includes(
                         search
                     );
@@ -686,9 +932,7 @@ function filterProjects() {
 
                 const matchesCategory =
                     category === "all" ||
-
-                    projectCategory ===
-                    category;
+                    projectCategory === category;
 
 
                 return (
@@ -708,7 +952,7 @@ function filterProjects() {
 
 
 // ==========================================
-// SEARCH EVENT
+// EVENTS
 // ==========================================
 
 if (searchInput) {
@@ -721,10 +965,6 @@ if (searchInput) {
 }
 
 
-// ==========================================
-// CATEGORY EVENT
-// ==========================================
-
 if (categorySelect) {
 
     categorySelect.addEventListener(
@@ -736,7 +976,7 @@ if (categorySelect) {
 
 
 // ==========================================
-// SECURITY
+// SECURITY HELPERS
 // ==========================================
 
 function escapeHTML(
