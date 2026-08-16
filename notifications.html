@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Notifications | Vidlyra</title>
@@ -12,6 +15,7 @@
 >
 
 <style>
+
 * {
     margin: 0;
     padding: 0;
@@ -27,11 +31,11 @@ body {
 
 header {
     height: 70px;
-    padding: 0 30px;
+    padding: 0 7%;
 
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
 
     background: #111;
     border-bottom: 1px solid #252525;
@@ -43,16 +47,22 @@ header {
     font-weight: 700;
 }
 
-.back-btn {
+.back-btn,
+.read-all {
     padding: 9px 16px;
+
     background: transparent;
     border: 1px solid #333;
     border-radius: 8px;
+
     color: #ccc;
     cursor: pointer;
+
+    transition: .2s;
 }
 
-.back-btn:hover {
+.back-btn:hover,
+.read-all:hover {
     border-color: #ff7a00;
     color: #ff7a00;
 }
@@ -60,81 +70,83 @@ header {
 .container {
     width: 100%;
     max-width: 850px;
-    margin: 40px auto;
+
+    margin: 45px auto;
     padding: 0 20px;
 }
 
-.title {
-    font-size: 30px;
-}
+.page-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-.subtitle {
-    color: #777;
-    margin-top: 5px;
+    gap: 15px;
+
     margin-bottom: 25px;
 }
 
-.actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 15px;
+.page-title {
+    font-size: 30px;
 }
 
-.read-btn {
-    background: #151515;
-    color: #ff7a00;
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 9px 14px;
-    cursor: pointer;
+.page-subtitle {
+    color: #777;
+    font-size: 13px;
+    margin-top: 5px;
 }
 
-.read-btn:hover {
-    border-color: #ff7a00;
+#loading {
+    text-align: center;
+    color: #888;
+    padding: 50px 10px;
 }
 
-.notification-list {
-    display: flex;
+#notificationList {
+    display: none;
     flex-direction: column;
     gap: 12px;
 }
 
 .notification {
-    position: relative;
+    padding: 20px;
 
     background: #111;
-    border: 1px solid #242424;
+
+    border: 1px solid #292929;
+
     border-radius: 14px;
 
-    padding: 18px;
+    cursor: pointer;
 
     transition: .2s;
 }
 
 .notification:hover {
     border-color: #ff7a00;
+    transform: translateY(-2px);
 }
 
 .notification.unread {
     border-left: 3px solid #ff7a00;
-    background: #141414;
+    background: #14100d;
 }
 
 .notification-top {
     display: flex;
     justify-content: space-between;
-    gap: 15px;
+    gap: 20px;
 }
 
 .notification-title {
+    color: #ff7a00;
     font-size: 16px;
     font-weight: 600;
 }
 
 .notification-message {
-    color: #aaa;
+    color: #bbb;
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.7;
     margin-top: 7px;
 }
 
@@ -147,36 +159,36 @@ header {
 .notification-type {
     display: inline-block;
 
-    margin-top: 10px;
+    margin-top: 12px;
 
-    padding: 3px 8px;
+    padding: 4px 9px;
 
     border-radius: 20px;
 
-    background: #222;
+    background: #1d1d1d;
 
-    color: #ff7a00;
+    color: #777;
 
     font-size: 10px;
-    text-transform: uppercase;
 }
 
-.empty {
-    text-align: center;
-    padding: 70px 20px;
-    color: #666;
-}
+.empty,
+.error {
+    padding: 50px 20px;
 
-.loading {
     text-align: center;
-    padding: 60px;
-    color: #777;
+
+    background: #111;
+
+    border: 1px solid #292929;
+
+    border-radius: 14px;
+
+    color: #888;
 }
 
 .error {
-    text-align: center;
-    padding: 30px;
-    color: #ff5555;
+    color: #ff7777;
 }
 
 @media(max-width:600px) {
@@ -185,24 +197,28 @@ header {
         padding: 0 18px;
     }
 
-    .container {
-        margin-top: 25px;
+    .page-top {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
-    .title {
+    .page-title {
         font-size: 25px;
     }
 
     .notification-top {
         flex-direction: column;
-        gap: 5px;
+        gap: 8px;
     }
 
     .notification-time {
-        white-space: normal;
+        order: -1;
     }
+
 }
+
 </style>
+
 </head>
 
 <body>
@@ -225,20 +241,25 @@ header {
 
 <main class="container">
 
-    <h1 class="title">
-        🔔 Notifications
-    </h1>
+    <div class="page-top">
 
-    <p class="subtitle">
-        Your latest Vidlyra updates
-    </p>
+        <div>
 
+            <h1 class="page-title">
+                Notifications
+            </h1>
 
-    <div class="actions">
+            <p class="page-subtitle">
+                Your latest Vidlyra updates
+            </p>
+
+        </div>
+
 
         <button
-            class="read-btn"
             id="readAllButton"
+            class="read-all"
+            type="button"
         >
             Mark all as read
         </button>
@@ -246,29 +267,24 @@ header {
     </div>
 
 
-    <div
-        id="loading"
-        class="loading"
-    >
+    <div id="loading">
         Loading notifications...
     </div>
 
 
-    <div
-        id="notificationList"
-        class="notification-list"
-        style="display:none;"
-    ></div>
-
+    <div id="notificationList"></div>
 
 </main>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
 
 <script src="js/config.js"></script>
 
 <script src="js/notifications.js"></script>
 
 </body>
+
 </html>
