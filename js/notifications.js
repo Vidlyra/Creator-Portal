@@ -2,9 +2,7 @@
 // VIDLYRA NOTIFICATIONS
 // ==========================================
 
-console.log("Vidlyra Notifications loaded");
-
-let currentUser = null;
+console.log("Vidlyra notifications.js loaded");
 
 
 // ==========================================
@@ -20,73 +18,53 @@ const notificationList =
 const readAllButton =
     document.getElementById("readAllButton");
 
+const unreadBadge =
+    document.getElementById("unreadBadge");
+
 
 // ==========================================
-// TIME FORMAT
+// GET USER
 // ==========================================
 
-function timeAgo(dateString) {
+async function getCurrentUser() {
+
+    const {
+        data,
+        error
+    } = await sb.auth.getUser();
+
+    if (error) {
+        throw error;
+    }
+
+    if (!data || !data.user) {
+        return null;
+    }
+
+    return data.user;
+}
+
+
+// ==========================================
+// FORMAT TIME
+// ==========================================
+
+function formatTime(dateString) {
+
+    if (!dateString) {
+        return "";
+    }
 
     const date =
         new Date(dateString);
 
-    const now =
-        new Date();
-
-    const seconds =
-        Math.floor(
-            (now - date) / 1000
-        );
-
-
-    if (seconds < 60) {
-
-        return "Just now";
-
-    }
-
-
-    const minutes =
-        Math.floor(
-            seconds / 60
-        );
-
-
-    if (minutes < 60) {
-
-        return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
-
-    }
-
-
-    const hours =
-        Math.floor(
-            minutes / 60
-        );
-
-
-    if (hours < 24) {
-
-        return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
-
-    }
-
-
-    const days =
-        Math.floor(
-            hours / 24
-        );
-
-
-    if (days < 30) {
-
-        return `${days} day${days !== 1 ? "s" : ""} ago`;
-
-    }
-
-
-    return date.toLocaleDateString();
-
+    return date.toLocaleString(
+        undefined,
+        {
+            dateStyle: "medium",
+            timeStyle: "short"
+        }
+    );
 }
 
 
@@ -98,29 +76,29 @@ async function loadNotifications() {
 
     try {
 
-        const {
-            data,
-            error
-        } = await sb.auth.getUser();
+        loading.style.display = "block";
+        notificationList.style.display = "none";
+
+        const user =
+            await getCurrentUser();
 
 
-        if (error || !data.user) {
+        // --------------------------------------
+        // LOGIN CHECK
+        // --------------------------------------
+
+        if (!user) {
 
             window.location.href =
                 "login.html";
 
             return;
-
         }
 
 
-        currentUser =
-            data.user;
-
-
         console.log(
-            "Notification user:",
-            currentUser.id
+            "Loading notifications for:",
+            user.id
         );
 
 
@@ -130,13 +108,25 @@ async function loadNotifications() {
 
         const {
             data: notifications,
-            error: notificationError
+            error
         } = await sb
+
             .from("notifications")
-            .select("*")
-            .or(
-                `user_id.eq.${currentUser.id},user_id.is.null`
+
+            .select(`
+                id,
+                title,
+                message,
+                type,
+                is_read,
+                created_at
+            `)
+
+            .eq(
+                "user_id",
+                user.id
             )
+
             .order(
                 "created_at",
                 {
@@ -145,44 +135,49 @@ async function loadNotifications() {
             );
 
 
-        if (notificationError) {
+        if (error) {
 
-            throw notificationError;
+            console.error(
+                "Notification query error:",
+                error
+            );
 
+            throw error;
         }
 
 
-        renderNotifications(
-            notifications || []
+        const list =
+            notifications || [];
+
+
+        console.log(
+            "Notifications:",
+            list
         );
+
+
+        renderNotifications(list);
 
 
     } catch (error) {
 
         console.error(
-            "Notification error:",
+            "Notification loading error:",
             error
         );
 
 
-        loading.style.display =
-            "none";
+        loading.style.display = "none";
 
         notificationList.style.display =
-            "block";
+            "flex";
 
         notificationList.innerHTML = `
-
             <div class="error">
-
                 Unable to load notifications.
-
                 <br><br>
-
                 ${escapeHTML(error.message)}
-
             </div>
-
         `;
 
     }
@@ -198,75 +193,62 @@ function renderNotifications(
     notifications
 ) {
 
-    loading.style.display =
-        "none";
-
+    loading.style.display = "none";
 
     notificationList.style.display =
         "flex";
 
 
+    // --------------------------------------
+    // EMPTY
+    // --------------------------------------
+
     if (!notifications.length) {
 
         notificationList.innerHTML = `
-
             <div class="empty">
-
-                🔔
-
-                <br><br>
-
+                🔔<br><br>
                 No notifications yet.
-
-                <br>
-
-                Vidlyra will keep you updated here.
-
             </div>
-
         `;
 
-        return;
+        updateUnreadBadge(0);
 
+        return;
     }
 
+
+    // --------------------------------------
+    // UNREAD COUNT
+    // --------------------------------------
+
+    const unread =
+        notifications.filter(
+            notification =>
+                !notification.is_read
+        ).length;
+
+
+    updateUnreadBadge(unread);
+
+
+    // --------------------------------------
+    // HTML
+    // --------------------------------------
 
     notificationList.innerHTML =
         notifications.map(
             notification => {
 
-                const title =
-                    notification.title ||
-                    "Vidlyra Update";
-
-
-                const message =
-                    notification.message ||
-                    "";
-
-
-                const type =
-                    notification.type ||
-                    "update";
-
-
-                const createdAt =
-                    notification.created_at ||
-                    new Date().toISOString();
-
-
-                const isRead =
-                    notification.is_read === true;
+                const isUnread =
+                    !notification.is_read;
 
 
                 return `
-
-                    <article
-                        class="
-                            notification
-                            ${isRead ? "" : "unread"}
-                        "
-                        data-id="${notification.id}"
+                    <div
+                        class="notification
+                        ${isUnread ? "unread" : "read"}"
+                        data-id="${escapeHTML(notification.id)}"
                     >
 
                         <div class="notification-top">
@@ -275,13 +257,25 @@ function renderNotifications(
 
                                 <div class="notification-title">
 
-                                    ${escapeHTML(title)}
+                                    ${escapeHTML(
+                                        notification.title ||
+                                        "Vidlyra Notification"
+                                    )}
+
+                                    ${
+                                        isUnread
+                                            ? `<span class="unread-label">NEW</span>`
+                                            : ""
+                                    }
 
                                 </div>
 
                                 <div class="notification-message">
 
-                                    ${escapeHTML(message)}
+                                    ${escapeHTML(
+                                        notification.message ||
+                                        ""
+                                    )}
 
                                 </div>
 
@@ -290,7 +284,9 @@ function renderNotifications(
 
                             <div class="notification-time">
 
-                                ${timeAgo(createdAt)}
+                                ${formatTime(
+                                    notification.created_at
+                                )}
 
                             </div>
 
@@ -299,12 +295,14 @@ function renderNotifications(
 
                         <div class="notification-type">
 
-                            ${escapeHTML(type)}
+                            ${escapeHTML(
+                                notification.type ||
+                                "Update"
+                            )}
 
                         </div>
 
-                    </article>
-
+                    </div>
                 `;
 
             }
@@ -316,21 +314,26 @@ function renderNotifications(
     // --------------------------------------
 
     document
-        .querySelectorAll(".notification")
-        .forEach(card => {
+        .querySelectorAll(
+            ".notification.unread"
+        )
+        .forEach(
+            element => {
 
-            card.addEventListener(
-                "click",
-                () => {
+                element.addEventListener(
+                    "click",
+                    () => {
 
-                    markAsRead(
-                        card.dataset.id
-                    );
+                        markAsRead(
+                            element.dataset.id,
+                            element
+                        );
 
-                }
-            );
+                    }
+                );
 
-        });
+            }
+        );
 
 }
 
@@ -340,32 +343,25 @@ function renderNotifications(
 // ==========================================
 
 async function markAsRead(
-    notificationId
+    notificationId,
+    element
 ) {
-
-    if (!notificationId) {
-
-        return;
-
-    }
-
 
     try {
 
         const {
             error
         } = await sb
+
             .from("notifications")
+
             .update({
                 is_read: true
             })
+
             .eq(
                 "id",
                 notificationId
-            )
-            .eq(
-                "user_id",
-                currentUser.id
             );
 
 
@@ -377,28 +373,43 @@ async function markAsRead(
             );
 
             return;
-
         }
 
 
-        const card =
-            document.querySelector(
-                `.notification[data-id="${notificationId}"]`
-            );
+        // --------------------------------------
+        // UPDATE UI
+        // --------------------------------------
 
+        if (element) {
 
-        if (card) {
-
-            card.classList.remove(
+            element.classList.remove(
                 "unread"
             );
 
+            element.classList.add(
+                "read"
+            );
+
+
+            const label =
+                element.querySelector(
+                    ".unread-label"
+                );
+
+            if (label) {
+                label.remove();
+            }
+
         }
+
+
+        updateUnreadBadgeFromPage();
+
 
     } catch (error) {
 
         console.error(
-            "Mark notification error:",
+            "Unexpected mark read error:",
             error
         );
 
@@ -413,34 +424,43 @@ async function markAsRead(
 
 async function markAllAsRead() {
 
-    if (!currentUser) {
-
-        return;
-
-    }
-
-
-    readAllButton.disabled =
-        true;
-
-
-    readAllButton.textContent =
-        "Updating...";
-
-
     try {
+
+        readAllButton.disabled =
+            true;
+
+        readAllButton.textContent =
+            "Updating...";
+
+
+        const user =
+            await getCurrentUser();
+
+
+        if (!user) {
+
+            window.location.href =
+                "login.html";
+
+            return;
+        }
+
 
         const {
             error
         } = await sb
+
             .from("notifications")
+
             .update({
                 is_read: true
             })
+
             .eq(
                 "user_id",
-                currentUser.id
+                user.id
             )
+
             .eq(
                 "is_read",
                 false
@@ -450,21 +470,43 @@ async function markAllAsRead() {
         if (error) {
 
             throw error;
-
         }
 
+
+        // --------------------------------------
+        // UPDATE UI
+        // --------------------------------------
 
         document
             .querySelectorAll(
                 ".notification.unread"
             )
-            .forEach(card => {
+            .forEach(
+                element => {
 
-                card.classList.remove(
-                    "unread"
-                );
+                    element.classList.remove(
+                        "unread"
+                    );
 
-            });
+                    element.classList.add(
+                        "read"
+                    );
+
+
+                    const label =
+                        element.querySelector(
+                            ".unread-label"
+                        );
+
+                    if (label) {
+                        label.remove();
+                    }
+
+                }
+            );
+
+
+        updateUnreadBadge(0);
 
 
     } catch (error) {
@@ -475,7 +517,7 @@ async function markAllAsRead() {
         );
 
         alert(
-            "Could not update notifications."
+            "Unable to mark notifications as read."
         );
 
     } finally {
@@ -492,23 +534,90 @@ async function markAllAsRead() {
 
 
 // ==========================================
-// SAFE HTML
+// UPDATE BADGE
 // ==========================================
 
-function escapeHTML(value) {
+function updateUnreadBadge(
+    count
+) {
 
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    if (!unreadBadge) {
+        return;
+    }
+
+
+    if (count > 0) {
+
+        unreadBadge.textContent =
+            count;
+
+        unreadBadge.style.display =
+            "inline-block";
+
+    } else {
+
+        unreadBadge.style.display =
+            "none";
+
+    }
 
 }
 
 
 // ==========================================
-// BUTTON
+// UPDATE BADGE FROM CURRENT PAGE
+// ==========================================
+
+function updateUnreadBadgeFromPage() {
+
+    const unread =
+        document.querySelectorAll(
+            ".notification.unread"
+        ).length;
+
+
+    updateUnreadBadge(unread);
+
+}
+
+
+// ==========================================
+// HTML ESCAPE
+// ==========================================
+
+function escapeHTML(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// ==========================================
+// READ ALL BUTTON
 // ==========================================
 
 if (readAllButton) {
@@ -522,65 +631,7 @@ if (readAllButton) {
 
 
 // ==========================================
-// REAL-TIME NOTIFICATIONS
-// ==========================================
-
-function startRealtimeNotifications() {
-
-    if (!currentUser) {
-
-        return;
-
-    }
-
-
-    sb
-        .channel(
-            "vidlyra-notifications"
-        )
-        .on(
-            "postgres_changes",
-            {
-                event: "INSERT",
-                schema: "public",
-                table: "notifications"
-            },
-            payload => {
-
-                const notification =
-                    payload.new;
-
-
-                if (
-                    notification.user_id ===
-                    currentUser.id
-                    ||
-                    notification.user_id ===
-                    null
-                ) {
-
-                    loadNotifications();
-
-                }
-
-            }
-        )
-        .subscribe();
-
-}
-
-
-// ==========================================
 // START
 // ==========================================
 
-async function startNotifications() {
-
-    await loadNotifications();
-
-    startRealtimeNotifications();
-
-}
-
-
-startNotifications();
+loadNotifications();
