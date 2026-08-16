@@ -105,32 +105,42 @@ async function uploadProject() {
     // ==========================================
 
     if (!title) {
+
         message.textContent =
             "Please enter a project title.";
+
         return;
     }
 
     if (!description) {
+
         message.textContent =
             "Please enter a description.";
+
         return;
     }
 
     if (!category) {
+
         message.textContent =
             "Please select a category.";
+
         return;
     }
 
     if (!mainFile) {
+
         message.textContent =
             "Please select your project file.";
+
         return;
     }
 
     if (!thumbnail) {
+
         message.textContent =
             "Please select a thumbnail.";
+
         return;
     }
 
@@ -143,8 +153,10 @@ async function uploadProject() {
         uploadSettings[category];
 
     if (!settings) {
+
         message.textContent =
             "Invalid category.";
+
         return;
     }
 
@@ -226,26 +238,33 @@ async function uploadProject() {
             "Please login first.";
 
         setTimeout(() => {
-            window.location.href = "login.html";
+
+            window.location.href =
+                "login.html";
+
         }, 1000);
 
         return;
     }
 
-    const user = userData.user;
+    const user =
+        userData.user;
 
 
     // ==========================================
-    // START
+    // START UPLOAD
     // ==========================================
 
     button.disabled = true;
-    button.textContent = "Uploading...";
+
+    button.textContent =
+        "Uploading...";
 
 
     try {
 
-        const timestamp = Date.now();
+        const timestamp =
+            Date.now();
 
 
         // ======================================
@@ -276,9 +295,20 @@ async function uploadProject() {
             `${user.id}/${timestamp}-thumbnail-${cleanThumbnailName}`;
 
 
-        console.log("Category:", category);
-        console.log("Bucket:", settings.bucket);
-        console.log("Main path:", mainPath);
+        console.log(
+            "Category:",
+            category
+        );
+
+        console.log(
+            "Bucket:",
+            settings.bucket
+        );
+
+        console.log(
+            "Main path:",
+            mainPath
+        );
 
 
         // ======================================
@@ -443,6 +473,49 @@ async function uploadProject() {
             "Project saved successfully:",
             project
         );
+
+
+        // ======================================
+        // CREATE UPLOAD NOTIFICATION
+        // ======================================
+
+        const {
+            error: notificationError
+        } = await sb
+            .from("notifications")
+            .insert({
+
+                user_id: user.id,
+
+                title:
+                    "Project Submitted 🎬",
+
+                message:
+                    `Your project "${title}" was submitted successfully and is now pending review.`,
+
+                type:
+                    "project",
+
+                is_read:
+                    false
+
+            });
+
+
+        if (notificationError) {
+
+            console.error(
+                "Notification error:",
+                notificationError
+            );
+
+        } else {
+
+            console.log(
+                "Upload notification created successfully."
+            );
+
+        }
 
 
         // ======================================
