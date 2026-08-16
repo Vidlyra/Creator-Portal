@@ -32,14 +32,19 @@ body {
     color: white;
 }
 
-/* HEADER */
+
+/* ==========================================
+   HEADER
+========================================== */
 
 header {
     height: 70px;
     padding: 0 30px;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     background: #111;
     border-bottom: 1px solid #252525;
 }
@@ -61,24 +66,31 @@ header {
     display: flex;
     align-items: center;
     gap: 10px;
+
     color: #ccc;
     font-size: 13px;
+
     text-decoration: none;
 }
 
 .profile-mini img {
     width: 38px;
     height: 38px;
+
     border-radius: 50%;
     object-fit: cover;
+
     border: 2px solid #ff7a00;
 }
 
 .logout-btn {
     padding: 8px 14px;
+
     background: transparent;
+
     border: 1px solid #333;
     border-radius: 8px;
+
     color: #aaa;
     cursor: pointer;
 }
@@ -88,16 +100,23 @@ header {
     color: #ff5555;
 }
 
-/* MAIN */
+
+/* ==========================================
+   MAIN
+========================================== */
 
 .container {
     width: 100%;
     max-width: 1150px;
+
     margin: 40px auto;
     padding: 0 20px;
 }
 
-/* WELCOME */
+
+/* ==========================================
+   WELCOME
+========================================== */
 
 .welcome {
     margin-bottom: 25px;
@@ -116,14 +135,20 @@ header {
     color: #888;
 }
 
-/* LEVEL CARD */
+
+/* ==========================================
+   LEVEL CARD
+========================================== */
 
 .level-card {
     background: #111;
+
     border: 1px solid #292929;
     border-radius: 18px;
+
     padding: 25px;
     margin-bottom: 25px;
+
     box-shadow: 0 0 30px rgba(255,122,0,.08);
 }
 
@@ -131,18 +156,22 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     gap: 20px;
 }
 
 .level-title {
     color: #777;
+
     font-size: 11px;
     letter-spacing: 1px;
 }
 
 .rank {
     margin-top: 4px;
+
     color: #ff7a00;
+
     font-size: 20px;
     font-weight: 600;
 }
@@ -152,12 +181,17 @@ header {
     font-weight: 700;
 }
 
-/* PROGRESS */
+
+/* ==========================================
+   PROGRESS
+========================================== */
 
 .progress-info {
     display: flex;
     justify-content: space-between;
+
     margin-top: 20px;
+
     color: #aaa;
     font-size: 13px;
 }
@@ -165,55 +199,85 @@ header {
 .progress-bar {
     width: 100%;
     height: 9px;
+
     margin-top: 8px;
+
     background: #252525;
+
     border-radius: 20px;
+
     overflow: hidden;
 }
 
 .progress-fill {
     width: 0%;
     height: 100%;
+
     background: #ff7a00;
+
     border-radius: 20px;
+
     transition: width .5s ease;
 }
 
 .next-level {
     margin-top: 8px;
+
     color: #777;
     font-size: 12px;
 }
 
-/* QUICK ACTIONS */
+
+/* ==========================================
+   SECTION TITLE
+========================================== */
 
 .section-title {
     margin-bottom: 15px;
+
     font-size: 20px;
 }
 
+
+/* ==========================================
+   QUICK ACTIONS
+========================================== */
+
 .quick-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
     gap: 15px;
+
     margin-bottom: 30px;
 }
 
 .action-card {
     min-height: 145px;
+
     padding: 22px;
+
     background: #111;
+
     border: 1px solid #292929;
     border-radius: 16px;
+
     color: white;
+
     text-decoration: none;
+
     transition: .2s;
 }
 
 .action-card:hover {
     transform: translateY(-4px);
+
     border-color: #ff7a00;
-    box-shadow: 0 0 20px rgba(255,122,0,.10);
+
+    box-shadow:
+        0 0 20px rgba(255,122,0,.10);
 }
 
 .action-icon {
@@ -222,70 +286,99 @@ header {
 
 .action-title {
     margin-top: 13px;
+
     font-size: 16px;
     font-weight: 600;
 }
 
 .action-description {
     margin-top: 5px;
+
     color: #777;
+
     font-size: 12px;
     line-height: 1.5;
 }
 
-/* PROJECT STATS */
+
+/* ==========================================
+   PROJECT STATS
+========================================== */
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
     gap: 15px;
+
     margin-bottom: 30px;
 }
 
 .stat-card {
     padding: 22px;
+
     background: #111;
+
     border: 1px solid #292929;
     border-radius: 15px;
 }
 
 .stat-label {
     color: #777;
+
     font-size: 12px;
 }
 
 .stat-number {
     margin-top: 5px;
+
     color: #ff7a00;
+
     font-size: 28px;
     font-weight: 700;
 }
 
-/* CREATOR AREA */
+
+/* ==========================================
+   CREATOR AREA
+========================================== */
 
 .creator-card {
     display: flex;
+
     align-items: center;
     justify-content: space-between;
+
     gap: 20px;
+
     padding: 25px;
+
     background: #111;
+
     border: 1px solid #292929;
     border-radius: 18px;
+
     margin-bottom: 30px;
 }
 
 .creator-info {
     display: flex;
+
     align-items: center;
+
     gap: 18px;
 }
 
 .creator-avatar {
     width: 85px;
     height: 85px;
+
     border-radius: 50%;
+
     object-fit: cover;
+
     border: 2px solid #ff7a00;
 }
 
@@ -295,17 +388,24 @@ header {
 
 .creator-text p {
     margin-top: 5px;
+
     color: #777;
+
     font-size: 13px;
 }
 
 .creator-button {
     padding: 11px 17px;
+
     background: #ff7a00;
+
     border: none;
     border-radius: 9px;
+
     color: white;
+
     text-decoration: none;
+
     font-size: 13px;
     font-weight: 600;
 }
@@ -314,25 +414,36 @@ header {
     background: #ff9500;
 }
 
-/* UPLOAD GUIDE */
+
+/* ==========================================
+   UPLOAD GUIDE
+========================================== */
 
 .guide {
     padding: 25px;
+
     background: #111;
+
     border: 1px solid #292929;
     border-radius: 18px;
 }
 
 .guide-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+
+    grid-template-columns:
+        repeat(5, 1fr);
+
     gap: 12px;
 }
 
 .guide-item {
     padding: 15px;
+
     background: #191919;
+
     border-radius: 10px;
+
     text-align: center;
 }
 
@@ -342,46 +453,66 @@ header {
 
 .guide-name {
     margin-top: 7px;
+
     font-size: 13px;
     font-weight: 600;
 }
 
 .guide-type {
     margin-top: 4px;
+
     color: #777;
+
     font-size: 10px;
 }
 
-/* LOADING */
+
+/* ==========================================
+   LOADING
+========================================== */
 
 .loading {
     padding: 60px;
+
     text-align: center;
+
     color: #777;
 }
 
-/* ERROR */
+
+/* ==========================================
+   ERROR
+========================================== */
 
 .error {
     display: none;
+
     padding: 25px;
+
     text-align: center;
+
     color: #ff5555;
 }
 
-/* MOBILE */
+
+/* ==========================================
+   MOBILE
+========================================== */
 
 @media(max-width:900px) {
 
     .quick-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+            repeat(2, 1fr);
     }
 
     .guide-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns:
+            repeat(3, 1fr);
     }
 
 }
+
 
 @media(max-width:600px) {
 
@@ -402,24 +533,29 @@ header {
     }
 
     .quick-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns:
+            1fr 1fr;
     }
 
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns:
+            1fr;
     }
 
     .guide-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+            repeat(2, 1fr);
     }
 
     .creator-card {
         flex-direction: column;
+
         align-items: flex-start;
     }
 
     .creator-button {
         width: 100%;
+
         text-align: center;
     }
 
@@ -432,6 +568,10 @@ header {
 
 <body>
 
+
+<!-- ==========================================
+     HEADER
+========================================== -->
 
 <header>
 
@@ -473,8 +613,14 @@ header {
 </header>
 
 
+<!-- ==========================================
+     MAIN
+========================================== -->
+
 <main class="container">
 
+
+    <!-- LOADING -->
 
     <div
         id="loading"
@@ -484,11 +630,15 @@ header {
     </div>
 
 
+    <!-- ERROR -->
+
     <div
         id="error"
         class="error"
     ></div>
 
+
+    <!-- DASHBOARD -->
 
     <div
         id="dashboardContent"
@@ -496,16 +646,22 @@ header {
     >
 
 
-        <!-- WELCOME -->
+        <!-- ======================================
+             WELCOME
+        ======================================= -->
 
         <section class="welcome">
 
             <h1>
+
                 Welcome,
+
                 <span id="welcomeName">
                     Creator
                 </span>
+
                 👋
+
             </h1>
 
             <p>
@@ -515,7 +671,9 @@ header {
         </section>
 
 
-        <!-- LEVEL -->
+        <!-- ======================================
+             CREATOR LEVEL
+        ======================================= -->
 
         <section class="level-card">
 
@@ -590,7 +748,9 @@ header {
         </section>
 
 
-        <!-- QUICK ACTIONS -->
+        <!-- ======================================
+             CREATOR TOOLS
+        ======================================= -->
 
         <h2 class="section-title">
             Creator Tools
@@ -599,6 +759,8 @@ header {
 
         <section class="quick-grid">
 
+
+            <!-- UPLOAD -->
 
             <a
                 href="upload.html"
@@ -686,25 +848,34 @@ header {
             </a>
 
 
+            <!-- NOTIFICATIONS -->
+
+            <a
+                href="notifications.html"
+                class="action-card"
+            >
+
+                <div class="action-icon">
+                    🔔
+                </div>
+
+                <div class="action-title">
+                    Notifications
+                </div>
+
+                <div class="action-description">
+                    View your latest creator updates and announcements.
+                </div>
+
+            </a>
+
+
         </section>
-      <a
-    href="notifications.html"
-    class="action-card"
-      >
-    <div class="action-icon">
-        🔔
-    </div>
 
-    <div class="action-title">
-        Notifications
-    </div>
 
-    <div class="action-description">
-        View your latest creator updates and announcements.
-    </div>
-    </a>
-
-        <!-- ACTIVITY -->
+        <!-- ======================================
+             ACTIVITY
+        ======================================= -->
 
         <h2 class="section-title">
             Your Activity
@@ -765,7 +936,9 @@ header {
         </section>
 
 
-        <!-- CREATOR PROFILE -->
+        <!-- ======================================
+             CREATOR PROFILE
+        ======================================= -->
 
         <h2 class="section-title">
             Creator Profile
@@ -813,7 +986,9 @@ header {
         </section>
 
 
-        <!-- UPLOAD GUIDE -->
+        <!-- ======================================
+             UPLOAD GUIDE
+        ======================================= -->
 
         <h2 class="section-title">
             Upload Guide
@@ -837,7 +1012,7 @@ header {
                     </div>
 
                     <div class="guide-type">
-                        Video / Project
+                        PDF
                     </div>
 
                 </div>
@@ -920,6 +1095,10 @@ header {
 
 </main>
 
+
+<!-- ==========================================
+     SUPABASE
+========================================== -->
 
 <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
