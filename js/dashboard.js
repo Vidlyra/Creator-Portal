@@ -865,3 +865,90 @@ async function loadDashboard() {
 // ==========================================
 
 loadDashboard();
+// ==========================================
+// NOTIFICATION BADGE
+// ==========================================
+
+async function loadNotificationBadge() {
+
+    const badge =
+        document.getElementById("notificationBadge");
+
+    if (!badge) {
+        console.warn("Notification badge element not found.");
+        return;
+    }
+
+    try {
+
+        const {
+            data: userData,
+            error: userError
+        } = await sb.auth.getUser();
+
+        if (userError || !userData.user) {
+            return;
+        }
+
+        const userId = userData.user.id;
+
+        const {
+            count,
+            error
+        } = await sb
+            .from("notifications")
+            .select("id", {
+                count: "exact",
+                head: true
+            })
+            .eq("user_id", userId)
+            .eq("is_read", false);
+
+        if (error) {
+            console.error(
+                "Notification badge error:",
+                error
+            );
+            return;
+        }
+
+        const unreadCount = count || 0;
+
+        if (unreadCount > 0) {
+
+            badge.textContent =
+                unreadCount > 99
+                    ? "99+"
+                    : unreadCount;
+
+            badge.style.display =
+                "inline-block";
+
+        } else {
+
+            badge.textContent = "0";
+
+            badge.style.display =
+                "none";
+
+        }
+
+        console.log(
+            "Unread notifications:",
+            unreadCount
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Notification badge error:",
+            error
+        );
+
+    }
+
+}
+
+
+// Load badge
+loadNotificationBadge();
