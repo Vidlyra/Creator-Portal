@@ -1,162 +1,115 @@
 // ==========================================
-// VIDLYRA CREATOR DASHBOARD
-// FULL VERSION + NOTIFICATION BADGE
+// VIDLYRA NOTIFICATIONS SYSTEM
 // ==========================================
 
-console.log("Vidlyra Dashboard JS loaded");
+console.log("Vidlyra Notifications JS loaded");
 
 
 // ==========================================
 // ELEMENTS
 // ==========================================
 
-const loading =
+const notificationLoading =
     document.getElementById("loading");
 
-const errorBox =
-    document.getElementById("error");
+const notificationList =
+    document.getElementById("notificationList");
 
-const dashboardContent =
-    document.getElementById("dashboardContent");
+const readAllButton =
+    document.getElementById("readAllButton");
 
-const headerName =
-    document.getElementById("headerName");
+const unreadBadge =
+    document.getElementById("unreadBadge");
 
-const headerAvatar =
-    document.getElementById("headerAvatar");
 
-const welcomeName =
-    document.getElementById("welcomeName");
-
-const creatorRank =
-    document.getElementById("creatorRank");
-
-const creatorLevel =
-    document.getElementById("creatorLevel");
-
-const approvedProjects =
-    document.getElementById("approvedProjects");
-
-const nextLevelTarget =
-    document.getElementById("nextLevelTarget");
-
-const levelProgress =
-    document.getElementById("levelProgress");
-
-const nextLevelText =
-    document.getElementById("nextLevelText");
-
-const totalProjects =
-    document.getElementById("totalProjects");
-
-const approvedCount =
-    document.getElementById("approvedCount");
-
-const pendingCount =
-    document.getElementById("pendingCount");
-
-const creatorAvatar =
-    document.getElementById("creatorAvatar");
-
-const creatorProfileName =
-    document.getElementById("creatorProfileName");
-
-const creatorProfileRank =
-    document.getElementById("creatorProfileRank");
-
+// Dashboard badge
 const notificationBadge =
     document.getElementById("notificationBadge");
 
 
 // ==========================================
-// CHECK REQUIRED ELEMENTS
+// FORMAT TIME
 // ==========================================
 
-console.log("Dashboard elements:", {
-    loading,
-    errorBox,
-    dashboardContent,
-    headerName,
-    headerAvatar,
-    welcomeName,
-    creatorRank,
-    creatorLevel,
-    approvedProjects,
-    nextLevelTarget,
-    levelProgress,
-    nextLevelText,
-    totalProjects,
-    approvedCount,
-    pendingCount,
-    creatorAvatar,
-    creatorProfileName,
-    creatorProfileRank,
-    notificationBadge
-});
+function formatNotificationTime(dateString) {
 
-
-// ==========================================
-// SHOW / HIDE
-// ==========================================
-
-function showLoading() {
-
-    if (loading) {
-        loading.style.display = "block";
+    if (!dateString) {
+        return "";
     }
 
-    if (errorBox) {
-        errorBox.style.display = "none";
+    const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) {
+        return "";
     }
 
-    if (dashboardContent) {
-        dashboardContent.style.display = "none";
+    const now = new Date();
+
+    const difference =
+        now.getTime() - date.getTime();
+
+
+    const seconds =
+        Math.floor(difference / 1000);
+
+    const minutes =
+        Math.floor(seconds / 60);
+
+    const hours =
+        Math.floor(minutes / 60);
+
+    const days =
+        Math.floor(hours / 24);
+
+
+    if (seconds < 60) {
+        return "Just now";
     }
 
-}
-
-
-function showDashboard() {
-
-    if (loading) {
-        loading.style.display = "none";
+    if (minutes < 60) {
+        return minutes +
+            (minutes === 1 ? " minute ago" : " minutes ago");
     }
 
-    if (errorBox) {
-        errorBox.style.display = "none";
+    if (hours < 24) {
+        return hours +
+            (hours === 1 ? " hour ago" : " hours ago");
     }
 
-    if (dashboardContent) {
-        dashboardContent.style.display = "block";
+    if (days < 7) {
+        return days +
+            (days === 1 ? " day ago" : " days ago");
     }
 
-}
 
-
-function showError(message) {
-
-    console.error(
-        "Dashboard error:",
-        message
+    return date.toLocaleDateString(
+        "en-IN",
+        {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        }
     );
 
-    if (loading) {
-        loading.style.display = "none";
+}
+
+
+// ==========================================
+// ESCAPE HTML
+// ==========================================
+
+function escapeHTML(value) {
+
+    if (value === null || value === undefined) {
+        return "";
     }
 
-    if (dashboardContent) {
-        dashboardContent.style.display = "none";
-    }
-
-    if (errorBox) {
-
-        errorBox.textContent =
-            message ||
-            "Something went wrong.";
-
-        errorBox.style.display =
-            "block";
-    }
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 }
 
@@ -165,7 +118,19 @@ function showError(message) {
 // GET CURRENT USER
 // ==========================================
 
-async function getCurrentUser() {
+async function getNotificationUser() {
+
+    if (
+        typeof sb === "undefined" ||
+        !sb
+    ) {
+
+        throw new Error(
+            "Supabase client is not available."
+        );
+
+    }
+
 
     const {
         data,
@@ -174,13 +139,14 @@ async function getCurrentUser() {
 
 
     if (error) {
-
         throw error;
-
     }
 
 
-    if (!data || !data.user) {
+    if (
+        !data ||
+        !data.user
+    ) {
 
         return null;
 
@@ -193,502 +159,57 @@ async function getCurrentUser() {
 
 
 // ==========================================
-// LOAD PROFILE
+// UPDATE BADGE
 // ==========================================
 
-async function loadProfile(userId) {
+function updateNotificationBadge(count) {
 
-    console.log(
-        "Loading profile:",
-        userId
-    );
+    const unread =
+        Number(count) || 0;
 
 
-    const {
-        data: profile,
-        error
-    } = await sb
+    // Notifications page badge
 
-        .from("profiles")
+    if (unreadBadge) {
 
-        .select(`
-            user_id,
-            full_name,
-            email,
-            avatar_url,
-            selected_avatar,
-            approved_projects,
-            creator_level,
-            creator_rank,
-            creator_avatar,
-            creator_avatar_unlocked
-        `)
+        if (unread > 0) {
 
-        .eq(
-            "user_id",
-            userId
-        )
+            unreadBadge.textContent =
+                unread > 99
+                    ? "99+"
+                    : unread;
 
-        .maybeSingle();
-
-
-    if (error) {
-
-        throw error;
-
-    }
-
-
-    if (!profile) {
-
-        throw new Error(
-            "Creator profile does not exist."
-        );
-
-    }
-
-
-    console.log(
-        "Creator profile:",
-        profile
-    );
-
-
-    return profile;
-
-}
-
-
-// ==========================================
-// GET AVATAR
-// ==========================================
-
-function getAvatar(profile) {
-
-    // Creator avatar from GitHub
-
-    if (
-        profile.creator_avatar &&
-        Number(profile.creator_avatar) >= 1 &&
-        Number(profile.creator_avatar) <= 7
-    ) {
-
-        return (
-            "assets/creator-avatars/creator" +
-            Number(profile.creator_avatar) +
-            ".png"
-        );
-
-    }
-
-
-    // Frequency avatar from GitHub
-
-    if (
-        profile.selected_avatar &&
-        Number(profile.selected_avatar) >= 1 &&
-        Number(profile.selected_avatar) <= 12
-    ) {
-
-        return (
-            "assets/avatars/avatar" +
-            Number(profile.selected_avatar) +
-            ".png"
-        );
-
-    }
-
-
-    // Supabase avatar URL
-
-    if (
-        profile.avatar_url
-    ) {
-
-        return profile.avatar_url;
-
-    }
-
-
-    // Default
-
-    return (
-        "assets/creator-avatars/creator1.png"
-    );
-
-}
-
-
-// ==========================================
-// UPDATE PROFILE UI
-// ==========================================
-
-function renderProfile(profile) {
-
-    const name =
-        profile.full_name ||
-        "Creator";
-
-
-    const rank =
-        profile.creator_rank ||
-        "New Creator";
-
-
-    const level =
-        Number(
-            profile.creator_level
-        ) || 1;
-
-
-    const avatar =
-        getAvatar(profile);
-
-
-    // Header name
-
-    if (headerName) {
-
-        headerName.textContent =
-            name;
-
-    }
-
-
-    // Header avatar
-
-    if (headerAvatar) {
-
-        headerAvatar.src =
-            avatar;
-
-        headerAvatar.onerror =
-            function () {
-
-                this.onerror = null;
-
-                this.src =
-                    "assets/creator-avatars/creator1.png";
-
-            };
-
-    }
-
-
-    // Welcome name
-
-    if (welcomeName) {
-
-        welcomeName.textContent =
-            name;
-
-    }
-
-
-    // Rank
-
-    if (creatorRank) {
-
-        creatorRank.textContent =
-            rank;
-
-    }
-
-
-    // Level
-
-    if (creatorLevel) {
-
-        creatorLevel.textContent =
-            "LEVEL " + level;
-
-    }
-
-
-    // Creator card name
-
-    if (creatorProfileName) {
-
-        creatorProfileName.textContent =
-            name;
-
-    }
-
-
-    // Creator card rank
-
-    if (creatorProfileRank) {
-
-        creatorProfileRank.textContent =
-            rank +
-            " • Level " +
-            level;
-
-    }
-
-
-    // Creator avatar
-
-    if (creatorAvatar) {
-
-        creatorAvatar.src =
-            avatar;
-
-        creatorAvatar.onerror =
-            function () {
-
-                this.onerror = null;
-
-                this.src =
-                    "assets/creator-avatars/creator1.png";
-
-            };
-
-    }
-
-
-    // Profile links
-
-    const profileLinks =
-        document.querySelectorAll(
-            'a[href="profile.html"]'
-        );
-
-
-    profileLinks.forEach(
-        link => {
-
-            link.href =
-                "profile.html?user=" +
-                encodeURIComponent(
-                    profile.user_id
-                );
-
-        }
-    );
-
-
-    return {
-
-        level,
-
-        approved:
-            Number(
-                profile.approved_projects
-            ) || 0
-
-    };
-
-}
-
-
-// ==========================================
-// LOAD PROJECT STATS
-// ==========================================
-
-async function loadProjectStats(userId) {
-
-    console.log(
-        "Loading project statistics..."
-    );
-
-
-    const {
-        data: projects,
-        error
-    } = await sb
-
-        .from("projects")
-
-        .select(`
-            id,
-            status
-        `)
-
-        .eq(
-            "user_id",
-            userId
-        );
-
-
-    if (error) {
-
-        throw error;
-
-    }
-
-
-    const projectList =
-        projects || [];
-
-
-    const total =
-        projectList.length;
-
-
-    const approved =
-        projectList.filter(
-            project =>
-                String(
-                    project.status || ""
-                ).toLowerCase() ===
-                "approved"
-        ).length;
-
-
-    const pending =
-        projectList.filter(
-            project =>
-                String(
-                    project.status || ""
-                ).toLowerCase() ===
-                "pending"
-        ).length;
-
-
-    console.log(
-        "Project stats:",
-        {
-            total,
-            approved,
-            pending
-        }
-    );
-
-
-    if (totalProjects) {
-
-        totalProjects.textContent =
-            total;
-
-    }
-
-
-    if (approvedCount) {
-
-        approvedCount.textContent =
-            approved;
-
-    }
-
-
-    if (pendingCount) {
-
-        pendingCount.textContent =
-            pending;
-
-    }
-
-
-    return {
-
-        total,
-        approved,
-        pending
-
-    };
-
-}
-
-
-// ==========================================
-// LEVEL PROGRESS
-// ==========================================
-
-function updateLevelProgress(
-    profileApproved,
-    actualApproved
-) {
-
-    const approved =
-        Number(
-            actualApproved
-        ) ||
-        Number(
-            profileApproved
-        ) ||
-        0;
-
-
-    let target;
-
-
-    if (approved < 3) {
-
-        target = 3;
-
-    } else if (approved < 6) {
-
-        target = 6;
-
-    } else if (approved < 10) {
-
-        target = 10;
-
-    } else {
-
-        target =
-            approved + 5;
-
-    }
-
-
-    if (approvedProjects) {
-
-        approvedProjects.textContent =
-            approved;
-
-    }
-
-
-    if (nextLevelTarget) {
-
-        nextLevelTarget.textContent =
-            target;
-
-    }
-
-
-    const percentage =
-        Math.min(
-            100,
-            (approved / target) * 100
-        );
-
-
-    if (levelProgress) {
-
-        levelProgress.style.width =
-            percentage + "%";
-
-    }
-
-
-    const remaining =
-        Math.max(
-            0,
-            target - approved
-        );
-
-
-    if (nextLevelText) {
-
-        if (remaining === 0) {
-
-            nextLevelText.textContent =
-                "Next creator level unlocked!";
+            unreadBadge.style.display =
+                "inline-block";
 
         } else {
 
-            nextLevelText.textContent =
-                remaining +
-                " approved project" +
-                (
-                    remaining === 1
-                        ? ""
-                        : "s"
-                ) +
-                " needed for the next level.";
+            unreadBadge.style.display =
+                "none";
+
+        }
+
+    }
+
+
+    // Dashboard badge
+
+    if (notificationBadge) {
+
+        if (unread > 0) {
+
+            notificationBadge.textContent =
+                unread > 99
+                    ? "99+"
+                    : unread;
+
+            notificationBadge.style.display =
+                "flex";
+
+        } else {
+
+            notificationBadge.style.display =
+                "none";
 
         }
 
@@ -698,29 +219,25 @@ function updateLevelProgress(
 
 
 // ==========================================
-// NOTIFICATION BADGE
+// LOAD NOTIFICATION BADGE
 // ==========================================
 
-async function loadNotificationBadge(userId) {
-
-    const badge =
-        document.getElementById(
-            "notificationBadge"
-        );
-
-
-    if (!badge) {
-
-        console.warn(
-            "Notification badge element not found."
-        );
-
-        return;
-
-    }
-
+async function loadNotificationBadge() {
 
     try {
+
+        const user =
+            await getNotificationUser();
+
+
+        if (!user) {
+
+            updateNotificationBadge(0);
+
+            return;
+
+        }
+
 
         const {
             count,
@@ -739,7 +256,7 @@ async function loadNotificationBadge(userId) {
 
             .eq(
                 "user_id",
-                userId
+                user.id
             )
 
             .eq(
@@ -755,50 +272,48 @@ async function loadNotificationBadge(userId) {
                 error
             );
 
-            badge.style.display =
-                "none";
+            updateNotificationBadge(0);
 
             return;
 
         }
 
 
-        const unread =
-            Number(count) || 0;
-
-
-        console.log(
-            "Unread notifications:",
-            unread
+        updateNotificationBadge(
+            count || 0
         );
-
-
-        if (unread > 0) {
-
-            badge.textContent =
-                unread > 99
-                    ? "99+"
-                    : unread;
-
-            badge.style.display =
-                "flex";
-
-        } else {
-
-            badge.style.display =
-                "none";
-
-        }
 
 
     } catch (error) {
 
         console.error(
-            "Notification badge failed:",
+            "Unable to load notification badge:",
             error
         );
 
-        badge.style.display =
+        updateNotificationBadge(0);
+
+    }
+
+}
+
+
+// ==========================================
+// SHOW LOADING
+// ==========================================
+
+function showNotificationLoading() {
+
+    if (notificationLoading) {
+
+        notificationLoading.style.display =
+            "block";
+
+    }
+
+    if (notificationList) {
+
+        notificationList.style.display =
             "none";
 
     }
@@ -807,45 +322,22 @@ async function loadNotificationBadge(userId) {
 
 
 // ==========================================
-// LOGOUT
+// SHOW LIST
 // ==========================================
 
-async function logout() {
+function showNotificationList() {
 
-    try {
+    if (notificationLoading) {
 
-        console.log(
-            "Logging out..."
-        );
+        notificationLoading.style.display =
+            "none";
 
+    }
 
-        const {
-            error
-        } = await sb.auth.signOut();
+    if (notificationList) {
 
-
-        if (error) {
-
-            throw error;
-
-        }
-
-
-        window.location.href =
-            "login.html";
-
-
-    } catch (error) {
-
-        console.error(
-            "Logout error:",
-            error
-        );
-
-
-        showError(
-            "Unable to logout. Please try again."
-        );
+        notificationList.style.display =
+            "flex";
 
     }
 
@@ -853,46 +345,59 @@ async function logout() {
 
 
 // ==========================================
-// START DASHBOARD
+// SHOW ERROR
 // ==========================================
 
-async function loadDashboard() {
+function showNotificationError(message) {
 
-    showLoading();
+    if (notificationLoading) {
+
+        notificationLoading.style.display =
+            "none";
+
+    }
+
+
+    if (notificationList) {
+
+        notificationList.style.display =
+            "block";
+
+
+        notificationList.innerHTML = `
+
+            <div class="error">
+
+                ${escapeHTML(
+                    message ||
+                    "Unable to load notifications."
+                )}
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// ==========================================
+// LOAD NOTIFICATIONS
+// ==========================================
+
+async function loadNotifications() {
+
+    showNotificationLoading();
 
 
     try {
 
-        // --------------------------------------
-        // Check Supabase
-        // --------------------------------------
-
-        if (
-            typeof sb === "undefined" ||
-            !sb
-        ) {
-
-            throw new Error(
-                "Supabase client is not available. Check config.js."
-            );
-
-        }
-
-
-        // --------------------------------------
-        // Get logged-in user
-        // --------------------------------------
-
         const user =
-            await getCurrentUser();
+            await getNotificationUser();
 
 
         if (!user) {
-
-            console.warn(
-                "No logged-in user."
-            );
-
 
             window.location.href =
                 "login.html";
@@ -903,83 +408,91 @@ async function loadDashboard() {
 
 
         console.log(
-            "Logged-in user:",
+            "Notification user:",
             user.id
         );
 
 
-        // --------------------------------------
-        // Profile
-        // --------------------------------------
+        const {
+            data: notifications,
+            error
+        } = await sb
 
-        const profile =
-            await loadProfile(
+            .from("notifications")
+
+            .select(`
+                id,
+                user_id,
+                title,
+                message,
+                type,
+                is_read,
+                created_at
+            `)
+
+            .eq(
+                "user_id",
                 user.id
+            )
+
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
             );
 
 
-        // --------------------------------------
-        // Render profile
-        // --------------------------------------
+        if (error) {
 
-        const profileData =
-            renderProfile(
-                profile
+            console.error(
+                "Notification load error:",
+                error
             );
 
+            throw error;
 
-        // --------------------------------------
-        // Project statistics
-        // --------------------------------------
-
-        const stats =
-            await loadProjectStats(
-                user.id
-            );
+        }
 
 
-        // --------------------------------------
-        // Notification badge
-        // --------------------------------------
-
-        await loadNotificationBadge(
-            user.id
-        );
-
-
-        // --------------------------------------
-        // Progress
-        // --------------------------------------
-
-        updateLevelProgress(
-            profileData.approved,
-            stats.approved
-        );
-
-
-        // --------------------------------------
-        // Show dashboard
-        // --------------------------------------
-
-        showDashboard();
+        const list =
+            notifications || [];
 
 
         console.log(
-            "Dashboard loaded successfully."
+            "Notifications loaded:",
+            list
+        );
+
+
+        renderNotifications(
+            list
+        );
+
+
+        const unread =
+            list.filter(
+                notification =>
+                    !notification.is_read
+            ).length;
+
+
+        updateNotificationBadge(
+            unread
         );
 
 
     } catch (error) {
 
         console.error(
-            "Dashboard loading error:",
+            "Notification system error:",
             error
         );
 
 
-        showError(
+        showNotificationError(
             error.message ||
-            "Unable to load dashboard."
+            "Unable to load notifications."
         );
 
     }
@@ -988,44 +501,455 @@ async function loadDashboard() {
 
 
 // ==========================================
-// AUTO REFRESH NOTIFICATION BADGE
+// RENDER NOTIFICATIONS
 // ==========================================
 
-setInterval(
-    async function () {
+function renderNotifications(
+    notifications
+) {
 
-        try {
+    if (!notificationList) {
 
-            const user =
-                await getCurrentUser();
+        console.error(
+            "Notification list element not found."
+        );
+
+        return;
+
+    }
 
 
-            if (!user) {
-                return;
-            }
+    notificationList.innerHTML = "";
 
 
-            await loadNotificationBadge(
+    if (
+        !notifications ||
+        notifications.length === 0
+    ) {
+
+        notificationList.innerHTML = `
+
+            <div class="empty">
+
+                🔔
+
+                <br><br>
+
+                No notifications yet.
+
+            </div>
+
+        `;
+
+        showNotificationList();
+
+        updateNotificationBadge(0);
+
+        return;
+
+    }
+
+
+    notifications.forEach(
+        notification => {
+
+            const item =
+                document.createElement("div");
+
+
+            item.className =
+                "notification " +
+                (
+                    notification.is_read
+                        ? "read"
+                        : "unread"
+                );
+
+
+            const title =
+                escapeHTML(
+                    notification.title ||
+                    "Vidlyra Notification"
+                );
+
+
+            const message =
+                escapeHTML(
+                    notification.message ||
+                    ""
+                );
+
+
+            const type =
+                escapeHTML(
+                    notification.type ||
+                    "Update"
+                );
+
+
+            const time =
+                formatNotificationTime(
+                    notification.created_at
+                );
+
+
+            item.innerHTML = `
+
+                <div class="notification-top">
+
+                    <div>
+
+                        <div class="notification-title">
+
+                            ${title}
+
+                            ${
+                                notification.is_read
+                                    ? ""
+                                    : `
+                                        <span class="unread-label">
+                                            NEW
+                                        </span>
+                                    `
+                            }
+
+                        </div>
+
+                        <div class="notification-message">
+
+                            ${message}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="notification-time">
+
+                        ${escapeHTML(time)}
+
+                    </div>
+
+                </div>
+
+
+                <div class="notification-type">
+
+                    ${type}
+
+                </div>
+
+            `;
+
+
+            item.addEventListener(
+                "click",
+                () => {
+
+                    markNotificationRead(
+                        notification.id,
+                        item
+                    );
+
+                }
+            );
+
+
+            notificationList.appendChild(
+                item
+            );
+
+        }
+    );
+
+
+    showNotificationList();
+
+}
+
+
+// ==========================================
+// MARK SINGLE NOTIFICATION READ
+// ==========================================
+
+async function markNotificationRead(
+    notificationId,
+    element
+) {
+
+    if (!notificationId) {
+        return;
+    }
+
+
+    try {
+
+        const user =
+            await getNotificationUser();
+
+
+        if (!user) {
+            return;
+        }
+
+
+        const {
+            error
+        } = await sb
+
+            .from("notifications")
+
+            .update({
+                is_read: true
+            })
+
+            .eq(
+                "id",
+                notificationId
+            )
+
+            .eq(
+                "user_id",
                 user.id
             );
 
 
-        } catch (error) {
+        if (error) {
 
             console.error(
-                "Notification auto-refresh error:",
+                "Mark notification read error:",
                 error
+            );
+
+            return;
+
+        }
+
+
+        if (element) {
+
+            element.classList.remove(
+                "unread"
+            );
+
+            element.classList.add(
+                "read"
+            );
+
+
+            const label =
+                element.querySelector(
+                    ".unread-label"
+                );
+
+
+            if (label) {
+                label.remove();
+            }
+
+        }
+
+
+        await loadNotificationBadge();
+
+
+    } catch (error) {
+
+        console.error(
+            "Notification read error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// MARK ALL AS READ
+// ==========================================
+
+async function markAllNotificationsRead() {
+
+    try {
+
+        const user =
+            await getNotificationUser();
+
+
+        if (!user) {
+            return;
+        }
+
+
+        if (readAllButton) {
+
+            readAllButton.disabled =
+                true;
+
+            readAllButton.textContent =
+                "Marking...";
+
+        }
+
+
+        const {
+            error
+        } = await sb
+
+            .from("notifications")
+
+            .update({
+                is_read: true
+            })
+
+            .eq(
+                "user_id",
+                user.id
+            )
+
+            .eq(
+                "is_read",
+                false
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Mark all read error:",
+                error
+            );
+
+            throw error;
+
+        }
+
+
+        console.log(
+            "All notifications marked as read."
+        );
+
+
+        updateNotificationBadge(0);
+
+
+        if (notificationList) {
+
+            const unreadItems =
+                notificationList.querySelectorAll(
+                    ".notification.unread"
+                );
+
+
+            unreadItems.forEach(
+                item => {
+
+                    item.classList.remove(
+                        "unread"
+                    );
+
+                    item.classList.add(
+                        "read"
+                    );
+
+
+                    const label =
+                        item.querySelector(
+                            ".unread-label"
+                        );
+
+
+                    if (label) {
+                        label.remove();
+                    }
+
+                }
             );
 
         }
 
-    },
-    10000
-);
+
+    } catch (error) {
+
+        console.error(
+            "Mark all notifications error:",
+            error
+        );
+
+
+        alert(
+            "Unable to mark notifications as read."
+        );
+
+
+    } finally {
+
+        if (readAllButton) {
+
+            readAllButton.disabled =
+                false;
+
+            readAllButton.textContent =
+                "Mark all as read";
+
+        }
+
+    }
+
+}
+
+
+// ==========================================
+// BUTTON
+// ==========================================
+
+if (readAllButton) {
+
+    readAllButton.addEventListener(
+        "click",
+        markAllNotificationsRead
+    );
+
+}
 
 
 // ==========================================
 // START
 // ==========================================
 
-loadDashboard();
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        console.log(
+            "Starting Vidlyra notification system..."
+        );
+
+
+        /*
+         * If this is notifications.html,
+         * load the complete notification list.
+         */
+
+        if (notificationList) {
+
+            await loadNotifications();
+
+        }
+
+
+        /*
+         * Always attempt to update
+         * the notification badge.
+         */
+
+        await loadNotificationBadge();
+
+
+        console.log(
+            "Notification system ready."
+        );
+
+    }
+);
