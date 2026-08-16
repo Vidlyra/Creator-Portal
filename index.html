@@ -25,8 +25,6 @@ body {
     color: white;
 }
 
-/* HEADER */
-
 header {
     background: #111;
     padding: 18px 8%;
@@ -60,8 +58,6 @@ nav a {
 nav a:hover {
     color: #ff7a00;
 }
-
-/* AUTH */
 
 .auth-area {
     display: flex;
@@ -98,8 +94,6 @@ nav a:hover {
     background: #ff7a00;
     color: white;
 }
-
-/* HERO */
 
 .hero {
     padding: 90px 8%;
@@ -159,8 +153,6 @@ nav a:hover {
     background: #333;
 }
 
-/* WELCOME */
-
 .welcome-box {
     display: none;
     margin-top: 25px;
@@ -176,8 +168,6 @@ nav a:hover {
 .welcome-box strong {
     color: #ff7a00;
 }
-
-/* RIGHT CARD */
 
 .right {
     flex: 1;
@@ -209,8 +199,6 @@ nav a:hover {
     border-bottom: 1px solid #222;
     color: #ccc;
 }
-
-/* FEATURES */
 
 .features {
     padding: 80px 8%;
@@ -251,8 +239,6 @@ nav a:hover {
     line-height: 1.6;
 }
 
-/* FOOTER */
-
 footer {
     padding: 40px;
     text-align: center;
@@ -260,8 +246,6 @@ footer {
     border-top: 1px solid #222;
     margin-top: 80px;
 }
-
-/* MOBILE */
 
 @media(max-width: 900px) {
 
@@ -314,33 +298,23 @@ footer {
 
     <nav>
 
-        <a href="index.html">
-            Home
-        </a>
+        <a href="index.html">Home</a>
 
-        <a href="upload.html">
-            Upload
-        </a>
+        <a href="upload.html">Upload</a>
 
-        <a href="dashboard.html">
-            Dashboard
-        </a>
+        <a href="dashboard.html">Dashboard</a>
 
-        <!-- GUEST -->
+        <a href="notifications.html">
+            🔔 Notifications
+        </a>
 
         <div id="guestAuth" class="auth-area">
 
-            <a href="login.html">
-                Login
-            </a>
+            <a href="login.html">Login</a>
 
-            <a href="signup.html">
-                Create Account
-            </a>
+            <a href="signup.html">Create Account</a>
 
         </div>
-
-        <!-- LOGGED IN -->
 
         <div
             id="userAuth"
@@ -382,8 +356,7 @@ footer {
     <div class="left">
 
         <h1>
-            Creator
-            <span>Portal</span>
+            Creator <span>Portal</span>
         </h1>
 
         <p>
@@ -393,30 +366,20 @@ footer {
             Share your imagination with the Vidlyra community.
         </p>
 
-        <!-- GUEST BUTTONS -->
-
         <div
             id="guestButtons"
             class="buttons"
         >
 
-            <a
-                href="login.html"
-                class="btn"
-            >
+            <a href="login.html" class="btn">
                 Login
             </a>
 
-            <a
-                href="signup.html"
-                class="btn btn2"
-            >
+            <a href="signup.html" class="btn btn2">
                 Create Account
             </a>
 
         </div>
-
-        <!-- LOGGED IN -->
 
         <div
             id="welcomeBox"
@@ -450,17 +413,11 @@ footer {
             <ul>
 
                 <li>🎬 Upload Anime Videos</li>
-
                 <li>🎨 Upload Artwork</li>
-
                 <li>🎵 Upload Music</li>
-
                 <li>📖 Publish Stories</li>
-
                 <li>👤 Official Avatar System</li>
-
                 <li>⭐ Creator Dashboard</li>
-
                 <li>🛡 Secure Cloud Storage</li>
 
             </ul>
@@ -522,54 +479,28 @@ footer {
 </footer>
 
 
-<!-- SUPABASE -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- YOUR CONFIG -->
 
 <script src="js/config.js"></script>
 
-
 <script>
-
-/* ==========================================
-   VIDLYRA HOME AUTH
-========================================== */
 
 console.log("Vidlyra Home Auth loaded");
 
 
-const guestAuth =
-    document.getElementById("guestAuth");
-
-const userAuth =
-    document.getElementById("userAuth");
-
-const guestButtons =
-    document.getElementById("guestButtons");
-
-const welcomeBox =
-    document.getElementById("welcomeBox");
-
-const welcomeUser =
-    document.getElementById("welcomeUser");
-
-const welcomePhrase =
-    document.getElementById("welcomePhrase");
-
-const userName =
-    document.getElementById("userName");
-
-const userPhrase =
-    document.getElementById("userPhrase");
-
-const logoutButton =
-    document.getElementById("logoutButton");
+const guestAuth = document.getElementById("guestAuth");
+const userAuth = document.getElementById("userAuth");
+const guestButtons = document.getElementById("guestButtons");
+const welcomeBox = document.getElementById("welcomeBox");
+const welcomeUser = document.getElementById("welcomeUser");
+const welcomePhrase = document.getElementById("welcomePhrase");
+const userName = document.getElementById("userName");
+const userPhrase = document.getElementById("userPhrase");
+const logoutButton = document.getElementById("logoutButton");
 
 
 /* ==========================================
-   RANDOM PHRASES
+   RANDOM VIDLYRA PHRASES
 ========================================== */
 
 const phrases = [
@@ -607,59 +538,64 @@ const phrases = [
 
 function getRandomPhrase() {
 
-    const index =
+    return phrases[
         Math.floor(
             Math.random() * phrases.length
-        );
-
-    return phrases[index];
+        )
+    ];
 
 }
 
 
 /* ==========================================
-   SHOW GUEST
+   GUEST
 ========================================== */
 
 function showGuest() {
 
-    if (guestAuth)
-        guestAuth.style.display = "flex";
-
-    if (userAuth)
-        userAuth.style.display = "none";
-
-    if (guestButtons)
-        guestButtons.style.display = "flex";
-
-    if (welcomeBox)
-        welcomeBox.style.display = "none";
+    guestAuth.style.display = "flex";
+    userAuth.style.display = "none";
+    guestButtons.style.display = "flex";
+    welcomeBox.style.display = "none";
 
 }
 
 
 /* ==========================================
-   GET CREATOR NAME
+   CREATOR NAME
 ========================================== */
 
 async function getCreatorName(user) {
 
     try {
 
-        const { data, error } = await sb
+        const {
+            data,
+            error
+        } = await sb
             .from("profiles")
             .select("*")
             .eq("user_id", user.id)
             .maybeSingle();
 
+
         if (error) {
 
             console.error(
-                "Profile error:",
+                "Profile lookup error:",
                 error
             );
 
+        }
+
+
+        if (data) {
+
             return (
+                data.display_name ||
+                data.username ||
+                data.full_name ||
+                data.name ||
                 user.user_metadata?.full_name ||
                 user.user_metadata?.name ||
                 "Creator"
@@ -667,34 +603,13 @@ async function getCreatorName(user) {
 
         }
 
-        if (!data) {
-
-            console.warn(
-                "No profile found for:",
-                user.id
-            );
-
-            return (
-                user.user_metadata?.full_name ||
-                user.user_metadata?.name ||
-                "Creator"
-            );
-
-        }
-
-        /*
-         * Supports common profile column names.
-         */
 
         return (
-            data.display_name ||
-            data.username ||
-            data.full_name ||
-            data.name ||
             user.user_metadata?.full_name ||
             user.user_metadata?.name ||
             "Creator"
         );
+
 
     } catch (error) {
 
@@ -711,74 +626,41 @@ async function getCreatorName(user) {
 
 
 /* ==========================================
-   SHOW LOGGED-IN USER
+   LOGGED IN
 ========================================== */
 
 async function showLoggedIn(user) {
 
-    if (guestAuth)
-        guestAuth.style.display = "none";
-
-    if (userAuth)
-        userAuth.style.display = "flex";
-
-    if (guestButtons)
-        guestButtons.style.display = "none";
-
-    if (welcomeBox)
-        welcomeBox.style.display = "block";
+    guestAuth.style.display = "none";
+    userAuth.style.display = "flex";
+    guestButtons.style.display = "none";
+    welcomeBox.style.display = "block";
 
 
     const creatorName =
         await getCreatorName(user);
 
-
     const phrase =
         getRandomPhrase();
 
 
-    /* TOP RIGHT NAME */
+    userName.textContent =
+        creatorName;
 
-    if (userName) {
+    userPhrase.textContent =
+        "— " + phrase;
 
-        userName.textContent =
-            creatorName;
+    welcomeUser.textContent =
+        creatorName;
 
-    }
-
-
-    /* TOP RIGHT RANDOM PHRASE */
-
-    if (userPhrase) {
-
-        userPhrase.textContent =
-            "— " + phrase;
-
-    }
-
-
-    /* WELCOME MESSAGE */
-
-    if (welcomeUser) {
-
-        welcomeUser.textContent =
-            creatorName;
-
-    }
-
-
-    if (welcomePhrase) {
-
-        welcomePhrase.textContent =
-            phrase;
-
-    }
+    welcomePhrase.textContent =
+        phrase;
 
 }
 
 
 /* ==========================================
-   CHECK CURRENT LOGIN
+   CHECK LOGIN
 ========================================== */
 
 async function checkLogin() {
@@ -793,12 +675,7 @@ async function checkLogin() {
         } = await sb.auth.getUser();
 
 
-        if (error) {
-
-            console.error(
-                "Auth error:",
-                error
-            );
+        if (error || !user) {
 
             showGuest();
 
@@ -807,20 +684,8 @@ async function checkLogin() {
         }
 
 
-        if (user) {
+        await showLoggedIn(user);
 
-            console.log(
-                "Logged in:",
-                user.id
-            );
-
-            await showLoggedIn(user);
-
-        } else {
-
-            showGuest();
-
-        }
 
     } catch (error) {
 
@@ -842,66 +707,48 @@ async function checkLogin() {
 
 async function logout() {
 
-    try {
-
-        const {
-            error
-        } = await sb.auth.signOut();
+    logoutButton.disabled = true;
+    logoutButton.textContent = "Logging out...";
 
 
-        if (error) {
-
-            console.error(
-                "Logout error:",
-                error
-            );
-
-            alert(
-                "Logout failed."
-            );
-
-            return;
-
-        }
+    const {
+        error
+    } = await sb.auth.signOut();
 
 
-        showGuest();
-
-        console.log(
-            "Logged out successfully"
-        );
-
-        window.location.href =
-            "index.html";
-
-    } catch (error) {
+    if (error) {
 
         console.error(
             "Logout error:",
             error
         );
 
+        logoutButton.disabled = false;
+        logoutButton.textContent = "Logout";
+
+        alert("Logout failed.");
+
+        return;
+
     }
 
-}
 
+    showGuest();
 
-/* ==========================================
-   LOGOUT BUTTON
-========================================== */
-
-if (logoutButton) {
-
-    logoutButton.addEventListener(
-        "click",
-        logout
-    );
+    window.location.href =
+        "index.html";
 
 }
 
 
+logoutButton.addEventListener(
+    "click",
+    logout
+);
+
+
 /* ==========================================
-   AUTH STATE LISTENER
+   AUTH STATE
 ========================================== */
 
 sb.auth.onAuthStateChange(
