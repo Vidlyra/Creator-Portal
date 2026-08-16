@@ -19,6 +19,10 @@
 
 <style>
 
+/* ==========================================
+   GLOBAL
+========================================== */
+
 * {
     margin: 0;
     padding: 0;
@@ -69,7 +73,6 @@ header {
 
     color: #ccc;
     font-size: 13px;
-
     text-decoration: none;
 }
 
@@ -204,7 +207,6 @@ header {
     background: #252525;
 
     border-radius: 20px;
-
     overflow: hidden;
 }
 
@@ -261,7 +263,6 @@ header {
     background: #111;
 
     border: 1px solid #292929;
-
     border-radius: 16px;
 
     color: white;
@@ -269,6 +270,8 @@ header {
     text-decoration: none;
 
     transition: .2s;
+
+    position: relative;
 }
 
 .action-card:hover {
@@ -282,6 +285,10 @@ header {
 }
 
 .action-icon {
+    position: relative;
+
+    display: inline-block;
+
     font-size: 30px;
 }
 
@@ -298,7 +305,6 @@ header {
     color: #777;
 
     font-size: 12px;
-
     line-height: 1.5;
 }
 
@@ -306,12 +312,6 @@ header {
 /* ==========================================
    NOTIFICATION BADGE
 ========================================== */
-
-.notification-icon-wrap {
-    position: relative;
-
-    display: inline-block;
-}
 
 .notification-badge {
     position: absolute;
@@ -322,14 +322,9 @@ header {
     min-width: 20px;
     height: 20px;
 
-    padding: 0 6px;
+    padding: 2px 6px;
 
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    background: #ff3b30;
+    background: #ff7a00;
 
     color: white;
 
@@ -338,11 +333,12 @@ header {
     font-size: 10px;
     font-weight: 700;
 
+    text-align: center;
+    line-height: 16px;
+
     border: 2px solid #111;
 
-    box-shadow:
-        0 0 10px
-        rgba(255,59,48,.35);
+    display: none;
 }
 
 
@@ -373,7 +369,6 @@ header {
 
 .stat-label {
     color: #777;
-
     font-size: 12px;
 }
 
@@ -447,7 +442,6 @@ header {
     background: #ff7a00;
 
     border: none;
-
     border-radius: 9px;
 
     color: white;
@@ -714,7 +708,8 @@ header {
             </h1>
 
             <p>
-                Manage your projects and continue your Vidlyra creator journey.
+                Manage your projects and continue
+                your Vidlyra creator journey.
             </p>
 
         </section>
@@ -791,7 +786,8 @@ header {
                 id="nextLevelText"
                 class="next-level"
             >
-                3 approved projects needed for the next level.
+                3 approved projects needed
+                for the next level.
             </div>
 
         </section>
@@ -825,13 +821,14 @@ header {
                 </div>
 
                 <div class="action-description">
-                    Submit anime, manga, music, artwork or short films.
+                    Submit anime, manga, music,
+                    artwork or short films.
                 </div>
 
             </a>
 
 
-            <!-- MY PROJECTS -->
+            <!-- PROJECTS -->
 
             <a
                 href="projects.html?mine=true"
@@ -847,7 +844,8 @@ header {
                 </div>
 
                 <div class="action-description">
-                    View and manage your submitted projects.
+                    View and manage your submitted
+                    projects.
                 </div>
 
             </a>
@@ -869,7 +867,8 @@ header {
                 </div>
 
                 <div class="action-description">
-                    Unlock special avatars as your creator level increases.
+                    Unlock special avatars as your
+                    creator level increases.
                 </div>
 
             </a>
@@ -891,7 +890,8 @@ header {
                 </div>
 
                 <div class="action-description">
-                    Choose your regular Vidlyra Frequency Avatar.
+                    Choose your regular Vidlyra
+                    Frequency Avatar.
                 </div>
 
             </a>
@@ -901,32 +901,29 @@ header {
 
             <a
                 href="notifications.html"
-                class="action-card notification-card"
+                class="action-card notification-action"
             >
 
-                <div class="notification-icon-wrap">
+                <div class="action-icon">
 
-                    <div class="action-icon">
-                        🔔
-                    </div>
+                    🔔
 
                     <span
                         id="notificationBadge"
                         class="notification-badge"
-                        style="display:none;"
                     >
                         0
                     </span>
 
                 </div>
 
-
                 <div class="action-title">
                     Notifications
                 </div>
 
                 <div class="action-description">
-                    View your latest creator updates and announcements.
+                    View your latest creator
+                    updates and announcements.
                 </div>
 
             </a>
@@ -1166,9 +1163,20 @@ header {
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
 ></script>
 
+
+<!-- SUPABASE CONFIG -->
+
 <script src="js/config.js"></script>
 
-<script src="js/dashboard.js"></script>
+
+<!-- DASHBOARD JS -->
+
+<script src="js/dashboard.js?v=3"></script>
+
+
+<!-- NOTIFICATION BADGE JS -->
+
+<script src="js/notifications.js?v=3"></script>
 
 
 </body>
