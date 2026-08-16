@@ -1,6 +1,5 @@
 // ==========================================
 // VIDLYRA ADMIN PROJECTS
-// PROJECT REVIEW SYSTEM
 // ==========================================
 
 console.log("Vidlyra Admin Projects JS loaded");
@@ -13,13 +12,6 @@ console.log("Vidlyra Admin Projects JS loaded");
 const loading = document.getElementById("loading");
 const errorBox = document.getElementById("error");
 const projectsList = document.getElementById("projectsList");
-
-
-// ==========================================
-// STATE
-// ==========================================
-
-let currentProjects = [];
 
 
 // ==========================================
@@ -49,7 +41,7 @@ function showLoading() {
 
 function showError(message) {
 
-    console.error("Admin projects error:", message);
+    console.error("Admin error:", message);
 
     if (loading) {
         loading.style.display = "none";
@@ -65,7 +57,6 @@ function showError(message) {
             message || "Something went wrong.";
 
         errorBox.style.display = "block";
-
     }
 
 }
@@ -107,39 +98,21 @@ async function getCurrentUser() {
         throw error;
     }
 
-    if (!data || !data.user) {
-        return null;
-    }
-
-    return data.user;
+    return data?.user || null;
 
 }
 
 
 // ==========================================
-// ADMIN CHECK
+// CHECK ADMIN
 // ==========================================
 
-async function checkAdmin(user) {
-
-    if (!user) {
-        return false;
-    }
+async function checkAdmin(userId) {
 
     console.log(
-        "Checking admin:",
-        user.id
+        "Checking admin role:",
+        userId
     );
-
-    /*
-        IMPORTANT:
-
-        Change this check if your project
-        uses a different admin system.
-
-        This version checks the profiles table
-        for creator_role = admin.
-    */
 
     const {
         data: profile,
@@ -154,35 +127,27 @@ async function checkAdmin(user) {
         `)
         .eq(
             "user_id",
-            user.id
+            userId
         )
         .maybeSingle();
 
     if (error) {
-
-        /*
-            If creator_role does not exist
-            in your profiles table, this will
-            show an error instead of silently
-            allowing access.
-        */
-
         throw error;
-
     }
 
     if (!profile) {
         return false;
     }
 
-    const role =
-        String(
-            profile.creator_role || ""
-        ).toLowerCase();
+    console.log(
+        "Admin profile:",
+        profile
+    );
 
     return (
-        role === "admin" ||
-        role === "administrator"
+        String(
+            profile.creator_role || ""
+        ).toLowerCase() === "admin"
     );
 
 }
@@ -195,7 +160,7 @@ async function checkAdmin(user) {
 async function loadProjects() {
 
     console.log(
-        "Loading creator projects..."
+        "Loading projects..."
     );
 
     const {
@@ -225,16 +190,13 @@ async function loadProjects() {
         throw error;
     }
 
-    currentProjects =
-        data || [];
-
     console.log(
-        "Projects loaded:",
-        currentProjects
+        "Projects:",
+        data
     );
 
     renderProjects(
-        currentProjects
+        data || []
     );
 
 }
@@ -247,6 +209,7 @@ async function loadProjects() {
 function renderProjects(projects) {
 
     if (!projectsList) {
+
         console.error(
             "projectsList element not found."
         );
@@ -257,11 +220,7 @@ function renderProjects(projects) {
     projectsList.innerHTML = "";
 
 
-    // ======================================
-    // EMPTY
-    // ======================================
-
-    if (!projects.length) {
+    if (projects.length === 0) {
 
         projectsList.innerHTML = `
             <div class="empty">
@@ -273,13 +232,8 @@ function renderProjects(projects) {
         showProjects();
 
         return;
-
     }
 
-
-    // ======================================
-    // PROJECT CARDS
-    // ======================================
 
     projects.forEach(
         project => {
@@ -325,17 +279,13 @@ function createProjectCard(project) {
         status.toLowerCase();
 
 
-    const date =
+    const createdDate =
         project.created_at
             ? new Date(
                 project.created_at
             ).toLocaleString()
             : "Unknown";
 
-
-    // ======================================
-    // CARD
-    // ======================================
 
     card.innerHTML = `
 
@@ -351,16 +301,21 @@ function createProjectCard(project) {
                 </h3>
 
                 <span class="category">
+
                     ${escapeHTML(
                         project.category ||
                         "Unknown"
                     )}
+
                 </span>
 
             </div>
 
+
             <span class="status ${statusClass}">
+
                 ${escapeHTML(status)}
+
             </span>
 
         </div>
@@ -369,11 +324,14 @@ function createProjectCard(project) {
         <div class="project-body">
 
             <p>
+
                 ${escapeHTML(
                     project.description ||
                     "No description provided."
                 )}
+
             </p>
+
 
             <div class="project-meta">
 
@@ -384,8 +342,11 @@ function createProjectCard(project) {
                     )}
                 </span>
 
+
                 <span>
-                    📅 ${escapeHTML(date)}
+                    📅 ${escapeHTML(
+                        createdDate
+                    )}
                 </span>
 
             </div>
@@ -403,26 +364,30 @@ function createProjectCard(project) {
                 View
             </button>
 
+
             ${
                 status.toLowerCase() === "pending"
-                    ? `
-                        <button
-                            type="button"
-                            class="approve-btn"
-                            data-action="approve"
-                        >
-                            ✓ Approve
-                        </button>
+                ?
+                `
+                    <button
+                        type="button"
+                        class="approve-btn"
+                        data-action="approve"
+                    >
+                        ✓ Approve
+                    </button>
 
-                        <button
-                            type="button"
-                            class="reject-btn"
-                            data-action="reject"
-                        >
-                            ✕ Reject
-                        </button>
-                    `
-                    : ""
+
+                    <button
+                        type="button"
+                        class="reject-btn"
+                        data-action="reject"
+                    >
+                        ✕ Reject
+                    </button>
+                `
+                :
+                ""
             }
 
         </div>
@@ -431,7 +396,7 @@ function createProjectCard(project) {
 
 
     // ======================================
-    // BUTTON EVENTS
+    // VIEW
     // ======================================
 
     const viewButton =
@@ -439,11 +404,12 @@ function createProjectCard(project) {
             '[data-action="view"]'
         );
 
+
     if (viewButton) {
 
         viewButton.addEventListener(
             "click",
-            () => {
+            function () {
 
                 showProjectDetails(
                     project
@@ -455,19 +421,24 @@ function createProjectCard(project) {
     }
 
 
+    // ======================================
+    // APPROVE
+    // ======================================
+
     const approveButton =
         card.querySelector(
             '[data-action="approve"]'
         );
 
+
     if (approveButton) {
 
         approveButton.addEventListener(
             "click",
-            () => {
+            function () {
 
                 approveProject(
-                    project.id,
+                    project,
                     approveButton
                 );
 
@@ -477,19 +448,24 @@ function createProjectCard(project) {
     }
 
 
+    // ======================================
+    // REJECT
+    // ======================================
+
     const rejectButton =
         card.querySelector(
             '[data-action="reject"]'
         );
 
+
     if (rejectButton) {
 
         rejectButton.addEventListener(
             "click",
-            () => {
+            function () {
 
                 rejectProject(
-                    project.id,
+                    project,
                     rejectButton
                 );
 
@@ -505,43 +481,34 @@ function createProjectCard(project) {
 
 
 // ==========================================
-// VIEW PROJECT DETAILS
+// VIEW DETAILS
 // ==========================================
 
 function showProjectDetails(project) {
 
-    const details = `
+    alert(
 
-Project: ${project.title || "Untitled"}
+        "PROJECT DETAILS\n\n" +
 
-Category: ${project.category || "Unknown"}
+        "Title: " +
+        (project.title || "-") +
 
-Status: ${project.status || "Pending"}
+        "\n\nCategory: " +
+        (project.category || "-") +
 
-Creator ID:
-${project.user_id || "-"}
+        "\n\nStatus: " +
+        (project.status || "-") +
 
-Created:
-${
-    project.created_at
-        ? new Date(
-            project.created_at
-        ).toLocaleString()
-        : "-"
-}
+        "\n\nCreator ID: " +
+        (project.user_id || "-") +
 
-Description:
-${project.description || "No description"}
+        "\n\nDescription:\n" +
+        (project.description || "-") +
 
-Main File:
-${project.file_path || "-"}
+        "\n\nFile:\n" +
+        (project.file_path || "-")
 
-Thumbnail:
-${project.thumbnail || "-"}
-
-    `;
-
-    alert(details);
+    );
 
 }
 
@@ -551,18 +518,13 @@ ${project.thumbnail || "-"}
 // ==========================================
 
 async function approveProject(
-    projectId,
+    project,
     button
 ) {
 
-    if (!projectId) {
-        return;
-    }
-
-
     const confirmed =
         confirm(
-            "Approve this project?"
+            `Approve "${project.title}"?`
         );
 
 
@@ -572,22 +534,29 @@ async function approveProject(
 
 
     if (button) {
+
         button.disabled = true;
+
         button.textContent =
             "Approving...";
+
     }
 
 
     try {
 
         console.log(
-            "Approving project:",
-            projectId
+            "Approving:",
+            project.id
         );
 
 
+        // ==================================
+        // UPDATE PROJECT
+        // ==================================
+
         const {
-            data: project,
+            data: updatedProject,
             error
         } = await sb
             .from("projects")
@@ -596,7 +565,7 @@ async function approveProject(
             })
             .eq(
                 "id",
-                projectId
+                project.id
             )
             .select()
             .single();
@@ -609,21 +578,30 @@ async function approveProject(
 
         console.log(
             "Project approved:",
-            project
+            updatedProject
         );
 
 
         // ==================================
-        // CREATE NOTIFICATION
+        // NOTIFICATION
         // ==================================
 
-        await createNotification(
-            project.user_id,
-            "Project Approved 🎉",
-            `Your project "${project.title}" was approved and is now published.`,
-            "project_approved",
-            project.id
-        );
+        const notification =
+            await createNotification(
+                project.user_id,
+                "Project Approved 🎉",
+                `Your project "${project.title}" was approved and is now pending publication.`,
+                "project_approved"
+            );
+
+
+        if (notification) {
+
+            console.log(
+                "Approval notification created."
+            );
+
+        }
 
 
         alert(
@@ -643,15 +621,18 @@ async function approveProject(
 
 
         alert(
-            "Unable to approve project:\n" +
+            "Unable to approve project:\n\n" +
             error.message
         );
 
 
         if (button) {
+
             button.disabled = false;
+
             button.textContent =
                 "✓ Approve";
+
         }
 
     }
@@ -664,18 +645,13 @@ async function approveProject(
 // ==========================================
 
 async function rejectProject(
-    projectId,
+    project,
     button
 ) {
 
-    if (!projectId) {
-        return;
-    }
-
-
     const reason =
         prompt(
-            "Enter rejection reason:"
+            `Why are you rejecting "${project.title}"?`
         );
 
 
@@ -695,27 +671,33 @@ async function rejectProject(
         );
 
         return;
-
     }
 
 
     if (button) {
+
         button.disabled = true;
+
         button.textContent =
             "Rejecting...";
+
     }
 
 
     try {
 
         console.log(
-            "Rejecting project:",
-            projectId
+            "Rejecting:",
+            project.id
         );
 
 
+        // ==================================
+        // UPDATE PROJECT
+        // ==================================
+
         const {
-            data: project,
+            data: updatedProject,
             error
         } = await sb
             .from("projects")
@@ -724,7 +706,7 @@ async function rejectProject(
             })
             .eq(
                 "id",
-                projectId
+                project.id
             )
             .select()
             .single();
@@ -737,20 +719,24 @@ async function rejectProject(
 
         console.log(
             "Project rejected:",
-            project
+            updatedProject
         );
 
 
         // ==================================
-        // CREATE NOTIFICATION
+        // NOTIFICATION
         // ==================================
 
         await createNotification(
+
             project.user_id,
+
             "Project Rejected",
-            `Your project "${project.title}" was not approved. Reason: ${cleanReason}`,
-            "project_rejected",
-            project.id
+
+            `Your project "${project.title}" was rejected. Reason: ${cleanReason}`,
+
+            "project_rejected"
+
         );
 
 
@@ -771,15 +757,18 @@ async function rejectProject(
 
 
         alert(
-            "Unable to reject project:\n" +
+            "Unable to reject project:\n\n" +
             error.message
         );
 
 
         if (button) {
+
             button.disabled = false;
+
             button.textContent =
                 "✕ Reject";
+
         }
 
     }
@@ -795,29 +784,27 @@ async function createNotification(
     userId,
     title,
     message,
-    type,
-    projectId
+    type
 ) {
 
     console.log(
-        "Creating notification..."
+        "Creating notification for:",
+        userId
     );
 
 
     /*
-        IMPORTANT:
+        YOUR ACTUAL TABLE:
 
-        Your notifications table must allow
-        admin/service-side inserts.
-
-        Expected columns:
-
+        id
         user_id
         title
         message
         type
-        project_id
         is_read
+        created_at
+
+        There is NO project_id.
     */
 
 
@@ -828,18 +815,20 @@ async function createNotification(
         .from("notifications")
         .insert({
 
-            user_id: userId,
+            user_id:
+                userId,
 
-            title: title,
+            title:
+                title,
 
-            message: message,
+            message:
+                message,
 
-            type: type,
+            type:
+                type,
 
-            project_id:
-                projectId || null,
-
-            is_read: false
+            is_read:
+                false
 
         })
         .select()
@@ -849,14 +838,17 @@ async function createNotification(
     if (error) {
 
         console.error(
-            "Notification error:",
+            "Notification insert error:",
             error
         );
 
+
         /*
-            Do NOT stop project approval
-            if only notification creation
-            fails.
+            Project approval/rejection
+            has already succeeded.
+
+            Therefore notification failure
+            should NOT undo the project update.
         */
 
         return null;
@@ -881,7 +873,9 @@ async function createNotification(
 
 function escapeHTML(value) {
 
-    return String(value || "")
+    return String(
+        value ?? ""
+    )
         .replace(
             /&/g,
             "&amp;"
@@ -937,7 +931,7 @@ async function logout() {
 
 
         alert(
-            "Unable to logout."
+            "Unable to logout. Please try again."
         );
 
     }
@@ -946,7 +940,7 @@ async function logout() {
 
 
 // ==========================================
-// START
+// START ADMIN PAGE
 // ==========================================
 
 async function loadAdminProjects() {
@@ -956,9 +950,9 @@ async function loadAdminProjects() {
 
     try {
 
-        // ----------------------------------
+        // ==================================
         // SUPABASE CHECK
-        // ----------------------------------
+        // ==================================
 
         if (
             typeof sb === "undefined" ||
@@ -972,15 +966,20 @@ async function loadAdminProjects() {
         }
 
 
-        // ----------------------------------
-        // USER
-        // ----------------------------------
+        // ==================================
+        // CURRENT USER
+        // ==================================
 
         const user =
             await getCurrentUser();
 
 
         if (!user) {
+
+            console.warn(
+                "No logged-in user."
+            );
+
 
             window.location.href =
                 "login.html";
@@ -991,18 +990,18 @@ async function loadAdminProjects() {
 
 
         console.log(
-            "Logged-in admin candidate:",
+            "Logged-in user:",
             user.id
         );
 
 
-        // ----------------------------------
-        // ADMIN
-        // ----------------------------------
+        // ==================================
+        // ADMIN CHECK
+        // ==================================
 
         const isAdmin =
             await checkAdmin(
-                user
+                user.id
             );
 
 
@@ -1017,9 +1016,14 @@ async function loadAdminProjects() {
         }
 
 
-        // ----------------------------------
+        console.log(
+            "Admin access confirmed."
+        );
+
+
+        // ==================================
         // LOAD PROJECTS
-        // ----------------------------------
+        // ==================================
 
         await loadProjects();
 
@@ -1032,14 +1036,14 @@ async function loadAdminProjects() {
     } catch (error) {
 
         console.error(
-            "Admin project loading error:",
+            "Admin page error:",
             error
         );
 
 
         showError(
             error.message ||
-            "Unable to load projects."
+            "Unable to load admin projects."
         );
 
     }
@@ -1053,7 +1057,7 @@ async function loadAdminProjects() {
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => {
+    function () {
 
         loadAdminProjects();
 
