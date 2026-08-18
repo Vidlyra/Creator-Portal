@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Admin Notifications | Vidlyra</title>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+>
+
+<style>
+
+/* ==========================================
+   RESET
+========================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+
+/* ==========================================
+   BODY
+========================================== */
+
+body {
+
+    min-height: 100vh;
+
+    background: #050505;
+
+    color: white;
+
+}
+
+
+/* ==========================================
+   HEADER
+========================================== */
+
+header {
+
+    height: 70px;
+
+    padding: 0 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    background: #111;
+
+    border-bottom: 1px solid #252525;
+
+}
+
+
+.logo {
+
+    color: #ff7a00;
+
+    font-size: 25px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+}
+
+
+.header-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+.back-btn {
+
+    padding: 9px 15px;
+
+    background: transparent;
+
+    border: 1px solid #333;
+
+    border-radius: 8px;
+
+    color: #bbb;
+
+    cursor: pointer;
+
+    transition: .2s;
+
+}
+
+
+.back-btn:hover {
+
+    border-color: #ff7a00;
+
+    color: #ff7a00;
+
+}
+
+
+/* ==========================================
+   MAIN
+========================================== */
+
+.container {
+
+    width: 100%;
+
+    max-width: 1100px;
+
+    margin: 40px auto;
+
+    padding: 0 20px;
+
+}
+
+
+/* ==========================================
+   PAGE TITLE
+========================================== */
+
+.page-header {
+
+    margin-bottom: 30px;
+
+}
+
+
+.page-header h1 {
+
+    font-size: 30px;
+
+}
+
+
+.page-header h1 span {
+
+    color: #ff7a00;
+
+}
+
+
+.page-header p {
+
+    margin-top: 6px;
+
+    color: #777;
+
+    font-size: 13px;
+
+}
+
+
+/* ==========================================
+   GRID
+========================================== */
+
+.admin-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(300px, 420px)
+        1fr;
+
+    gap: 25px;
+
+}
+
+
+/* ==========================================
+   CARD
+========================================== */
+
+.card {
+
+    background: #111;
+
+    border: 1px solid #292929;
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+}
+
+
+.card-title {
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    margin-bottom: 20px;
+
+}
+
+
+.card-subtitle {
+
+    color: #777;
+
+    font-size: 12px;
+
+    margin-top: -12px;
+
+    margin-bottom: 20px;
+
+}
+
+
+/* ==========================================
+   FORM
+========================================== */
+
+.form-group {
+
+    margin-bottom: 18px;
+
+}
+
+
+.form-label {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #aaa;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+}
+
+
+.form-input,
+.form-select,
+.form-textarea {
+
+    width: 100%;
+
+    padding: 12px 13px;
+
+    background: #191919;
+
+    border: 1px solid #333;
+
+    border-radius: 9px;
+
+    color: white;
+
+    outline: none;
+
+    font-size: 13px;
+
+    transition: .2s;
+
+}
+
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+
+    border-color: #ff7a00;
+
+}
+
+
+.form-textarea {
+
+    min-height: 120px;
+
+    resize: vertical;
+
+}
+
+
+.form-select option {
+
+    background: #111;
+
+    color: white;
+
+}
+
+
+/* ==========================================
+   SEND BUTTON
+========================================== */
+
+.send-button {
+
+    width: 100%;
+
+    padding: 13px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #ff7a00;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .2s;
+
+}
+
+
+.send-button:hover {
+
+    background: #ff9500;
+
+}
+
+
+.send-button:disabled {
+
+    opacity: .5;
+
+    cursor: not-allowed;
+
+}
+
+
+/* ==========================================
+   MESSAGE
+========================================== */
+
+#formMessage {
+
+    margin-top: 15px;
+
+    padding: 12px;
+
+    display: none;
+
+    border-radius: 9px;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+}
+
+
+#formMessage.success {
+
+    display: block;
+
+    background: #102216;
+
+    border: 1px solid #245d32;
+
+    color: #66dd88;
+
+}
+
+
+#formMessage.error {
+
+    display: block;
+
+    background: #241010;
+
+    border: 1px solid #662525;
+
+    color: #ff7777;
+
+}
+
+
+/* ==========================================
+   HISTORY
+========================================== */
+
+.notification-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    max-height: 650px;
+
+    overflow-y: auto;
+
+}
+
+
+.notification-item {
+
+    padding: 17px;
+
+    background: #191919;
+
+    border: 1px solid #292929;
+
+    border-radius: 12px;
+
+    transition: .2s;
+
+}
+
+
+.notification-item:hover {
+
+    border-color: #ff7a00;
+
+}
+
+
+.notification-item-top {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+}
+
+
+.notification-item-title {
+
+    color: #ff7a00;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+}
+
+
+.notification-item-message {
+
+    margin-top: 7px;
+
+    color: #aaa;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+}
+
+
+.notification-meta {
+
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 12px;
+
+}
+
+
+.notification-type {
+
+    padding: 4px 9px;
+
+    border-radius: 20px;
+
+    background: #252525;
+
+    color: #aaa;
+
+    font-size: 10px;
+
+}
+
+
+.notification-date {
+
+    color: #666;
+
+    font-size: 10px;
+
+}
+
+
+/* ==========================================
+   EMPTY / LOADING
+========================================== */
+
+.empty-state {
+
+    padding: 45px 20px;
+
+    text-align: center;
+
+    color: #666;
+
+    font-size: 13px;
+
+}
+
+
+.loading-state {
+
+    padding: 45px 20px;
+
+    text-align: center;
+
+    color: #777;
+
+    font-size: 13px;
+
+}
+
+
+/* ==========================================
+   ADMIN STATUS
+========================================== */
+
+.admin-status {
+
+    margin-bottom: 25px;
+
+    padding: 14px 17px;
+
+    background: #101010;
+
+    border: 1px solid #292929;
+
+    border-radius: 12px;
+
+    color: #888;
+
+    font-size: 12px;
+
+}
+
+
+.admin-status strong {
+
+    color: #ff7a00;
+
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media(max-width: 850px) {
+
+    .admin-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+
+@media(max-width: 600px) {
+
+    header {
+
+        padding: 0 18px;
+
+    }
+
+    .logo {
+
+        font-size: 21px;
+
+    }
+
+    .container {
+
+        margin-top: 25px;
+
+    }
+
+    .page-header h1 {
+
+        font-size: 25px;
+
+    }
+
+    .notification-item-top {
+
+        flex-direction: column;
+
+        gap: 5px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     HEADER
+========================================== -->
+
+<header>
+
+    <div class="logo">
+        VIDLYRA
+    </div>
+
+
+    <div class="header-right">
+
+        <button
+            type="button"
+            class="back-btn"
+            onclick="window.location.href='admin-dashboard.html'"
+        >
+            ← Admin Dashboard
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- ==========================================
+     MAIN
+========================================== -->
+
+<main class="container">
+
+
+    <!-- PAGE HEADER -->
+
+    <section class="page-header">
+
+        <h1>
+            Admin
+            <span>Notifications</span>
+        </h1>
+
+        <p>
+            Send announcements and project updates to Vidlyra creators.
+        </p>
+
+    </section>
+
+
+    <!-- ADMIN STATUS -->
+
+    <div
+        id="adminStatus"
+        class="admin-status"
+    >
+        Checking admin access...
+    </div>
+
+
+    <!-- MAIN GRID -->
+
+    <div class="admin-grid">
+
+
+        <!-- ======================================
+             SEND NOTIFICATION
+        ======================================= -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+                🔔 Send Notification
+            </h2>
+
+            <p class="card-subtitle">
+                Create a notification for a creator.
+            </p>
+
+
+            <form id="notificationForm">
+
+
+                <!-- CREATOR -->
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="creator"
+                    >
+                        Creator
+                    </label>
+
+
+                    <select
+                        id="creator"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="">
+                            Loading creators...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- TITLE -->
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="notificationTitle"
+                    >
+                        Notification Title
+                    </label>
+
+
+                    <input
+                        id="notificationTitle"
+                        class="form-input"
+                        type="text"
+                        placeholder="Project Submitted 🎬"
+                        maxlength="100"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- MESSAGE -->
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="notificationMessage"
+                    >
+                        Message
+                    </label>
+
+
+                    <textarea
+                        id="notificationMessage"
+                        class="form-textarea"
+                        placeholder="Your project has been submitted successfully and is now pending review."
+                        maxlength="500"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <!-- TYPE -->
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="notificationType"
+                    >
+                        Notification Type
+                    </label>
+
+
+                    <select
+                        id="notificationType"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="project">
+                            Project
+                        </option>
+
+                        <option value="approval">
+                            Approval
+                        </option>
+
+                        <option value="rejection">
+                            Rejection
+                        </option>
+
+                        <option value="announcement">
+                            Announcement
+                        </option>
+
+                        <option value="system">
+                            System
+                        </option>
+
+                        <option value="creator">
+                            Creator
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- SEND -->
+
+                <button
+                    id="sendButton"
+                    class="send-button"
+                    type="submit"
+                >
+                    Send Notification
+                </button>
+
+
+                <!-- MESSAGE -->
+
+                <div
+                    id="formMessage"
+                ></div>
+
+
+            </form>
+
+        </section>
+
+
+        <!-- ======================================
+             NOTIFICATION HISTORY
+        ======================================= -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+                Notification History
+            </h2>
+
+            <p class="card-subtitle">
+                Notifications currently stored in Vidlyra.
+            </p>
+
+
+            <div
+                id="notificationList"
+                class="notification-list"
+            >
+
+                <div class="loading-state">
+                    Loading notifications...
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </div>
+
+
+</main>
+
+
+<!-- ==========================================
+     SUPABASE
+========================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<!-- ==========================================
+     VIDLYRA CONFIG
+========================================== -->
+
+<script src="js/config.js"></script>
+
+
+<!-- ==========================================
+     ADMIN NOTIFICATIONS JS
+========================================== -->
+
+<script src="js/admin-notifications.js"></script>
+
+
+</body>
+
+</html>
