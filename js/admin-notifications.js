@@ -1,327 +1,362 @@
 /* =========================================================
    VIDLYRA ADMIN NOTIFICATIONS
-   Supports:
-   1. Specific Creator
-   2. All Creators
+   Uses existing Supabase client: sb
    ========================================================= */
+
+"use strict";
 
 console.log("Vidlyra Admin Notifications JS loaded");
 
-(() => {
-    "use strict";
+let supabaseClient = null;
+let currentAdmin = null;
+let creators = [];
 
-    let supabaseClient = null;
-    let currentAdmin = null;
-    let creators = [];
 
-    /* =====================================================
-       DOM
-       ===================================================== */
+/* =========================================================
+   DOM HELPERS
+   ========================================================= */
 
-    const getEl = (id) => document.getElementById(id);
+function getEl(id) {
+    return document.getElementById(id);
+}
 
-    const elements = {};
+const elements = {
+    creatorSelect: null,
+    title: null,
+    message: null,
+    type: null,
+    sendButton: null,
+    status: null,
+    creatorCount: null
+};
 
-    function cacheElements() {
-        elements.creatorSelect =
-            getEl("creatorSelect") ||
-            getEl("creator") ||
-            getEl("creatorSelector");
 
-        elements.title =
-            getEl("notificationTitle") ||
-            getEl("title");
+/* =========================================================
+   CACHE ELEMENTS
+   ========================================================= */
 
-        elements.message =
-            getEl("notificationMessage") ||
-            getEl("message");
+function cacheElements() {
 
-        elements.type =
-            getEl("notificationType") ||
-            getEl("type");
+    elements.creatorSelect =
+        getEl("creatorSelect");
 
-        elements.sendButton =
-            getEl("sendNotification") ||
-            getEl("sendButton") ||
-            getEl("sendNotificationButton");
+    elements.title =
+        getEl("notificationTitle");
 
-        elements.status =
-            getEl("notificationStatus") ||
-            getEl("status");
+    elements.message =
+        getEl("notificationMessage");
 
-        elements.creatorCount =
-            getEl("creatorCount");
+    elements.type =
+        getEl("notificationType");
 
-        console.log("Admin notification elements:", elements);
+    elements.sendButton =
+        getEl("sendNotification") ||
+        getEl("sendNotificationButton") ||
+        getEl("sendButton");
+
+    elements.status =
+        getEl("notificationStatus");
+
+    elements.creatorCount =
+        getEl("creatorCount");
+
+    console.log(
+        "Admin notification elements:",
+        elements
+    );
+}
+
+
+/* =========================================================
+   GET EXISTING SUPABASE CLIENT
+   ========================================================= */
+
+function getSupabase() {
+
+    /*
+     * Your config.js creates:
+     *
+     * const sb = window.supabase.createClient(...)
+     */
+
+    if (
+        typeof sb !== "undefined" &&
+        sb &&
+        typeof sb.from === "function"
+    ) {
+        return sb;
     }
 
-    /* =====================================================
-       SUPABASE
-       ===================================================== */
+    console.error(
+        "Supabase client `sb` not found."
+    );
 
-    function getSupabase() {
+    return null;
+}
 
-        if (typeof window.supabaseClient !== "undefined") {
-            return window.supabaseClient;
-        }
 
-        if (typeof window.supabase !== "undefined") {
+/* =========================================================
+   STATUS MESSAGE
+   ========================================================= */
 
-            if (
-                window.supabase &&
-                typeof window.supabase.from === "function"
-            ) {
-                return window.supabase;
-            }
-        }
+function setStatus(message, type = "info") {
 
-        console.error("Supabase client not found.");
-
-        return null;
+    if (!elements.status) {
+        console.log(`[${type}] ${message}`);
+        return;
     }
 
-    /* =====================================================
-       STATUS
-       ===================================================== */
+    elements.status.textContent = message;
 
-    function setStatus(message, type = "info") {
+    elements.status.style.display = "block";
 
-        if (!elements.status) {
-            console.log(`[${type}] ${message}`);
-            return;
-        }
+    elements.status.className =
+        `notification-status ${type}`;
+}
 
-        elements.status.textContent = message;
 
-        elements.status.className =
-            `notification-status ${type}`;
+/* =========================================================
+   VERIFY ADMIN
+   ========================================================= */
 
-        elements.status.style.display = "block";
+async function verifyAdmin() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.getUser();
+
+    if (error) {
+        throw error;
     }
 
-    /* =====================================================
-       ADMIN VERIFICATION
-       ===================================================== */
+    const user = data?.user;
 
-    async function verifyAdmin() {
-
-        if (!supabaseClient) {
-            throw new Error("Supabase client unavailable.");
-        }
-
-        const {
-            data: {
-                user
-            },
-            error
-        } = await supabaseClient.auth.getUser();
-
-        if (error) {
-            throw error;
-        }
-
-        if (!user) {
-            throw new Error("You are not logged in.");
-        }
-
-        currentAdmin = user;
-
-        console.log(
-            "Logged-in user:",
-            user.id
+    if (!user) {
+        throw new Error(
+            "You are not logged in."
         );
-
-        /*
-         * Check profiles table.
-         */
-
-        const {
-            data: profile,
-            error: profileError
-        } = await supabaseClient
-            .from("profiles")
-            .select("user_id, creator_role")
-            .eq("user_id", user.id)
-            .maybeSingle();
-
-        if (profileError) {
-            throw profileError;
-        }
-
-        if (!profile) {
-            throw new Error(
-                "Admin profile does not exist."
-            );
-        }
-
-        const role =
-            String(profile.creator_role || "")
-                .trim()
-                .toLowerCase();
-
-        if (role !== "admin") {
-            throw new Error(
-                "Access denied. Admin account required."
-            );
-        }
-
-        console.log(
-            "Admin verified:",
-            user.id
-        );
-
-        return true;
     }
 
-    /* =====================================================
-       LOAD CREATORS
-       ===================================================== */
+    currentAdmin = user;
 
-    async function loadCreators() {
+    console.log(
+        "Logged-in user:",
+        user.id
+    );
 
-        if (!elements.creatorSelect) {
-            throw new Error(
-                "Creator select element not found."
-            );
-        }
+    const {
+        data: profile,
+        error: profileError
+    } = await supabaseClient
+        .from("profiles")
+        .select(
+            "user_id, creator_role"
+        )
+        .eq(
+            "user_id",
+            user.id
+        )
+        .maybeSingle();
 
-        console.log("Loading creators...");
+    if (profileError) {
+        throw profileError;
+    }
 
-        const {
-            data,
-            error
-        } = await supabaseClient
-            .from("profiles")
-            .select(
-                "user_id, full_name, email, creator_role"
-            )
-            .eq("creator_role", "creator")
-            .order("full_name", {
+    if (!profile) {
+        throw new Error(
+            "Admin profile does not exist."
+        );
+    }
+
+    const role =
+        String(
+            profile.creator_role || ""
+        )
+        .trim()
+        .toLowerCase();
+
+    if (role !== "admin") {
+        throw new Error(
+            "Access denied. Admin account required."
+        );
+    }
+
+    console.log(
+        "Admin verified:",
+        user.id
+    );
+
+    return true;
+}
+
+
+/* =========================================================
+   LOAD ALL CREATORS
+   ========================================================= */
+
+async function loadCreators() {
+
+    if (!elements.creatorSelect) {
+        throw new Error(
+            "Creator select element not found."
+        );
+    }
+
+    console.log(
+        "Loading creators..."
+    );
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("profiles")
+        .select(
+            "user_id, full_name, email, creator_role"
+        )
+        .eq(
+            "creator_role",
+            "creator"
+        )
+        .order(
+            "full_name",
+            {
                 ascending: true
-            });
-
-        if (error) {
-            console.error(
-                "Creator loading error:",
-                error
-            );
-
-            throw error;
-        }
-
-        creators = Array.isArray(data)
-            ? data
-            : [];
-
-        console.log(
-            "Profiles found:",
-            creators
+            }
         );
 
-        /*
-         * Remove duplicates.
-         */
+    if (error) {
+        console.error(
+            "Failed to load creators:",
+            error
+        );
 
-        const uniqueMap = new Map();
+        throw error;
+    }
 
-        creators.forEach((creator) => {
+    console.log(
+        "Profiles found:",
+        data
+    );
+
+    /*
+     * Remove admin and duplicate IDs.
+     */
+
+    const uniqueCreators = new Map();
+
+    (data || []).forEach(
+        creator => {
 
             if (
                 creator.user_id &&
-                creator.user_id !== currentAdmin?.id
+                creator.user_id !==
+                currentAdmin?.id
             ) {
-                uniqueMap.set(
+
+                uniqueCreators.set(
                     creator.user_id,
                     creator
                 );
             }
-        });
+        }
+    );
 
-        creators = Array.from(
-            uniqueMap.values()
+    creators =
+        Array.from(
+            uniqueCreators.values()
         );
 
-        console.log(
-            `${creators.length} creator profiles loaded.`
-        );
+    console.log(
+        `${creators.length} creator profiles loaded.`
+    );
 
-        renderCreatorSelect();
+    renderCreatorSelect();
+}
+
+
+/* =========================================================
+   RENDER CREATOR DROPDOWN
+   ========================================================= */
+
+function renderCreatorSelect() {
+
+    const select =
+        elements.creatorSelect;
+
+    if (!select) {
+        return;
     }
 
-    /* =====================================================
-       RENDER CREATOR SELECT
-       ===================================================== */
+    select.innerHTML = "";
 
-    function renderCreatorSelect() {
+    /*
+     * Default
+     */
 
-        const select =
-            elements.creatorSelect;
+    const defaultOption =
+        document.createElement("option");
 
-        if (!select) {
-            return;
-        }
+    defaultOption.value = "";
 
-        select.innerHTML = "";
+    defaultOption.textContent =
+        "Select recipient";
 
-        /*
-         * Default
-         */
+    select.appendChild(
+        defaultOption
+    );
 
-        const defaultOption =
+
+    /*
+     * ALL CREATORS
+     */
+
+    const allOption =
+        document.createElement("option");
+
+    allOption.value =
+        "ALL_CREATORS";
+
+    allOption.textContent =
+        "📢 All Creators";
+
+    select.appendChild(
+        allOption
+    );
+
+
+    /*
+     * Separator
+     */
+
+    if (creators.length > 0) {
+
+        const separator =
             document.createElement("option");
 
-        defaultOption.value = "";
+        separator.disabled = true;
 
-        defaultOption.textContent =
-            "Select recipient";
-
-        select.appendChild(
-            defaultOption
-        );
-
-        /*
-         * ALL CREATORS
-         */
-
-        const allOption =
-            document.createElement("option");
-
-        allOption.value = "ALL_CREATORS";
-
-        allOption.textContent =
-            "📢 All Creators";
+        separator.textContent =
+            "──────────────";
 
         select.appendChild(
-            allOption
+            separator
         );
+    }
 
-        /*
-         * Separator
-         */
 
-        if (creators.length > 0) {
+    /*
+     * INDIVIDUAL CREATORS
+     */
 
-            const separator =
-                document.createElement("option");
-
-            separator.disabled = true;
-
-            separator.textContent =
-                "──────────────";
-
-            select.appendChild(
-                separator
-            );
-        }
-
-        /*
-         * INDIVIDUAL CREATORS
-         */
-
-        creators.forEach((creator) => {
+    creators.forEach(
+        creator => {
 
             const option =
-                document.createElement("option");
+                document.createElement(
+                    "option"
+                );
 
             option.value =
                 creator.user_id;
@@ -341,23 +376,137 @@ console.log("Vidlyra Admin Notifications JS loaded");
             select.appendChild(
                 option
             );
-        });
+        }
+    );
+
+
+    /*
+     * Creator count
+     */
+
+    if (elements.creatorCount) {
+
+        elements.creatorCount.textContent =
+            creators.length;
+    }
+}
+
+
+/* =========================================================
+   GET RECIPIENT IDS
+   ========================================================= */
+
+async function getRecipientIds(
+    selectedRecipient
+) {
+
+    /*
+     * ALL CREATORS
+     */
+
+    if (
+        selectedRecipient ===
+        "ALL_CREATORS"
+    ) {
+
+        console.log(
+            "Loading all creators for notification..."
+        );
 
         /*
-         * Count
+         * Refresh directly from database.
+         * This automatically includes newly
+         * registered creators.
          */
 
-        if (elements.creatorCount) {
-            elements.creatorCount.textContent =
-                creators.length;
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("profiles")
+            .select(
+                "user_id"
+            )
+            .eq(
+                "creator_role",
+                "creator"
+            );
+
+        if (error) {
+            throw error;
         }
+
+        const ids =
+            [
+                ...new Set(
+                    (data || [])
+                        .map(
+                            row =>
+                                row.user_id
+                        )
+                        .filter(Boolean)
+                        .filter(
+                            id =>
+                                id !==
+                                currentAdmin?.id
+                        )
+                )
+            ];
+
+        console.log(
+            "All creator IDs:",
+            ids
+        );
+
+        return ids;
     }
 
-    /* =====================================================
-       GET FORM DATA
-       ===================================================== */
 
-    function getFormData() {
+    /*
+     * SPECIFIC CREATOR
+     */
+
+    if (
+        selectedRecipient &&
+        selectedRecipient !==
+        currentAdmin?.id
+    ) {
+
+        console.log(
+            "Specific creator:",
+            selectedRecipient
+        );
+
+        return [
+            selectedRecipient
+        ];
+    }
+
+
+    throw new Error(
+        "Please select a valid creator."
+    );
+}
+
+
+/* =========================================================
+   SEND NOTIFICATION
+   ========================================================= */
+
+async function sendNotification() {
+
+    try {
+
+        if (!supabaseClient) {
+            throw new Error(
+                "Supabase client is not available."
+            );
+        }
+
+
+        /*
+         * FORM VALUES
+         */
 
         const recipient =
             elements.creatorSelect?.value;
@@ -371,6 +520,11 @@ console.log("Vidlyra Admin Notifications JS loaded");
         const type =
             elements.type?.value ||
             "announcement";
+
+
+        /*
+         * VALIDATION
+         */
 
         if (!recipient) {
             throw new Error(
@@ -390,227 +544,137 @@ console.log("Vidlyra Admin Notifications JS loaded");
             );
         }
 
-        return {
-            recipient,
-            title,
-            message,
-            type
-        };
-    }
-
-    /* =====================================================
-       GET RECIPIENT IDS
-       ===================================================== */
-
-    async function getRecipientIds(
-        recipient
-    ) {
 
         /*
-         * ALL CREATORS
+         * FIND RECIPIENTS
          */
+
+        const recipientIds =
+            await getRecipientIds(
+                recipient
+            );
+
+
+        if (
+            recipientIds.length === 0
+        ) {
+
+            throw new Error(
+                "No creators found."
+            );
+        }
+
+
+        console.log(
+            "Sending notification to:",
+            recipientIds
+        );
+
+
+        /*
+         * CREATE ROWS
+         */
+
+        const notificationRows =
+            recipientIds.map(
+                userId => ({
+
+                    user_id:
+                        userId,
+
+                    title:
+                        title,
+
+                    message:
+                        message,
+
+                    type:
+                        type,
+
+                    is_read:
+                        false
+                })
+            );
+
+
+        /*
+         * DISABLE BUTTON
+         */
+
+        if (elements.sendButton) {
+
+            elements.sendButton.disabled =
+                true;
+
+            elements.sendButton.textContent =
+                "Sending...";
+        }
+
+
+        setStatus(
+            "Sending notification...",
+            "info"
+        );
+
+
+        /*
+         * INSERT
+         */
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("notifications")
+            .insert(
+                notificationRows
+            )
+            .select();
+
+
+        if (error) {
+
+            console.error(
+                "Notification insert error:",
+                error
+            );
+
+            throw error;
+        }
+
+
+        /*
+         * SUCCESS
+         */
+
+        console.log(
+            "Notifications created:",
+            data
+        );
+
 
         if (
             recipient ===
             "ALL_CREATORS"
         ) {
 
-            /*
-             * Refresh the creator list from
-             * Supabase so newly registered
-             * creators are included.
-             */
+            setStatus(
+                `Notification sent to ${recipientIds.length} creator${recipientIds.length === 1 ? "" : "s"}.`,
+                "success"
+            );
 
-            const {
-                data,
-                error
-            } = await supabaseClient
-                .from("profiles")
-                .select(
-                    "user_id, creator_role"
-                )
-                .eq(
-                    "creator_role",
-                    "creator"
-                );
+        } else {
 
-            if (error) {
-                throw error;
-            }
-
-            const ids = [
-                ...new Set(
-                    (data || [])
-                        .map(
-                            row => row.user_id
-                        )
-                        .filter(Boolean)
-                        .filter(
-                            id =>
-                                id !==
-                                currentAdmin?.id
-                        )
-                )
-            ];
-
-            return ids;
+            setStatus(
+                "Notification sent successfully.",
+                "success"
+            );
         }
+
 
         /*
-         * SPECIFIC CREATOR
+         * CLEAR FORM
          */
-
-        if (
-            recipient &&
-            recipient !==
-            currentAdmin?.id
-        ) {
-            return [recipient];
-        }
-
-        throw new Error(
-            "Invalid notification recipient."
-        );
-    }
-
-    /* =====================================================
-       SEND NOTIFICATION
-       ===================================================== */
-
-    async function sendNotification() {
-
-        if (!supabaseClient) {
-            setStatus(
-                "Supabase is not available.",
-                "error"
-            );
-
-            return;
-        }
-
-        try {
-
-            const form =
-                getFormData();
-
-            const recipientIds =
-                await getRecipientIds(
-                    form.recipient
-                );
-
-            if (
-                recipientIds.length === 0
-            ) {
-
-                throw new Error(
-                    "No creator profiles found."
-                );
-            }
-
-            console.log(
-                "Notification recipients:",
-                recipientIds
-            );
-
-            /*
-             * Create one notification
-             * for each creator.
-             */
-
-            const rows =
-                recipientIds.map(
-                    userId => ({
-                        user_id: userId,
-                        title: form.title,
-                        message: form.message,
-                        type: form.type,
-                        is_read: false
-                    })
-                );
-
-            setStatus(
-                "Sending notification...",
-                "info"
-            );
-
-            if (elements.sendButton) {
-                elements.sendButton.disabled =
-                    true;
-            }
-
-            const {
-                data,
-                error
-            } = await supabaseClient
-                .from("notifications")
-                .insert(rows)
-                .select();
-
-            if (error) {
-
-                console.error(
-                    "Notification insert error:",
-                    error
-                );
-
-                throw error;
-            }
-
-            console.log(
-                "Notifications created:",
-                data
-            );
-
-            const count =
-                recipientIds.length;
-
-            if (
-                form.recipient ===
-                "ALL_CREATORS"
-            ) {
-
-                setStatus(
-                    `Notification sent successfully to ${count} creator${count === 1 ? "" : "s"}.`,
-                    "success"
-                );
-
-            } else {
-
-                setStatus(
-                    "Notification sent successfully.",
-                    "success"
-                );
-            }
-
-            clearForm();
-
-        } catch (error) {
-
-            console.error(
-                "Send notification error:",
-                error
-            );
-
-            setStatus(
-                error.message ||
-                "Failed to send notification.",
-                "error"
-            );
-
-        } finally {
-
-            if (elements.sendButton) {
-                elements.sendButton.disabled =
-                    false;
-            }
-        }
-    }
-
-    /* =====================================================
-       CLEAR FORM
-       ===================================================== */
-
-    function clearForm() {
 
         if (elements.title) {
             elements.title.value = "";
@@ -620,138 +684,189 @@ console.log("Vidlyra Admin Notifications JS loaded");
             elements.message.value = "";
         }
 
-        if (elements.type) {
-            elements.type.value =
-                "announcement";
-        }
-
         if (elements.creatorSelect) {
-            elements.creatorSelect.value =
-                "";
-        }
-    }
-
-    /* =====================================================
-       BUTTON EVENT
-       ===================================================== */
-
-    function attachEvents() {
-
-        if (!elements.sendButton) {
-
-            console.warn(
-                "Send notification button not found."
-            );
-
-            return;
+            elements.creatorSelect.value = "";
         }
 
-        /*
-         * Prevent duplicate listeners.
-         */
+    } catch (error) {
 
-        if (
-            elements.sendButton.dataset
-                .notificationBound === "true"
-        ) {
-            return;
-        }
-
-        elements.sendButton.dataset
-            .notificationBound = "true";
-
-        elements.sendButton.addEventListener(
-            "click",
-            (event) => {
-
-                event.preventDefault();
-
-                sendNotification();
-            }
-        );
-    }
-
-    /* =====================================================
-       INIT
-       ===================================================== */
-
-    async function initAdminNotifications() {
-
-        console.log(
-            "Initializing admin notifications..."
+        console.error(
+            "Send notification error:",
+            error
         );
 
-        try {
+        setStatus(
+            error.message ||
+            "Failed to send notification.",
+            "error"
+        );
 
-            cacheElements();
+    } finally {
 
-            supabaseClient =
-                getSupabase();
+        if (elements.sendButton) {
 
-            if (!supabaseClient) {
-                throw new Error(
-                    "Supabase client not found. Check js/config.js."
-                );
-            }
+            elements.sendButton.disabled =
+                false;
 
-            await verifyAdmin();
-
-            await loadCreators();
-
-            attachEvents();
-
-            console.log(
-                "Admin notification page ready."
-            );
-
-        } catch (error) {
-
-            console.error(
-                "Admin notification initialization error:",
-                error
-            );
-
-            setStatus(
-                error.message ||
-                "Failed to initialize admin notifications.",
-                "error"
-            );
+            elements.sendButton.textContent =
+                "Send Notification";
         }
     }
+}
 
-    /* =====================================================
-       GLOBAL ACCESS
-       ===================================================== */
 
-    window.sendNotification =
-        sendNotification;
+/* =========================================================
+   ATTACH EVENTS
+   ========================================================= */
 
-    window.loadCreators =
-        loadCreators;
+function attachEvents() {
 
-    window.initAdminNotifications =
-        initAdminNotifications;
+    if (!elements.sendButton) {
 
-    /* =====================================================
-       START
-       ===================================================== */
+        console.warn(
+            "Send notification button not found."
+        );
+
+        return;
+    }
+
+
+    /*
+     * Prevent duplicate event listeners.
+     */
 
     if (
-        document.readyState ===
-        "loading"
+        elements.sendButton.dataset
+            .notificationBound === "true"
     ) {
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            initAdminNotifications,
-            {
-                once: true
-            }
-        );
-
-    } else {
-
-        initAdminNotifications();
+        return;
     }
 
-})();
+
+    elements.sendButton.dataset
+        .notificationBound = "true";
+
+
+    elements.sendButton.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            sendNotification();
+        }
+    );
+}
+
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+async function initAdminNotifications() {
+
+    console.log(
+        "Initializing admin notifications..."
+    );
+
+    try {
+
+        /*
+         * DOM
+         */
+
+        cacheElements();
+
+
+        /*
+         * SUPABASE
+         */
+
+        supabaseClient =
+            getSupabase();
+
+
+        if (!supabaseClient) {
+
+            throw new Error(
+                "Supabase client not found. Check js/config.js."
+            );
+        }
+
+
+        /*
+         * ADMIN
+         */
+
+        await verifyAdmin();
+
+
+        /*
+         * CREATORS
+         */
+
+        await loadCreators();
+
+
+        /*
+         * EVENTS
+         */
+
+        attachEvents();
+
+
+        console.log(
+            "Admin notification page ready."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Admin notification initialization error:",
+            error
+        );
+
+        setStatus(
+            error.message ||
+            "Failed to initialize admin notifications.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   GLOBAL FUNCTIONS
+   ========================================================= */
+
+window.sendNotification =
+    sendNotification;
+
+window.loadCreators =
+    loadCreators;
+
+window.initAdminNotifications =
+    initAdminNotifications;
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initAdminNotifications,
+        {
+            once: true
+        }
+    );
+
+} else {
+
+    initAdminNotifications();
+}
