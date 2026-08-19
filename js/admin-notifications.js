@@ -12,68 +12,128 @@ console.log("Vidlyra Admin Notifications JS loaded");
 const creatorSelect =
     document.getElementById("creatorSelect");
 
-const titleInput =
+const notificationForm =
+    document.getElementById("notificationForm");
+
+const notificationTitle =
     document.getElementById("notificationTitle");
 
-const messageInput =
+const notificationMessage =
     document.getElementById("notificationMessage");
 
-const typeSelect =
+const notificationType =
     document.getElementById("notificationType");
 
-const sendButton =
-    document.getElementById("sendNotificationButton");
+const sendNotificationButton =
+    document.getElementById(
+        "sendNotificationButton"
+    );
+
+const notificationList =
+    document.getElementById("notificationList");
+
+const adminStatus =
+    document.getElementById("adminStatus");
 
 const statusBox =
     document.getElementById("status");
 
-const creatorList =
-    document.getElementById("creatorList");
+const formMessage =
+    document.getElementById("formMessage");
 
 
 // ==========================================
-// STATUS
+// CHECK ELEMENTS
 // ==========================================
 
-function showStatus(message, success = false) {
+console.log(
+    "Admin notification elements:",
+    {
+        creatorSelect,
+        notificationForm,
+        notificationTitle,
+        notificationMessage,
+        notificationType,
+        sendNotificationButton,
+        notificationList,
+        adminStatus
+    }
+);
 
-    if (!statusBox) return;
 
-    statusBox.textContent = message;
+// ==========================================
+// SHOW STATUS
+// ==========================================
 
-    statusBox.style.display = "block";
+function showMessage(
+    message,
+    type = "success"
+) {
 
-    statusBox.style.color =
-        success
-            ? "#7dff9b"
-            : "#ff7777";
+    if (!formMessage) {
+        console.log(message);
+        return;
+    }
+
+    formMessage.textContent = message;
+
+    formMessage.className =
+        type === "error"
+            ? "error"
+            : "success";
+
+    formMessage.style.display = "block";
 
 }
 
 
 // ==========================================
-// CHECK ADMIN
+// HIDE STATUS
 // ==========================================
 
-async function checkAdmin() {
+function hideMessage() {
+
+    if (!formMessage) {
+        return;
+    }
+
+    formMessage.textContent = "";
+
+    formMessage.style.display = "none";
+
+    formMessage.className = "";
+
+}
+
+
+// ==========================================
+// ADMIN CHECK
+// ==========================================
+
+async function verifyAdmin() {
 
     const {
         data,
         error
     } = await sb.auth.getUser();
 
+
     if (error) {
         throw error;
     }
 
-    if (!data || !data.user) {
 
-        window.location.href =
-            "login.html";
+    if (
+        !data ||
+        !data.user
+    ) {
 
-        return null;
+        throw new Error(
+            "You must be logged in."
+        );
 
     }
+
 
     const userId =
         data.user.id;
@@ -124,7 +184,7 @@ async function checkAdmin() {
     if (role !== "admin") {
 
         throw new Error(
-            "You do not have admin permission."
+            "Access denied. Admin account required."
         );
 
     }
@@ -136,7 +196,21 @@ async function checkAdmin() {
     );
 
 
-    return profile;
+    if (adminStatus) {
+
+        adminStatus.innerHTML =
+            "Admin access verified: <strong>" +
+            (
+                profile.full_name ||
+                profile.email ||
+                "Administrator"
+            ) +
+            "</strong>";
+
+    }
+
+
+    return data.user;
 
 }
 
@@ -147,11 +221,6 @@ async function checkAdmin() {
 
 async function loadCreators() {
 
-    console.log(
-        "Loading creators..."
-    );
-
-
     if (!creatorSelect) {
 
         throw new Error(
@@ -161,17 +230,38 @@ async function loadCreators() {
     }
 
 
-    creatorSelect.innerHTML = `
+    console.log(
+        "Loading creators..."
+    );
 
-        <option value="">
-            Loading creators...
-        </option>
 
-    `;
+    creatorSelect.innerHTML = "";
 
+
+    // ======================================
+    // ALL CREATORS OPTION
+    // ======================================
+
+    const allOption =
+        document.createElement("option");
+
+    allOption.value =
+        "ALL";
+
+    allOption.textContent =
+        "📢 All Creators";
+
+    creatorSelect.appendChild(
+        allOption
+    );
+
+
+    // ======================================
+    // LOAD CREATOR PROFILES
+    // ======================================
 
     const {
-        data,
+        data: profiles,
         error
     } = await sb
 
@@ -184,12 +274,6 @@ async function loadCreators() {
             creator_role
         `)
 
-        .not(
-            "user_id",
-            "is",
-            null
-        )
-
         .order(
             "full_name",
             {
@@ -200,18 +284,9 @@ async function loadCreators() {
 
     if (error) {
 
-        console.error(
-            "Creator loading error:",
-            error
-        );
-
         throw error;
 
     }
-
-
-    const profiles =
-        data || [];
 
 
     console.log(
@@ -220,39 +295,32 @@ async function loadCreators() {
     );
 
 
-    // Clear dropdown
+    const creatorProfiles =
+        (profiles || []).filter(
+            profile => {
 
-    creatorSelect.innerHTML = `
+                const role =
+                    String(
+                        profile.creator_role || ""
+                    ).toLowerCase();
 
-        <option value="">
-            Select your creator
-        </option>
+                return role !== "admin";
 
-    `;
-
-
-    if (
-        profiles.length === 0
-    ) {
-
-        creatorSelect.innerHTML = `
-
-            <option value="">
-                No creators found
-            </option>
-
-        `;
-
-        showStatus(
-            "No creator profiles found in the profiles table."
+            }
         );
 
-        return;
 
-    }
+    console.log(
+        creatorProfiles.length +
+        " creator profiles loaded."
+    );
 
 
-    profiles.forEach(
+    // ======================================
+    // ADD CREATORS
+    // ======================================
+
+    creatorProfiles.forEach(
         profile => {
 
             const option =
@@ -267,7 +335,7 @@ async function loadCreators() {
 
             const name =
                 profile.full_name ||
-                "Unnamed Creator";
+                "Creator";
 
 
             const email =
@@ -277,7 +345,7 @@ async function loadCreators() {
 
             option.textContent =
                 email
-                    ? `${name} — ${email}`
+                    ? name + " — " + email
                     : name;
 
 
@@ -289,9 +357,184 @@ async function loadCreators() {
     );
 
 
+    // ======================================
+    // NO CREATORS
+    // ======================================
+
+    if (
+        creatorProfiles.length === 0
+    ) {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value =
+            "";
+
+        option.textContent =
+            "No creators found";
+
+        option.disabled =
+            true;
+
+        creatorSelect.appendChild(
+            option
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// GET ALL CREATOR USER IDS
+// ==========================================
+
+async function getAllCreatorIds() {
+
+    const {
+        data: profiles,
+        error
+    } = await sb
+
+        .from("profiles")
+
+        .select(`
+            user_id,
+            creator_role
+        `);
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    const creatorIds =
+        (profiles || [])
+
+            .filter(
+                profile => {
+
+                    const role =
+                        String(
+                            profile.creator_role || ""
+                        ).toLowerCase();
+
+                    return role !== "admin";
+
+                }
+            )
+
+            .map(
+                profile =>
+                    profile.user_id
+            )
+
+            .filter(
+                Boolean
+            );
+
+
     console.log(
-        `${profiles.length} creator profiles loaded.`
+        "All creator IDs:",
+        creatorIds
     );
+
+
+    return creatorIds;
+
+}
+
+
+// ==========================================
+// CREATE NOTIFICATIONS
+// ==========================================
+
+async function createNotifications(
+    userIds,
+    title,
+    message,
+    type
+) {
+
+    if (
+        !Array.isArray(userIds) ||
+        userIds.length === 0
+    ) {
+
+        throw new Error(
+            "No creator accounts found."
+        );
+
+    }
+
+
+    const rows =
+        userIds.map(
+            userId => {
+
+                return {
+
+                    user_id:
+                        userId,
+
+                    title:
+                        title,
+
+                    message:
+                        message,
+
+                    type:
+                        type,
+
+                    is_read:
+                        false
+
+                };
+
+            }
+        );
+
+
+    console.log(
+        "Creating notifications:",
+        rows
+    );
+
+
+    const {
+        data,
+        error
+    } = await sb
+
+        .from("notifications")
+
+        .insert(
+            rows
+        )
+
+        .select();
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    console.log(
+        "Notifications created:",
+        data
+    );
+
+
+    return data || [];
 
 }
 
@@ -302,79 +545,135 @@ async function loadCreators() {
 
 async function sendNotification() {
 
+    hideMessage();
+
+
+    if (
+        !creatorSelect ||
+        !notificationTitle ||
+        !notificationMessage ||
+        !notificationType
+    ) {
+
+        throw new Error(
+            "Notification form elements are missing."
+        );
+
+    }
+
+
+    const selectedUser =
+        creatorSelect.value;
+
+
+    const title =
+        notificationTitle.value.trim();
+
+
+    const message =
+        notificationMessage.value.trim();
+
+
+    const type =
+        notificationType.value;
+
+
+    // ======================================
+    // VALIDATION
+    // ======================================
+
+    if (!selectedUser) {
+
+        throw new Error(
+            "Please select a creator."
+        );
+
+    }
+
+
+    if (!title) {
+
+        throw new Error(
+            "Please enter a notification title."
+        );
+
+    }
+
+
+    if (!message) {
+
+        throw new Error(
+            "Please enter a notification message."
+        );
+
+    }
+
+
+    // ======================================
+    // DISABLE BUTTON
+    // ======================================
+
+    if (sendNotificationButton) {
+
+        sendNotificationButton.disabled =
+            true;
+
+        sendNotificationButton.textContent =
+            "Sending...";
+
+    }
+
+
     try {
 
-        if (!creatorSelect) {
-            throw new Error(
-                "Creator selector not found."
-            );
-        }
+        let userIds = [];
 
 
-        const userId =
-            creatorSelect.value;
+        // ==================================
+        // ALL CREATORS
+        // ==================================
 
+        if (
+            selectedUser === "ALL"
+        ) {
 
-        const title =
-            titleInput
-                ? titleInput.value.trim()
-                : "";
-
-
-        const message =
-            messageInput
-                ? messageInput.value.trim()
-                : "";
-
-
-        const type =
-            typeSelect
-                ? typeSelect.value
-                : "general";
-
-
-        // Validation
-
-        if (!userId) {
-
-            showStatus(
-                "Please select a creator."
+            console.log(
+                "Sending notification to ALL creators..."
             );
 
-            return;
+
+            userIds =
+                await getAllCreatorIds();
+
+
+            if (
+                userIds.length === 0
+            ) {
+
+                throw new Error(
+                    "No creator accounts are available."
+                );
+
+            }
 
         }
 
 
-        if (!title) {
+        // ==================================
+        // ONE CREATOR
+        // ==================================
 
-            showStatus(
-                "Please enter a notification title."
+        else {
+
+            console.log(
+                "Sending notification to:",
+                selectedUser
             );
 
-            return;
 
-        }
-
-
-        if (!message) {
-
-            showStatus(
-                "Please enter a notification message."
-            );
-
-            return;
-
-        }
-
-
-        if (sendButton) {
-
-            sendButton.disabled =
-                true;
-
-            sendButton.textContent =
-                "Sending...";
+            userIds = [
+                selectedUser
+            ];
 
         }
 
@@ -382,7 +681,7 @@ async function sendNotification() {
         console.log(
             "Sending notification:",
             {
-                userId,
+                userIds,
                 title,
                 message,
                 type
@@ -390,77 +689,75 @@ async function sendNotification() {
         );
 
 
-        const {
-            data,
-            error
-        } = await sb
+        // ==================================
+        // INSERT
+        // ==================================
 
-            .from("notifications")
-
-            .insert({
-
-                user_id:
-                    userId,
-
-                title:
-                    title,
-
-                message:
-                    message,
-
-                type:
-                    type,
-
-                is_read:
-                    false
-
-            })
-
-            .select()
-            
-            .single();
-
-
-        if (error) {
-
-            console.error(
-                "Notification insert error:",
-                error
+        const created =
+            await createNotifications(
+                userIds,
+                title,
+                message,
+                type
             );
 
-            throw error;
+
+        // ==================================
+        // SUCCESS
+        // ==================================
+
+        const count =
+            created.length;
+
+
+        if (
+            selectedUser === "ALL"
+        ) {
+
+            showMessage(
+                "Notification sent successfully to " +
+                count +
+                " creator" +
+                (
+                    count === 1
+                        ? ""
+                        : "s"
+                ) +
+                ".",
+                "success"
+            );
+
+        }
+
+        else {
+
+            showMessage(
+                "Notification sent successfully.",
+                "success"
+            );
 
         }
 
 
-        console.log(
-            "Notification created:",
-            data
-        );
+        // ==================================
+        // CLEAR FORM
+        // ==================================
+
+        notificationTitle.value =
+            "";
+
+        notificationMessage.value =
+            "";
+
+        notificationType.value =
+            "project";
 
 
-        showStatus(
-            "Notification sent successfully! 🔔",
-            true
-        );
+        // ==================================
+        // RELOAD HISTORY
+        // ==================================
 
-
-        // Clear form
-
-        if (titleInput) {
-            titleInput.value = "";
-        }
-
-
-        if (messageInput) {
-            messageInput.value = "";
-        }
-
-
-        if (typeSelect) {
-            typeSelect.value =
-                "general";
-        }
+        await loadNotificationHistory();
 
 
     } catch (error) {
@@ -471,19 +768,21 @@ async function sendNotification() {
         );
 
 
-        showStatus(
+        showMessage(
             error.message ||
-            "Failed to send notification."
+            "Unable to send notification.",
+            "error"
         );
+
 
     } finally {
 
-        if (sendButton) {
+        if (sendNotificationButton) {
 
-            sendButton.disabled =
+            sendNotificationButton.disabled =
                 false;
 
-            sendButton.textContent =
+            sendNotificationButton.textContent =
                 "Send Notification";
 
         }
@@ -494,14 +793,303 @@ async function sendNotification() {
 
 
 // ==========================================
-// BUTTON
+// LOAD NOTIFICATION HISTORY
 // ==========================================
 
-if (sendButton) {
+async function loadNotificationHistory() {
 
-    sendButton.addEventListener(
-        "click",
-        sendNotification
+    if (!notificationList) {
+        return;
+    }
+
+
+    notificationList.innerHTML =
+        `
+        <div class="loading-state">
+            Loading notifications...
+        </div>
+        `;
+
+
+    try {
+
+        const {
+            data: notifications,
+            error
+        } = await sb
+
+            .from("notifications")
+
+            .select(`
+                id,
+                user_id,
+                title,
+                message,
+                type,
+                is_read,
+                created_at
+            `)
+
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            )
+
+            .limit(100);
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        if (
+            !notifications ||
+            notifications.length === 0
+        ) {
+
+            notificationList.innerHTML =
+                `
+                <div class="empty-state">
+                    No notifications found.
+                </div>
+                `;
+
+            return;
+
+        }
+
+
+        notificationList.innerHTML =
+            "";
+
+
+        notifications.forEach(
+            notification => {
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.className =
+                    "notification-item";
+
+
+                const top =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                top.className =
+                    "notification-item-top";
+
+
+                const title =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                title.className =
+                    "notification-item-title";
+
+
+                title.textContent =
+                    notification.title ||
+                    "Notification";
+
+
+                const message =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                message.className =
+                    "notification-item-message";
+
+
+                message.textContent =
+                    notification.message ||
+                    "";
+
+
+                const meta =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                meta.className =
+                    "notification-meta";
+
+
+                const type =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                type.className =
+                    "notification-type";
+
+
+                type.textContent =
+                    notification.type ||
+                    "general";
+
+
+                const date =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                date.className =
+                    "notification-date";
+
+
+                date.textContent =
+                    formatDate(
+                        notification.created_at
+                    );
+
+
+                meta.appendChild(
+                    type
+                );
+
+                meta.appendChild(
+                    date
+                );
+
+
+                top.appendChild(
+                    title
+                );
+
+
+                item.appendChild(
+                    top
+                );
+
+                item.appendChild(
+                    message
+                );
+
+                item.appendChild(
+                    meta
+                );
+
+
+                notificationList.appendChild(
+                    item
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Notification history error:",
+            error
+        );
+
+
+        notificationList.innerHTML =
+            `
+            <div class="empty-state">
+                Unable to load notification history.
+            </div>
+            `;
+
+    }
+
+}
+
+
+// ==========================================
+// DATE FORMAT
+// ==========================================
+
+function formatDate(
+    value
+) {
+
+    if (!value) {
+        return "";
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "";
+
+    }
+
+
+    return date.toLocaleString(
+        undefined,
+        {
+            dateStyle: "medium",
+            timeStyle: "short"
+        }
+    );
+
+}
+
+
+// ==========================================
+// FORM SUBMIT
+// ==========================================
+
+if (notificationForm) {
+
+    notificationForm.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+            try {
+
+                await sendNotification();
+
+            } catch (error) {
+
+                console.error(
+                    "Notification form error:",
+                    error
+                );
+
+
+                showMessage(
+                    error.message ||
+                    "Unable to send notification.",
+                    "error"
+                );
+
+            }
+
+        }
     );
 
 }
@@ -513,17 +1101,48 @@ if (sendButton) {
 
 async function initAdminNotifications() {
 
+    console.log(
+        "Initializing admin notifications..."
+    );
+
+
     try {
 
-        console.log(
-            "Initializing admin notifications..."
-        );
+        // ==============================
+        // SUPABASE CHECK
+        // ==============================
+
+        if (
+            typeof sb === "undefined" ||
+            !sb
+        ) {
+
+            throw new Error(
+                "Supabase client is not available."
+            );
+
+        }
 
 
-        await checkAdmin();
+        // ==============================
+        // VERIFY ADMIN
+        // ==============================
 
+        await verifyAdmin();
+
+
+        // ==============================
+        // LOAD CREATORS
+        // ==============================
 
         await loadCreators();
+
+
+        // ==============================
+        // LOAD HISTORY
+        // ==============================
+
+        await loadNotificationHistory();
 
 
         console.log(
@@ -539,9 +1158,19 @@ async function initAdminNotifications() {
         );
 
 
-        showStatus(
+        if (adminStatus) {
+
+            adminStatus.textContent =
+                error.message ||
+                "Unable to initialize admin notifications.";
+
+        }
+
+
+        showMessage(
             error.message ||
-            "Unable to load admin notification page."
+            "Unable to initialize admin notifications.",
+            "error"
         );
 
     }
@@ -554,8 +1183,7 @@ async function initAdminNotifications() {
 // ==========================================
 
 if (
-    document.readyState ===
-    "loading"
+    document.readyState === "loading"
 ) {
 
     document.addEventListener(
