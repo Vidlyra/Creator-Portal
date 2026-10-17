@@ -1,21 +1,10 @@
-// ==========================================
-// VIDLYRA FREQUENCY AVATARS
-// Fixed version
-// Uses profiles.selected_avatar
-// ==========================================
 
-console.log("Frequency Avatar JS loaded");
+console.log("Vidlyra Frequency Avatar JS loaded");
 
 let currentUser = null;
 let selectedAvatar = 1;
 
-
-// ==========================================
-// AVATAR DATA
-// ==========================================
-
 const avatars = {
-
     basic: [
         { id: 1, name: "Student" },
         { id: 2, name: "Cyber Hacker" },
@@ -30,7 +19,6 @@ const avatars = {
         { id: 11, name: "Guardian" },
         { id: 12, name: "Dreamer" }
     ],
-
     premium: [
         { id: 13, name: "Shadow Hacker" },
         { id: 14, name: "Cyber Samurai" },
@@ -63,7 +51,6 @@ const avatars = {
         { id: 41, name: "Frequency Rider" },
         { id: 42, name: "Digital Guardian" }
     ],
-
     vip: [
         { id: 43, name: "Legendary Lyra" },
         { id: 44, name: "Frequency King" },
@@ -72,507 +59,267 @@ const avatars = {
         { id: 47, name: "Galaxy Warrior" },
         { id: 48, name: "Eternal Mage" }
     ]
-
 };
 
-
-// ==========================================
-// IMAGE PATH
-// ==========================================
+// ------------------------------------------
+// HELPERS
+// ------------------------------------------
 
 function getAvatarImage(id) {
-
     return `assets/avatars/avatar${id}.png`;
-
 }
 
+function showMessage(message, color = "#aaa") {
+    const element = document.getElementById("message");
 
-// ==========================================
-// CREATE CARD
-// ==========================================
+    if (element) {
+        element.style.color = color;
+        element.textContent = message;
+    }
+}
+
+// ------------------------------------------
+// CREATE AVATAR CARD
+// ------------------------------------------
 
 function createAvatarCard(avatar) {
-
-    const card =
-        document.createElement("div");
+    const card = document.createElement("div");
 
     card.className = "avatar-card";
+    card.dataset.avatarId = String(avatar.id);
 
-    card.dataset.avatarId = avatar.id;
-
-    if (Number(avatar.id) === Number(selectedAvatar)) {
-
+    if (Number(avatar.id) === selectedAvatar) {
         card.classList.add("selected");
-
     }
 
-    card.innerHTML = `
+    const image = document.createElement("img");
+    image.className = "avatar-image";
+    image.src = getAvatarImage(avatar.id);
+    image.alt = avatar.name;
+    image.loading = "lazy";
 
-        <img
-            class="avatar-image"
-            src="${getAvatarImage(avatar.id)}"
-            alt="${avatar.name}"
-            onerror="this.style.opacity='0.2'"
-        >
+    image.onerror = () => {
+        image.style.opacity = "0.2";
+    };
 
-        <div class="avatar-name">
-            ${avatar.name}
-        </div>
+    const name = document.createElement("div");
+    name.className = "avatar-name";
+    name.textContent = avatar.name;
 
-        <div class="avatar-number">
-            Avatar #${avatar.id}
-        </div>
+    const number = document.createElement("div");
+    number.className = "avatar-number";
+    number.textContent = `Avatar #${avatar.id}`;
 
-    `;
+    card.append(image, name, number);
 
-    card.addEventListener(
-        "click",
-        () => selectAvatar(avatar.id)
-    );
+    card.addEventListener("click", () => {
+        selectAvatar(avatar.id);
+    });
 
     return card;
 }
 
-
-// ==========================================
-// DISPLAY AVATARS
-// ==========================================
+// ------------------------------------------
+// DISPLAY ALL AVATARS
+// ------------------------------------------
 
 function displayAvatars() {
-
-    const basicGrid =
-        document.getElementById("basicGrid");
-
-    const premiumGrid =
-        document.getElementById("premiumGrid");
-
-    const vipGrid =
-        document.getElementById("vipGrid");
-
+    const basicGrid = document.getElementById("basicGrid");
+    const premiumGrid = document.getElementById("premiumGrid");
+    const vipGrid = document.getElementById("vipGrid");
 
     if (!basicGrid || !premiumGrid || !vipGrid) {
-
-        console.error(
-            "Avatar grids not found."
-        );
-
+        console.error("One or more avatar grids were not found.");
+        showMessage("Avatar display elements are missing.", "#ff5555");
         return;
-
     }
 
+    basicGrid.replaceChildren();
+    premiumGrid.replaceChildren();
+    vipGrid.replaceChildren();
 
-    basicGrid.innerHTML = "";
-    premiumGrid.innerHTML = "";
-    vipGrid.innerHTML = "";
+    avatars.basic.forEach(avatar =>
+        basicGrid.appendChild(createAvatarCard(avatar))
+    );
 
+    avatars.premium.forEach(avatar =>
+        premiumGrid.appendChild(createAvatarCard(avatar))
+    );
 
-    avatars.basic.forEach(avatar => {
-
-        basicGrid.appendChild(
-            createAvatarCard(avatar)
-        );
-
-    });
-
-
-    avatars.premium.forEach(avatar => {
-
-        premiumGrid.appendChild(
-            createAvatarCard(avatar)
-        );
-
-    });
-
-
-    avatars.vip.forEach(avatar => {
-
-        vipGrid.appendChild(
-            createAvatarCard(avatar)
-        );
-
-    });
-
+    avatars.vip.forEach(avatar =>
+        vipGrid.appendChild(createAvatarCard(avatar))
+    );
 }
 
-
-// ==========================================
+// ------------------------------------------
 // SELECT AVATAR
-// ==========================================
+// ------------------------------------------
 
 function selectAvatar(id) {
+    const number = Number(id);
 
-    selectedAvatar = Number(id);
+    if (!Number.isInteger(number) || number < 1 || number > 48) {
+        showMessage("Invalid avatar selection.", "#ff5555");
+        return;
+    }
 
+    selectedAvatar = number;
 
-    document
-        .querySelectorAll(".avatar-card")
-        .forEach(card => {
-
-            card.classList.remove("selected");
-
-        });
-
-
-    const selectedCard =
-        document.querySelector(
-            `.avatar-card[data-avatar-id="${selectedAvatar}"]`
+    document.querySelectorAll(".avatar-card").forEach(card => {
+        card.classList.toggle(
+            "selected",
+            Number(card.dataset.avatarId) === selectedAvatar
         );
+    });
 
-
-    if (selectedCard) {
-
-        selectedCard.classList.add("selected");
-
-    }
-
-
-    const message =
-        document.getElementById("message");
-
-
-    if (message) {
-
-        message.style.color = "#aaa";
-
-        message.textContent =
-            `Avatar #${selectedAvatar} selected.`;
-
-    }
-
+    showMessage(`Avatar #${selectedAvatar} selected.`);
 }
 
-
-// ==========================================
-// LOAD CURRENT USER
-// ==========================================
+// ------------------------------------------
+// LOAD LOGGED-IN USER AND SAVED AVATAR
+// ------------------------------------------
 
 async function loadAvatarSystem() {
-
-    const loading =
-        document.getElementById("loading");
-
-    const content =
-        document.getElementById("avatarContent");
-
-    const message =
-        document.getElementById("message");
-
+    const loading = document.getElementById("loading");
+    const content = document.getElementById("avatarContent");
 
     try {
+        const { data, error } = await sb.auth.getUser();
 
-        // ----------------------------------
-        // CHECK LOGIN
-        // ----------------------------------
+        if (error) throw error;
 
-        const {
-            data: userData,
-            error: userError
-        } = await sb.auth.getUser();
-
-
-        if (userError) {
-
-            throw userError;
-
-        }
-
-
-        if (!userData || !userData.user) {
-
-            window.location.href =
-                "login.html";
-
+        if (!data?.user) {
+            window.location.href = "login.html";
             return;
-
         }
 
+        currentUser = data.user;
 
-        currentUser =
-            userData.user;
-
-
-        console.log(
-            "Frequency avatar user:",
-            currentUser.id
-        );
-
-
-        // ----------------------------------
-        // LOAD PROFILE
-        // ----------------------------------
-        // IMPORTANT:
-        // Do NOT request frequency_avatar
-        // or avatar_type.
-        //
-        // Your current database uses:
-        // selected_avatar
-        // ----------------------------------
-
-        const {
-            data: profile,
-            error: profileError
-        } = await sb
+        const { data: profile, error: profileError } = await sb
             .from("profiles")
-            .select("selected_avatar")
-            .eq(
-                "user_id",
-                currentUser.id
-            )
+            .select("selected_avatar, selected_avatar_type")
+            .eq("user_id", currentUser.id)
             .maybeSingle();
 
-
-        if (profileError) {
-
-            throw profileError;
-
-        }
-
+        if (profileError) throw profileError;
 
         if (profile) {
+            const saved = Number(profile.selected_avatar);
 
-            const savedAvatar =
-                Number(
-                    profile.selected_avatar
-                );
-
-
-            if (
-                Number.isInteger(savedAvatar) &&
-                savedAvatar >= 1 &&
-                savedAvatar <= 48
-            ) {
-
-                selectedAvatar =
-                    savedAvatar;
-
+            if (Number.isInteger(saved) && saved >= 1 && saved <= 48) {
+                selectedAvatar = saved;
             }
-
         }
-
-
-        console.log(
-            "Current frequency avatar:",
-            selectedAvatar
-        );
-
-
-        // ----------------------------------
-        // DISPLAY
-        // ----------------------------------
 
         displayAvatars();
 
+        if (loading) loading.style.display = "none";
+        if (content) content.style.display = "block";
 
-        if (loading) {
-
-            loading.style.display =
-                "none";
-
-        }
-
-
-        if (content) {
-
-            content.style.display =
-                "block";
-
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Frequency avatar system error:",
-            error
+        showMessage(
+            `Current selection: Frequency Avatar #${selectedAvatar}.`
         );
 
+        console.log("Frequency avatar loaded:", selectedAvatar);
+
+    } catch (error) {
+        console.error("Frequency avatar loading error:", error);
 
         if (loading) {
-
-            loading.textContent =
-                "Unable to load frequency avatars.";
-
+            loading.textContent = "Unable to load Frequency Avatars.";
         }
 
-
-        if (message) {
-
-            message.style.color =
-                "#ff5555";
-
-            message.textContent =
-                error.message ||
-                "Something went wrong.";
-
-        }
-
+        showMessage(
+            error.message || "Something went wrong.",
+            "#ff5555"
+        );
     }
-
 }
 
-
-// ==========================================
-// SAVE AVATAR
-// ==========================================
+// ------------------------------------------
+// SAVE FREQUENCY AVATAR
+// ------------------------------------------
 
 async function saveAvatar() {
-
-    const button =
-        document.getElementById("saveButton");
-
-    const message =
-        document.getElementById("message");
-
+    const button = document.getElementById("saveButton");
 
     if (!currentUser) {
-
-        if (message) {
-
-            message.style.color =
-                "#ff5555";
-
-            message.textContent =
-                "Please login first.";
-
-        }
-
+        showMessage("Please login first.", "#ff5555");
         return;
-
     }
 
-
     if (
-        !selectedAvatar ||
+        !Number.isInteger(selectedAvatar) ||
         selectedAvatar < 1 ||
         selectedAvatar > 48
     ) {
-
-        if (message) {
-
-            message.style.color =
-                "#ff5555";
-
-            message.textContent =
-                "Please select an avatar.";
-
-        }
-
+        showMessage("Please select a valid avatar.", "#ff5555");
         return;
-
     }
-
 
     if (button) {
-
         button.disabled = true;
-
-        button.textContent =
-            "Saving...";
-
+        button.textContent = "Saving...";
     }
-
 
     try {
-
-        // ----------------------------------
-        // SAVE TO PROFILES
-        // ----------------------------------
-
-        const {
-            error
-        } = await sb
+        const { data, error } = await sb
             .from("profiles")
             .update({
-
-                selected_avatar:
-                    selectedAvatar
-
+                selected_avatar: selectedAvatar,
+                selected_avatar_type: "frequency",
+                selected_event_avatar_id: null
             })
-            .eq(
-                "user_id",
-                currentUser.id
+            .eq("user_id", currentUser.id)
+            .select("user_id, selected_avatar, selected_avatar_type")
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (!data) {
+            throw new Error(
+                "No profile was updated. Check that your profile exists and your Supabase RLS policy allows this update."
             );
-
-
-        if (error) {
-
-            throw error;
-
         }
 
+        console.log("Frequency avatar saved:", data);
 
-        console.log(
-            "Frequency avatar saved:",
-            selectedAvatar
+        showMessage(
+            `Avatar #${selectedAvatar} saved successfully!`,
+            "#55dd77"
         );
 
-
-        if (message) {
-
-            message.style.color =
-                "#55dd77";
-
-            message.textContent =
-                `✅ Avatar #${selectedAvatar} saved successfully!`;
-
-        }
-
-
-        // ----------------------------------
-        // RETURN TO PROFILE
-        // ----------------------------------
-
-        setTimeout(() => {
-
-            window.location.href =
-                "profile.html";
-
+        // Keep the selected avatar type and number in sync.
+        window.setTimeout(() => {
+            window.location.href = "profile.html";
         }, 1000);
 
-
     } catch (error) {
+        console.error("Frequency avatar save error:", error);
 
-        console.error(
-            "Frequency avatar save error:",
-            error
+        showMessage(
+            `Could not save avatar: ${error.message || "Unknown error"}`,
+            "#ff5555"
         );
 
-
-        if (message) {
-
-            message.style.color =
-                "#ff5555";
-
-            message.textContent =
-                "❌ Could not save avatar: " +
-                (
-                    error.message ||
-                    "Unknown error"
-                );
-
-        }
-
     } finally {
-
         if (button) {
-
             button.disabled = false;
-
-            button.textContent =
-                "Save Selected Avatar";
-
+            button.textContent = "Save Selected Avatar";
         }
-
     }
-
 }
 
-
-// ==========================================
+// ------------------------------------------
 // START
-// ==========================================
+// ------------------------------------------
 
-document.addEventListener(
-    "DOMContentLoaded",
-    loadAvatarSystem
-);
+if (document.readyState === "loading") {
+    document.addEventListener(
+        "DOMContentLoaded",
+        loadAvatarSystem,
+        { once: true }
+    );
+} else {
+    loadAvatarSystem();
+}
