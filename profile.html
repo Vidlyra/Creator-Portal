@@ -2,17 +2,22 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#070707">
+    <meta name="description" content="View a Vidlyra creator profile, avatar, rank, and approved projects.">
 
     <title>Creator Profile | Vidlyra</title>
 
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
     <style>
+        /* ==========================================
+           GLOBAL
+        ========================================== */
 
         * {
             box-sizing: border-box;
@@ -20,86 +25,133 @@
             padding: 0;
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #070707;
-            color: #fff;
+        :root {
+            --orange: #ff7a00;
+            --orange-light: #ff9b45;
+            --background: #070707;
+            --card: #111111;
+            --border: #292929;
+            --muted: #888888;
+            --white: #ffffff;
         }
 
+        body {
+            min-height: 100vh;
+            font-family: 'Poppins', Arial, sans-serif;
+            background: var(--background);
+            color: var(--white);
+        }
+
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ==========================================
+           HEADER
+        ========================================== */
+
         header {
-            height: 70px;
-            padding: 0 30px;
+            min-height: 70px;
+            padding: 12px 30px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 15px;
             border-bottom: 1px solid #242424;
             background: #090909;
         }
 
         .logo {
-            color: #ff7a00;
+            color: var(--orange);
             font-size: 25px;
             font-weight: 800;
             letter-spacing: 2px;
+            text-decoration: none;
         }
 
         .back-btn {
-            color: #aaa;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #aaaaaa;
             text-decoration: none;
             font-size: 14px;
+            transition: color 0.2s ease;
         }
 
         .back-btn:hover {
-            color: #ff7a00;
+            color: var(--orange);
         }
+
+        /* ==========================================
+           PROFILE HERO
+        ========================================== */
 
         .profile-hero {
             width: min(1100px, 94%);
             margin: 40px auto 30px;
             padding: 35px;
-            background: #111;
-            border: 1px solid #292929;
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(255, 122, 0, 0.08),
+                    transparent 42%
+                ),
+                var(--card);
+            border: 1px solid var(--border);
             border-radius: 20px;
             display: flex;
             gap: 30px;
             align-items: center;
+            min-width: 0;
         }
 
         .avatar {
             width: 150px;
             height: 150px;
+            flex-shrink: 0;
             border-radius: 50%;
             object-fit: cover;
             background: #1c1c1c;
-            border: 3px solid #ff7a00;
+            border: 3px solid var(--orange);
+            box-shadow: 0 0 25px rgba(255, 122, 0, 0.12);
         }
 
         .avatar-placeholder {
             width: 150px;
             height: 150px;
+            flex-shrink: 0;
             border-radius: 50%;
             background: #1c1c1c;
-            border: 3px solid #ff7a00;
+            border: 3px solid var(--orange);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 55px;
+            box-shadow: 0 0 25px rgba(255, 122, 0, 0.12);
         }
 
         .creator-info {
             flex: 1;
+            min-width: 0;
         }
 
         .creator-name {
             font-size: 32px;
+            font-weight: 700;
+            overflow-wrap: anywhere;
             margin-bottom: 8px;
         }
 
         .rank {
-            color: #ff9b45;
-            font-size: 16px;
+            color: var(--orange-light);
+            font-size: 15px;
             margin-bottom: 20px;
         }
+
+        /* ==========================================
+           CREATOR STATS
+        ========================================== */
 
         .stats {
             display: flex;
@@ -107,14 +159,20 @@
             flex-wrap: wrap;
         }
 
+        .stat {
+            min-width: 100px;
+        }
+
         .stat strong {
             display: block;
             font-size: 24px;
+            font-weight: 700;
         }
 
         .stat span {
-            color: #777;
-            font-size: 12px;
+            color: #777777;
+            font-size: 11px;
+            letter-spacing: 0.5px;
         }
 
         .level {
@@ -123,236 +181,352 @@
             padding: 7px 12px;
             border-radius: 20px;
             background: #21170f;
-            color: #ff9b45;
-            font-size: 13px;
+            border: 1px solid rgba(255, 122, 0, 0.18);
+            color: var(--orange-light);
+            font-size: 12px;
+            font-weight: 600;
         }
+
+        /* ==========================================
+           PROJECT SECTION
+        ========================================== */
 
         .content {
             width: min(1100px, 94%);
             margin: auto;
         }
 
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin: 30px 0 18px;
+        }
+
         .section-title {
             font-size: 24px;
-            margin: 30px 0 18px;
+            font-weight: 700;
+        }
+
+        .section-accent {
+            color: var(--orange);
         }
 
         .projects {
             display: grid;
-            grid-template-columns:
-                repeat(auto-fill, minmax(230px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
             gap: 20px;
             padding-bottom: 50px;
         }
 
         .project-card {
-            background: #111;
-            border: 1px solid #292929;
+            min-width: 0;
+            background: var(--card);
+            border: 1px solid var(--border);
             border-radius: 14px;
             overflow: hidden;
-            transition: transform 0.2s;
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
         }
 
         .project-card:hover {
             transform: translateY(-4px);
+            border-color: rgba(255, 122, 0, 0.65);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
         }
 
         .project-image {
             width: 100%;
-            height: 145px;
+            height: 160px;
             object-fit: cover;
+            display: block;
             background: #1a1a1a;
         }
 
+        .project-image.placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777777;
+            font-size: 12px;
+            background: #191919;
+        }
+
         .project-content {
-            padding: 15px;
+            padding: 16px;
         }
 
         .project-title {
-            font-size: 17px;
-            margin-bottom: 7px;
+            font-size: 16px;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+            margin-bottom: 8px;
         }
 
         .project-category {
             color: #ff8a24;
             font-size: 12px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .project-date {
-            color: #666;
+            color: #777777;
             font-size: 11px;
         }
 
-        .empty {
-            padding: 50px;
+        /* ==========================================
+           LOADING / EMPTY / ERROR STATES
+        ========================================== */
+
+        .empty,
+        .loading,
+        .error {
+            padding: 35px 20px;
             text-align: center;
-            color: #777;
-            background: #111;
+            background: var(--card);
             border: 1px solid #242424;
             border-radius: 15px;
+            color: #888888;
+            grid-column: 1 / -1;
         }
 
         .loading {
-            padding: 50px;
-            text-align: center;
-            color: #888;
+            padding: 50px 20px;
         }
 
         .error {
-            padding: 30px;
-            text-align: center;
             color: #ff6262;
+            border-color: #482020;
+            background: #180d0d;
         }
 
+        /* ==========================================
+           FOOTER
+        ========================================== */
+
+        footer {
+            padding: 20px;
+            border-top: 1px solid #202020;
+            text-align: center;
+            color: #666666;
+            font-size: 11px;
+        }
+
+        footer span {
+            color: var(--orange);
+        }
+
+        /* ==========================================
+           RESPONSIVE DESIGN
+        ========================================== */
+
         @media (max-width: 650px) {
+            header {
+                padding: 12px 18px;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
 
             .profile-hero {
                 flex-direction: column;
                 text-align: center;
+                padding: 27px 18px;
+                gap: 22px;
+            }
+
+            .avatar,
+            .avatar-placeholder {
+                width: 125px;
+                height: 125px;
+            }
+
+            .avatar-placeholder {
+                font-size: 45px;
             }
 
             .creator-name {
                 font-size: 25px;
             }
 
+            .rank {
+                margin-bottom: 18px;
+            }
+
             .stats {
                 justify-content: center;
+                gap: 22px;
             }
 
-            header {
-                padding: 0 18px;
+            .stat {
+                min-width: 85px;
             }
 
+            .stat strong {
+                font-size: 22px;
+            }
+
+            .section-title {
+                font-size: 21px;
+            }
+
+            .projects {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .project-image {
+                height: 120px;
+            }
+
+            .project-content {
+                padding: 12px;
+            }
+
+            .project-title {
+                font-size: 14px;
+            }
+
+            .project-category {
+                font-size: 11px;
+            }
         }
 
+        @media (max-width: 360px) {
+            .projects {
+                grid-template-columns: 1fr;
+            }
+
+            .project-image {
+                height: 165px;
+            }
+        }
     </style>
-
 </head>
-
 
 <body>
 
+    <!-- ==========================================
+         HEADER
+    ========================================== -->
 
-<header>
+    <header>
+        <a href="index.html" class="logo">VIDLYRA</a>
 
-    <div class="logo">
-        VIDLYRA
-    </div>
+        <a
+            href="javascript:history.back()"
+            class="back-btn"
+            aria-label="Go back to previous page"
+        >
+            <span aria-hidden="true">←</span>
+            <span>Back</span>
+        </a>
+    </header>
 
-    <a
-        href="javascript:history.back()"
-        class="back-btn"
-    >
-        ← Back
-    </a>
+    <main>
 
-</header>
+        <!-- ==========================================
+             CREATOR PROFILE
+        ========================================== -->
 
-
-<main>
-
-
-    <!-- CREATOR PROFILE -->
-
-    <section
-        class="profile-hero"
-        id="profileHero"
-    >
-
-        <div class="avatar-placeholder">
-            👤
-        </div>
-
-        <div class="creator-info">
-
-            <h1 class="creator-name">
-                Loading Creator...
-            </h1>
-
-            <div class="rank">
-                Loading rank...
-            </div>
-
-            <div class="stats">
-
-                <div class="stat">
-
-                    <strong>
-                        0
-                    </strong>
-
-                    <span>
-                        APPROVED PROJECTS
-                    </span>
-
-                </div>
-
-                <div class="stat">
-
-                    <strong>
-                        1
-                    </strong>
-
-                    <span>
-                        LEVEL
-                    </span>
-
-                </div>
-
-            </div>
-
-            <div class="level">
-                Creator
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- PROJECTS -->
-
-    <section class="content">
-
-        <h2 class="section-title">
-            Approved Projects
-        </h2>
-
-        <div
-            id="projects"
-            class="projects"
+        <section
+            class="profile-hero"
+            id="profileHero"
+            aria-label="Creator profile"
         >
 
-            <div class="loading">
-                Loading projects...
+            <!--
+                profile.js replaces this placeholder
+                with the selected avatar image.
+            -->
+
+            <div class="avatar-placeholder" aria-label="Creator avatar">
+                👤
             </div>
 
-        </div>
+            <div class="creator-info">
 
-    </section>
+                <h1 class="creator-name">
+                    Loading Creator...
+                </h1>
 
+                <div class="rank">
+                    Loading rank...
+                </div>
 
-</main>
+                <div class="stats">
 
+                    <div class="stat">
+                        <strong>0</strong>
+                        <span>APPROVED PROJECTS</span>
+                    </div>
 
-<!-- SUPABASE -->
+                    <div class="stat">
+                        <strong>1</strong>
+                        <span>LEVEL</span>
+                    </div>
 
-<script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-></script>
+                </div>
 
+                <div class="level">
+                    Creator
+                </div>
 
-<!-- EXISTING CONFIG -->
+            </div>
 
-<script src="js/config.js"></script>
+        </section>
 
+        <!-- ==========================================
+             APPROVED PROJECTS
+        ========================================== -->
 
-<!-- PROFILE JS -->
+        <section class="content">
 
-<script src="js/profile.js"></script>
+            <div class="section-heading">
 
+                <h2 class="section-title">
+                    Approved <span class="section-accent">Projects</span>
+                </h2>
+
+            </div>
+
+            <div
+                id="projects"
+                class="projects"
+                aria-live="polite"
+            >
+                <div class="loading">
+                    Loading approved projects...
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ==========================================
+         FOOTER
+    ========================================== -->
+
+    <footer>
+        Powered by <span>VIDLYRA</span>
+    </footer>
+
+    <!-- ==========================================
+         SUPABASE CLIENT
+    ========================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Existing Supabase configuration -->
+    <script src="js/config.js"></script>
+
+    <!-- Profile logic -->
+    <script src="js/profile.js?v=2"></script>
 
 </body>
-
 </html>
