@@ -3,20 +3,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#05070D">
 
   <title>VIDLYRA Creator Portal | Halloween Fest 2026</title>
-  <meta name="description"
-        content="Join VIDLYRA Halloween Fest 2026. Explore seven chapters and unlock the limited-edition festival avatar.">
+
+  <meta name="description" content="Join VIDLYRA Halloween Fest 2026, complete seven chapters and unlock the Limited Edition Avatar.">
 
   <meta property="og:title" content="VIDLYRA Halloween Fest 2026">
-  <meta property="og:description"
-        content="Join the festival, complete seven chapters, and unlock a Limited Edition Avatar!">
-  <meta property="og:image"
-        content="https://vidlyra.github.io/Creator-Portal/assets/poster/Vidlyra%20halloween%20fest%202026.png">
-  <meta property="og:url"
-        content="https://vidlyra.github.io/Vidlyra-Halloween-Fest-2026/">
+  <meta property="og:description" content="Complete seven chapters and unlock the Limited Edition Halloween Avatar!">
+  <meta property="og:image" content="https://vidlyra.github.io/Creator-Portal/assets/poster/Vidlyra%20halloween%20fest%202026.png">
+  <meta property="og:url" content="https://vidlyra.github.io/Vidlyra-Halloween-Fest-2026/">
   <meta property="og:type" content="website">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,7 +27,6 @@
       --black: #05070D;
       --panel: #10141D;
       --muted: #B8BEC9;
-      --border: rgba(255, 138, 0, .25);
     }
 
     * {
@@ -41,18 +37,14 @@
     }
 
     body {
+      min-height: 100vh;
       background: var(--black);
       color: #fff;
-      min-height: 100vh;
     }
 
-    a {
-      color: inherit;
-    }
+    a { color: inherit; }
 
-    button {
-      font: inherit;
-    }
+    button { font: inherit; }
 
     header {
       position: sticky;
@@ -84,14 +76,12 @@
     }
 
     nav a {
-      text-decoration: none;
       color: #ddd;
       font-size: 13px;
+      text-decoration: none;
     }
 
-    nav a:hover {
-      color: var(--orange);
-    }
+    nav a:hover { color: var(--orange); }
 
     .auth-name {
       font-size: 13px;
@@ -114,12 +104,12 @@
     }
 
     .hero {
-      padding: 75px 7%;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 40px;
+      padding: 75px 7%;
     }
 
     .left, .right {
@@ -128,20 +118,18 @@
     }
 
     .left h1 {
+      margin-bottom: 20px;
       font-size: clamp(38px, 5vw, 60px);
       line-height: 1.15;
-      margin-bottom: 20px;
     }
 
-    .left h1 span {
-      color: var(--orange);
-    }
+    .left h1 span { color: var(--orange); }
 
     .left p {
       max-width: 650px;
+      margin-bottom: 25px;
       color: var(--muted);
       line-height: 1.9;
-      margin-bottom: 25px;
     }
 
     .buttons, .reward-actions {
@@ -153,17 +141,17 @@
 
     .btn, .action-btn {
       display: inline-flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       gap: 7px;
       padding: 12px 20px;
       border: 1px solid var(--orange);
       border-radius: 28px;
       background: var(--orange);
-      color: #fff;
-      text-decoration: none;
+      color: white;
       font-size: 13px;
       font-weight: 700;
+      text-decoration: none;
       cursor: pointer;
       transition: .25s;
     }
@@ -188,21 +176,19 @@
       display: none;
       margin-top: 25px;
       padding: 18px;
-      background: #111722;
       border-left: 3px solid var(--orange);
       border-radius: 10px;
+      background: #111722;
       color: #ccc;
     }
 
-    .welcome-box strong {
-      color: var(--orange);
-    }
+    .welcome-box strong { color: var(--orange); }
 
     .card, .feature-card {
-      background: var(--panel);
+      padding: 28px;
       border: 1px solid #242a36;
       border-radius: 18px;
-      padding: 28px;
+      background: var(--panel);
     }
 
     .card {
@@ -211,18 +197,16 @@
     }
 
     .card h2, .feature-card h3 {
-      color: var(--orange);
       margin-bottom: 15px;
+      color: var(--orange);
     }
 
-    .card ul {
-      list-style: none;
-    }
+    .card ul { list-style: none; }
 
     .card li {
       padding: 11px 0;
-      color: #ccc;
       border-bottom: 1px solid #252a34;
+      color: #ccc;
     }
 
     .features {
@@ -230,9 +214,9 @@
     }
 
     .section-title {
+      margin-bottom: 35px;
       text-align: center;
       font-size: clamp(26px, 4vw, 38px);
-      margin-bottom: 35px;
     }
 
     .feature-grid {
@@ -241,9 +225,7 @@
       gap: 20px;
     }
 
-    .feature-card {
-      transition: .25s;
-    }
+    .feature-card { transition: .25s; }
 
     .feature-card:hover {
       transform: translateY(-5px);
@@ -252,18 +234,18 @@
 
     .feature-card p {
       color: var(--muted);
-      line-height: 1.7;
       font-size: 14px;
+      line-height: 1.7;
     }
 
-    /* HALLOWEEN FEST */
+    /* HALLOWEEN FEST SECTION */
 
     .halloween-reward {
+      width: 90%;
       max-width: 1100px;
       margin: 25px auto 60px;
       padding: 30px;
-      width: 90%;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255, 138, 0, .25);
       border-radius: 24px;
       background:
         radial-gradient(circle at top right, rgba(255,138,0,.13), transparent 45%),
@@ -271,21 +253,19 @@
       box-shadow: 0 0 35px rgba(255,138,0,.07);
     }
 
-    .festival-heading {
-      text-align: center;
-    }
+    .festival-heading { text-align: center; }
 
     .festival-heading h2 {
+      margin-bottom: 10px;
       color: var(--orange);
       font-size: clamp(27px, 4vw, 40px);
-      margin-bottom: 10px;
     }
 
     .festival-heading p {
-      color: var(--muted);
-      line-height: 1.8;
       max-width: 720px;
       margin: 0 auto 20px;
+      color: var(--muted);
+      line-height: 1.8;
     }
 
     .festival-poster {
@@ -300,11 +280,11 @@
     }
 
     .reward-status {
-      padding: 15px 18px;
       margin: 20px 0;
-      background: #171c27;
+      padding: 15px 18px;
       border: 1px solid #303746;
       border-radius: 12px;
+      background: #171c27;
       color: #ffbf69;
       line-height: 1.7;
     }
@@ -317,15 +297,15 @@
     .reward-message {
       min-height: 24px;
       margin-top: 17px;
-      text-align: center;
       color: #ddd;
       font-size: 13px;
+      text-align: center;
       overflow-wrap: anywhere;
     }
 
     .festival-link {
-      text-align: center;
       margin-top: 20px;
+      text-align: center;
     }
 
     .festival-link a {
@@ -334,16 +314,16 @@
       font-weight: 600;
     }
 
-    /* LIMITED EDITION LOCK */
+    /* LIMITED EDITION AVATAR */
 
     .limited-reward {
       max-width: 460px;
       margin: 25px auto;
       padding: 25px;
-      text-align: center;
       border: 2px solid var(--gold);
       border-radius: 20px;
       background: rgba(255, 215, 0, .035);
+      text-align: center;
       box-shadow:
         0 0 14px rgba(255,215,0,.35),
         0 0 32px rgba(255,170,0,.15);
@@ -360,20 +340,43 @@
       animation: none;
     }
 
+    .limited-edition-avatar {
+      display: block;
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      margin: 0 auto 18px;
+      border: 2px solid var(--gold);
+      border-radius: 18px;
+      background: #080a10;
+      box-shadow:
+        0 0 14px rgba(255,215,0,.55),
+        0 0 32px rgba(255,170,0,.25);
+      transition: .3s;
+    }
+
+    .limited-reward.locked .limited-edition-avatar {
+      filter: brightness(.55);
+    }
+
+    .limited-reward.claimed .limited-edition-avatar {
+      filter: none;
+      border-color: var(--orange);
+      box-shadow: 0 0 28px rgba(255,138,0,.65);
+    }
+
     .reward-lock-icon {
-      font-size: 48px;
       margin-bottom: 10px;
+      font-size: 42px;
       filter: drop-shadow(0 0 12px rgba(255,215,0,.65));
     }
 
     .limited-reward h3 {
-      color: var(--gold);
       margin-bottom: 8px;
+      color: var(--gold);
     }
 
-    .limited-reward.claimed h3 {
-      color: var(--orange);
-    }
+    .limited-reward.claimed h3 { color: var(--orange); }
 
     .limited-reward p {
       color: #bbb;
@@ -393,29 +396,18 @@
     }
 
     footer {
-      border-top: 1px solid #242834;
       padding: 30px 15px;
-      text-align: center;
+      border-top: 1px solid #242834;
       color: #858b98;
       font-size: 13px;
+      text-align: center;
     }
 
     @media (max-width: 760px) {
-      header {
-        justify-content: center;
-      }
-
-      nav {
-        justify-content: center;
-      }
-
-      .hero {
-        padding: 45px 6%;
-      }
-
-      .halloween-reward {
-        padding: 22px 16px;
-      }
+      header { justify-content: center; }
+      nav { justify-content: center; }
+      .hero { padding: 45px 6%; }
+      .halloween-reward { padding: 22px 16px; }
 
       .reward-actions {
         flex-direction: column;
@@ -532,7 +524,7 @@
       <p>
         Enter the festival, complete all seven chapters and unlock
         your exclusive Limited Edition Halloween Avatar.
-        Share the festival poster and invite your friends!
+        Share the official poster and invite your friends!
       </p>
     </div>
 
@@ -544,19 +536,25 @@
     >
 
     <div class="limited-reward locked" id="limitedRewardCard">
+      <img
+        id="limitedEditionAvatar"
+        class="limited-edition-avatar"
+        src="assets/event-avatars/Vidlyra_EventAvatar_HalloweenFest2026_LimitedEdition.png"
+        alt="VIDLYRA Halloween Fest 2026 Limited Edition Avatar"
+        loading="lazy"
+      >
+
       <div class="reward-lock-icon" id="rewardLockIcon">🔒</div>
+
       <h3 id="limitedRewardTitle">LIMITED EDITION AVATAR</h3>
+
       <p id="limitedRewardDescription">
-        Complete all seven festival chapters and claim this exclusive reward.
-        This reward is locked until it has been claimed.
+        Complete all seven festival chapters and claim this exclusive
+        reward. The golden lock remains until your claim is saved.
       </p>
     </div>
 
-    <div
-      class="reward-status"
-      id="halloweenRewardStatus"
-      aria-live="polite"
-    >
+    <div class="reward-status" id="halloweenRewardStatus" aria-live="polite">
       Checking festival progress...
     </div>
 
@@ -596,11 +594,7 @@
       </a>
     </div>
 
-    <p
-      class="reward-message"
-      id="halloweenRewardMessage"
-      aria-live="polite"
-    ></p>
+    <p class="reward-message" id="halloweenRewardMessage" aria-live="polite"></p>
 
     <p class="festival-link">
       Festival link:
@@ -622,10 +616,6 @@
   <script>
     "use strict";
 
-    /* =========================================
-       CONFIGURATION
-    ========================================= */
-
     const HALLOWEEN_FESTIVAL_ID = "halloween_2026";
 
     const HALLOWEEN_FESTIVAL_URL =
@@ -641,10 +631,6 @@
       "LIMITED EDITION AVATAR!\n\n" +
       "Enter the festival here:\n" +
       HALLOWEEN_FESTIVAL_URL;
-
-    /* =========================================
-       DOM ELEMENTS
-    ========================================= */
 
     const guestAuth = document.getElementById("guestAuth");
     const userAuth = document.getElementById("userAuth");
@@ -670,33 +656,6 @@
 
     let halloweenRewardBusy = false;
 
-    /* =========================================
-       VALIDATE SUPABASE CONFIG
-       js/config.js must initialize the global sb client.
-    ========================================= */
-
-    if (
-      typeof sb === "undefined" ||
-      !sb ||
-      !sb.auth
-    ) {
-      console.error(
-        "Supabase client not found. Check js/config.js."
-      );
-
-      rewardStatus.textContent =
-        "Supabase configuration could not be loaded.";
-
-      rewardMessage.textContent =
-        "Check that js/config.js creates the existing Supabase client named sb.";
-
-      claimAvatarButton.disabled = true;
-    }
-
-    /* =========================================
-       RANDOM CREATOR PHRASES
-    ========================================= */
-
     const phrases = [
       "Time's up. Take the pen.",
       "Don't drop it. Keep moving.",
@@ -718,9 +677,7 @@
       rewardMessage.textContent = message;
     }
 
-    /* =========================================
-       GUEST / LOGIN UI
-    ========================================= */
+    /* LOGIN UI */
 
     function showGuest() {
       guestAuth.style.display = "flex";
@@ -737,9 +694,7 @@
           .eq("user_id", user.id)
           .maybeSingle();
 
-        if (error) {
-          console.error("Profile lookup error:", error);
-        }
+        if (error) console.error("Profile lookup error:", error);
 
         if (data) {
           return (
@@ -805,8 +760,6 @@
         if (error) throw error;
 
         showGuest();
-        await loadHalloweenReward();
-
         window.location.href = "index.html";
       } catch (error) {
         console.error("Logout error:", error);
@@ -819,9 +772,7 @@
 
     logoutButton.addEventListener("click", logout);
 
-    /* =========================================
-       LIMITED EDITION LOCK DISPLAY
-    ========================================= */
+    /* AVATAR STATE */
 
     function showRewardLocked() {
       limitedRewardCard.classList.remove("claimed");
@@ -829,9 +780,10 @@
 
       rewardLockIcon.textContent = "🔒";
       limitedRewardTitle.textContent = "LIMITED EDITION AVATAR";
+
       limitedRewardDescription.textContent =
         "Complete all seven festival chapters and claim this exclusive reward. " +
-        "The golden lock will remain until your claim is saved.";
+        "The golden lock remains until your claim is saved.";
     }
 
     function showRewardClaimed() {
@@ -840,6 +792,7 @@
 
       rewardLockIcon.textContent = "🏆";
       limitedRewardTitle.textContent = "LIMITED EDITION — CLAIMED!";
+
       limitedRewardDescription.textContent =
         "Your Halloween Fest reward has been claimed successfully. " +
         "Your claim status is saved to your festival progress.";
@@ -861,9 +814,7 @@
       return getCompletedChapterCount(progress) === 7;
     }
 
-    /* =========================================
-       LOAD HALLOWEEN REWARD PROGRESS
-    ========================================= */
+    /* LOAD FESTIVAL PROGRESS */
 
     async function loadHalloweenReward() {
       if (typeof sb === "undefined" || !sb?.auth) return;
@@ -881,7 +832,7 @@
             "Login to check your Halloween Fest reward.";
 
           setHalloweenMessage(
-            "Please log in to your Creator Portal account, then refresh this page."
+            "Log in to your Creator Portal account to check your reward."
           );
           return;
         }
@@ -904,8 +855,7 @@
             "No festival progress found for this account.";
 
           setHalloweenMessage(
-            "Play the festival using the same logged-in account. " +
-            "Your existing SQL/table setup is not changed by this page."
+            "Play the festival using the same account and then refresh this page."
           );
           return;
         }
@@ -934,7 +884,7 @@
             `Festival progress: ${completedCount}/7 chapters completed.`;
 
           setHalloweenMessage(
-            "Complete all seven chapters to unlock the Limited Edition Avatar claim."
+            "Complete all seven chapters to unlock the Limited Edition Avatar."
           );
           return;
         }
@@ -955,14 +905,12 @@
           "Unable to verify your festival progress.";
 
         setHalloweenMessage(
-          "Check your Supabase connection, festival_progress fields and Row Level Security."
+          "Check Supabase connection, festival_progress fields and Row Level Security."
         );
       }
     }
 
-    /* =========================================
-       CLAIM AVATAR
-    ========================================= */
+    /* CLAIM LIMITED EDITION AVATAR */
 
     claimAvatarButton.addEventListener("click", async () => {
       if (halloweenRewardBusy) return;
@@ -1030,11 +978,10 @@
         if (updateError) throw updateError;
 
         if (!updatedRows || updatedRows.length === 0) {
-          // Refresh the database state in case another request already claimed it.
           await loadHalloweenReward();
 
           throw new Error(
-            "The claim was not saved. Refresh your progress and check Supabase RLS policies."
+            "The claim was not saved. Refresh progress and check Supabase RLS policies."
           );
         }
 
@@ -1062,26 +1009,21 @@
       }
     });
 
-    /* =========================================
-       SHARE POSTER + MESSAGE + FESTIVAL LINK
-    ========================================= */
+    /* SHARE POSTER + MESSAGE + FESTIVAL LINK */
 
-    async function copyFestivalMessage() {
-      const textToCopy = HALLOWEEN_SHARE_MESSAGE;
-
+    async function copyFestivalMessage(message = HALLOWEEN_SHARE_MESSAGE) {
       try {
         if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(textToCopy);
+          await navigator.clipboard.writeText(message);
 
           setHalloweenMessage(
-            "Festival message and link copied! You can paste them into your chat."
+            "Festival message and link copied! Paste them into your chat."
           );
           return;
         }
 
-        // Clipboard fallback for browsers without Clipboard API.
         const textArea = document.createElement("textarea");
-        textArea.value = textToCopy;
+        textArea.value = message;
         textArea.style.position = "fixed";
         textArea.style.opacity = "0";
 
@@ -1097,32 +1039,26 @@
           "Festival message and link copied! Paste them into your chat."
         );
       } catch (error) {
-        console.error("Clipboard fallback failed:", error);
+        console.error("Clipboard copy failed:", error);
 
         window.prompt(
           "Copy the Halloween Fest message below:",
-          textToCopy
-        );
-
-        setHalloweenMessage(
-          "Copy the message from the box, then share the poster image separately."
+          message
         );
       }
     }
 
     async function shareHalloweenFestival(invite = false) {
       const message = invite
-        ? "👻 Invite from a friend!\n\n" + HALLOWEEN_SHARE_MESSAGE
+        ? "👻 INVITATION TO VIDLYRA HALLOWEEN FEST 2026 👻\n\n" +
+          HALLOWEEN_SHARE_MESSAGE
         : HALLOWEEN_SHARE_MESSAGE;
 
       try {
-        // Try to attach the real existing poster file.
         const response = await fetch(HALLOWEEN_POSTER_PATH);
 
         if (!response.ok) {
-          throw new Error(
-            "Poster file could not be loaded: " + response.status
-          );
+          throw new Error("Poster could not be loaded: " + response.status);
         }
 
         const posterBlob = await response.blob();
@@ -1148,13 +1084,11 @@
           await navigator.share(fileShareData);
 
           setHalloweenMessage(
-            "Share sheet opened with the poster and festival message. " +
-            "Choose your sharing app to send it."
+            "Share menu opened with the poster and festival message. Choose an app to send it."
           );
           return;
         }
 
-        // Some browsers support text sharing but not image-file sharing.
         if (navigator.share) {
           await navigator.share({
             title: "VIDLYRA Halloween Fest 2026",
@@ -1163,13 +1097,12 @@
           });
 
           setHalloweenMessage(
-            "Message and festival link shared. This browser could not attach the poster automatically."
+            "Message and festival link shared. This browser cannot attach the poster automatically."
           );
           return;
         }
 
-        // Desktop browsers without Web Share API.
-        await copyFestivalMessage();
+        await copyFestivalMessage(message);
 
         window.open(
           HALLOWEEN_POSTER_PATH,
@@ -1178,21 +1111,17 @@
         );
 
         setHalloweenMessage(
-          "Message and link copied. The poster opened in a new tab; " +
-          "attach it to your message before sending."
+          "Message and link copied. The poster opened in a new tab; attach it before sending."
         );
       } catch (error) {
-        if (error.name === "AbortError") {
-          // User closed the share sheet; don't show an error.
-          return;
-        }
+        if (error.name === "AbortError") return;
 
         console.error("Festival sharing failed:", error);
 
-        await copyFestivalMessage();
+        await copyFestivalMessage(message);
 
         setHalloweenMessage(
-          "Text and link fallback used. If the poster did not load, check its filename and path."
+          "Text and link fallback used. If the poster failed to load, check its file path."
         );
       }
     }
@@ -1205,13 +1134,10 @@
       shareHalloweenFestival(true);
     });
 
-    /* =========================================
-       AUTH STATE + PAGE INITIALIZATION
-    ========================================= */
+    /* AUTH STATE */
 
     if (typeof sb !== "undefined" && sb?.auth) {
       sb.auth.onAuthStateChange(() => {
-        // Defer Supabase calls until after the auth callback finishes.
         setTimeout(() => {
           checkLogin();
           loadHalloweenReward();
@@ -1226,21 +1152,36 @@
 
       checkLogin();
       loadHalloweenReward();
+    } else {
+      console.error(
+        "Supabase client 'sb' is missing. Check js/config.js."
+      );
+
+      rewardStatus.textContent =
+        "Supabase configuration could not be loaded.";
+
+      setHalloweenMessage(
+        "Make sure js/config.js initializes your existing Supabase client as sb."
+      );
     }
 
-    /* =========================================
-       POSTER LOAD ERROR
-    ========================================= */
+    /* IMAGE LOAD ERRORS */
 
-    document
-      .querySelector(".festival-poster")
+    document.querySelector(".festival-poster")
       .addEventListener("error", function () {
-        this.alt =
-          "Poster not found. Check the filename in assets/poster.";
         this.style.display = "none";
 
-        setHalloweenMessage(
-          "The poster image could not load. Check the path and capitalization in assets/poster."
+        console.error(
+          "Festival poster not found. Check assets/poster/ filename."
+        );
+      });
+
+    document.getElementById("limitedEditionAvatar")
+      .addEventListener("error", function () {
+        this.style.display = "none";
+
+        console.error(
+          "Limited Edition avatar not found. Check assets/event-avatars/ filename."
         );
       });
   </script>
