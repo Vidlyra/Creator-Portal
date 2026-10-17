@@ -2,821 +2,851 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#050505">
-    <title>Vidlyra Creator Portal</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        :root {
-            --orange: #ff8a00;
-            --orange-light: #ffb347;
-            --background: #050505;
-            --panel: #111111;
-            --border: #282828;
-            --muted: #aaaaaa;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background: var(--background);
-            color: white;
-            min-height: 100vh;
-        }
-
-        button, a {
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        a {
-            color: inherit;
-        }
-
-        header {
-            background: rgba(17, 17, 17, .96);
-            padding: 18px 8%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            border-bottom: 1px solid #222;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(14px);
-        }
-
-        .logo {
-            color: var(--orange);
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            white-space: nowrap;
-        }
-
-        nav {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: #eee;
-            font-size: 13px;
-            transition: color .25s;
-        }
-
-        nav a:hover {
-            color: var(--orange);
-        }
-
-        .auth-area {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .auth-name {
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .phrase {
-            color: #999;
-            font-size: 11px;
-            font-style: italic;
-            max-width: 220px;
-        }
-
-        .logout-btn {
-            padding: 9px 18px;
-            background: transparent;
-            color: var(--orange);
-            border: 1px solid var(--orange);
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: .25s;
-        }
-
-        .logout-btn:hover {
-            background: var(--orange);
-            color: white;
-        }
-
-        .hero {
-            padding: 90px 8%;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 50px;
-        }
-
-        .left {
-            flex: 1;
-            min-width: 280px;
-        }
-
-        .left h1 {
-            font-size: clamp(38px, 5vw, 58px);
-            line-height: 1.12;
-            margin-bottom: 22px;
-        }
-
-        .left h1 span {
-            color: var(--orange);
-        }
-
-        .left p {
-            color: #bbb;
-            line-height: 1.9;
-            margin-bottom: 30px;
-        }
-
-        .buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 13px 26px;
-            background: var(--orange);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: .25s;
-        }
-
-        .btn:hover {
-            background: #ff9c22;
-            transform: translateY(-2px);
-        }
-
-        .btn2 {
-            background: #222;
-            border: 1px solid #383838;
-        }
-
-        .btn2:hover {
-            background: #333;
-        }
-
-        .welcome-box {
-            display: none;
-            margin-top: 25px;
-            padding: 18px 20px;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-left: 3px solid var(--orange);
-            border-radius: 10px;
-            color: #bbb;
-            font-size: 13px;
-            line-height: 1.8;
-        }
-
-        .welcome-box strong {
-            color: var(--orange);
-        }
-
-        .right {
-            flex: 1;
-            min-width: 270px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .card {
-            width: 100%;
-            max-width: 430px;
-            background: var(--panel);
-            border: 1px solid #242424;
-            padding: 35px;
-            border-radius: 20px;
-        }
-
-        .card h2 {
-            margin-bottom: 20px;
-            color: var(--orange);
-        }
-
-        .card ul {
-            list-style: none;
-        }
-
-        .card li {
-            padding: 13px 0;
-            border-bottom: 1px solid #252525;
-            color: #ccc;
-        }
-
-        .features {
-            padding: 65px 8%;
-        }
-
-        .title {
-            text-align: center;
-            font-size: clamp(28px, 4vw, 38px);
-            margin-bottom: 45px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 22px;
-        }
-
-        .feature-box {
-            background: #101010;
-            padding: 28px;
-            border-radius: 15px;
-            border: 1px solid #252525;
-            transition: .25s;
-        }
-
-        .feature-box:hover {
-            transform: translateY(-5px);
-            border-color: var(--orange);
-        }
-
-        .feature-box h3 {
-            color: var(--orange);
-            margin-bottom: 12px;
-        }
-
-        .feature-box p {
-            color: #aaa;
-            line-height: 1.8;
-            font-size: 14px;
-        }
-
-        /* HALLOWEEN REWARD HUB */
-
-        .halloween-reward {
-            max-width: 1100px;
-            margin: 35px auto;
-            padding: 35px;
-            width: 84%;
-            border: 1px solid rgba(255, 138, 0, .4);
-            border-radius: 24px;
-            background:
-                radial-gradient(circle at top right, rgba(255, 138, 0, .15), transparent 45%),
-                #101010;
-            box-shadow: 0 0 35px rgba(255, 138, 0, .08);
-        }
-
-        .reward-kicker {
-            display: inline-block;
-            margin-bottom: 12px;
-            padding: 6px 12px;
-            border: 1px solid rgba(255, 138, 0, .35);
-            border-radius: 30px;
-            color: var(--orange-light);
-            font-size: 11px;
-            letter-spacing: 1.5px;
-        }
-
-        .halloween-reward h2 {
-            color: var(--orange);
-            font-size: clamp(26px, 4vw, 40px);
-            margin-bottom: 12px;
-        }
-
-        .halloween-reward > p {
-            color: #bbb;
-            line-height: 1.9;
-        }
-
-        .reward-status {
-            margin: 22px 0 12px;
-            padding: 16px 18px;
-            background: #191919;
-            border: 1px solid #303030;
-            border-radius: 12px;
-            color: var(--orange-light);
-            line-height: 1.7;
-        }
-
-        .reward-progress-track {
-            width: 100%;
-            height: 8px;
-            background: #292929;
-            border-radius: 20px;
-            overflow: hidden;
-            margin: 14px 0;
-        }
-
-        .reward-progress-fill {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #ff6500, #ffbd42);
-            border-radius: inherit;
-            transition: width .4s ease;
-        }
-
-        .reward-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 22px;
-        }
-
-        .reward-actions button,
-        .reward-actions a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 46px;
-            padding: 12px 19px;
-            border: 1px solid var(--orange);
-            border-radius: 30px;
-            background: var(--orange);
-            color: white;
-            text-decoration: none;
-            font: 600 13px 'Poppins', sans-serif;
-            cursor: pointer;
-            transition: .25s;
-        }
-
-        .reward-actions .reward-secondary {
-            background: transparent;
-            color: var(--orange-light);
-        }
-
-        .reward-actions button:hover,
-        .reward-actions a:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.12);
-        }
-
-        .reward-actions button:disabled {
-            opacity: .5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .reward-message {
-            margin-top: 15px;
-            min-height: 25px;
-            color: #ddd;
-            font-size: 13px;
-            line-height: 1.8;
-            overflow-wrap: anywhere;
-        }
-
-        footer {
-            padding: 35px 20px;
-            text-align: center;
-            color: #777;
-            border-top: 1px solid #222;
-            margin-top: 65px;
-            font-size: 13px;
-        }
-
-        @media (max-width: 900px) {
-            header {
-                padding: 16px 5%;
-            }
-
-            nav {
-                gap: 12px;
-            }
-
-            .phrase {
-                display: none;
-            }
-
-            .hero {
-                padding: 65px 6%;
-            }
-
-            .features {
-                padding: 50px 6%;
-            }
-
-            .halloween-reward {
-                width: 90%;
-            }
-        }
-
-        @media (max-width: 600px) {
-            header {
-                flex-direction: column;
-                gap: 14px;
-            }
-
-            nav {
-                justify-content: center;
-            }
-
-            .auth-area {
-                justify-content: center;
-            }
-
-            .hero {
-                padding: 45px 6%;
-                gap: 35px;
-            }
-
-            .left {
-                min-width: 0;
-            }
-
-            .card {
-                padding: 25px;
-            }
-
-            .halloween-reward {
-                margin: 20px auto;
-                padding: 23px;
-            }
-
-            .reward-actions {
-                flex-direction: column;
-            }
-
-            .reward-actions button,
-            .reward-actions a {
-                width: 100%;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#05070D">
+
+  <title>VIDLYRA Creator Portal | Halloween Fest 2026</title>
+  <meta name="description"
+        content="Join VIDLYRA Halloween Fest 2026. Explore seven chapters and unlock the limited-edition festival avatar.">
+
+  <meta property="og:title" content="VIDLYRA Halloween Fest 2026">
+  <meta property="og:description"
+        content="Join the festival, complete seven chapters, and unlock a Limited Edition Avatar!">
+  <meta property="og:image"
+        content="https://vidlyra.github.io/Creator-Portal/assets/poster/Vidlyra%20halloween%20fest%202026.png">
+  <meta property="og:url"
+        content="https://vidlyra.github.io/Vidlyra-Halloween-Fest-2026/">
+  <meta property="og:type" content="website">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --orange: #FF8A00;
+      --gold: #FFD700;
+      --black: #05070D;
+      --panel: #10141D;
+      --muted: #B8BEC9;
+      --border: rgba(255, 138, 0, .25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: var(--black);
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 17px 6%;
+      background: rgba(8, 10, 16, .96);
+      border-bottom: 1px solid #242834;
+      backdrop-filter: blur(12px);
+    }
+
+    .logo {
+      color: var(--orange);
+      font-size: 27px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    nav, .auth-area {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #ddd;
+      font-size: 13px;
+    }
+
+    nav a:hover {
+      color: var(--orange);
+    }
+
+    .auth-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .phrase {
+      color: #999;
+      font-size: 11px;
+      font-style: italic;
+    }
+
+    .logout-btn {
+      padding: 8px 15px;
+      border: 1px solid var(--orange);
+      border-radius: 25px;
+      background: transparent;
+      color: var(--orange);
+      cursor: pointer;
+    }
+
+    .hero {
+      padding: 75px 7%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+
+    .left, .right {
+      flex: 1;
+      min-width: min(100%, 290px);
+    }
+
+    .left h1 {
+      font-size: clamp(38px, 5vw, 60px);
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .left h1 span {
+      color: var(--orange);
+    }
+
+    .left p {
+      max-width: 650px;
+      color: var(--muted);
+      line-height: 1.9;
+      margin-bottom: 25px;
+    }
+
+    .buttons, .reward-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn, .action-btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 20px;
+      border: 1px solid var(--orange);
+      border-radius: 28px;
+      background: var(--orange);
+      color: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .btn:hover, .action-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.12);
+    }
+
+    .btn.secondary, .action-btn.secondary {
+      background: transparent;
+      color: #ffb347;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .welcome-box {
+      display: none;
+      margin-top: 25px;
+      padding: 18px;
+      background: #111722;
+      border-left: 3px solid var(--orange);
+      border-radius: 10px;
+      color: #ccc;
+    }
+
+    .welcome-box strong {
+      color: var(--orange);
+    }
+
+    .card, .feature-card {
+      background: var(--panel);
+      border: 1px solid #242a36;
+      border-radius: 18px;
+      padding: 28px;
+    }
+
+    .card {
+      max-width: 440px;
+      margin: auto;
+    }
+
+    .card h2, .feature-card h3 {
+      color: var(--orange);
+      margin-bottom: 15px;
+    }
+
+    .card ul {
+      list-style: none;
+    }
+
+    .card li {
+      padding: 11px 0;
+      color: #ccc;
+      border-bottom: 1px solid #252a34;
+    }
+
+    .features {
+      padding: 35px 7% 70px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: clamp(26px, 4vw, 38px);
+      margin-bottom: 35px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-card {
+      transition: .25s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--orange);
+    }
+
+    .feature-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    /* HALLOWEEN FEST */
+
+    .halloween-reward {
+      max-width: 1100px;
+      margin: 25px auto 60px;
+      padding: 30px;
+      width: 90%;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top right, rgba(255,138,0,.13), transparent 45%),
+        #0d1119;
+      box-shadow: 0 0 35px rgba(255,138,0,.07);
+    }
+
+    .festival-heading {
+      text-align: center;
+    }
+
+    .festival-heading h2 {
+      color: var(--orange);
+      font-size: clamp(27px, 4vw, 40px);
+      margin-bottom: 10px;
+    }
+
+    .festival-heading p {
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 720px;
+      margin: 0 auto 20px;
+    }
+
+    .festival-poster {
+      display: block;
+      width: 100%;
+      max-width: 680px;
+      height: auto;
+      margin: 24px auto;
+      border: 1px solid rgba(255,138,0,.45);
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(255,138,0,.18);
+    }
+
+    .reward-status {
+      padding: 15px 18px;
+      margin: 20px 0;
+      background: #171c27;
+      border: 1px solid #303746;
+      border-radius: 12px;
+      color: #ffbf69;
+      line-height: 1.7;
+    }
+
+    .reward-actions {
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .reward-message {
+      min-height: 24px;
+      margin-top: 17px;
+      text-align: center;
+      color: #ddd;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .festival-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .festival-link a {
+      color: var(--orange);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* LIMITED EDITION LOCK */
+
+    .limited-reward {
+      max-width: 460px;
+      margin: 25px auto;
+      padding: 25px;
+      text-align: center;
+      border: 2px solid var(--gold);
+      border-radius: 20px;
+      background: rgba(255, 215, 0, .035);
+      box-shadow:
+        0 0 14px rgba(255,215,0,.35),
+        0 0 32px rgba(255,170,0,.15);
+      transition: .3s;
+    }
+
+    .limited-reward.locked {
+      animation: goldPulse 2s ease-in-out infinite alternate;
+    }
+
+    .limited-reward.claimed {
+      border-color: var(--orange);
+      box-shadow: 0 0 25px rgba(255,138,0,.35);
+      animation: none;
+    }
+
+    .reward-lock-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 12px rgba(255,215,0,.65));
+    }
+
+    .limited-reward h3 {
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .limited-reward.claimed h3 {
+      color: var(--orange);
+    }
+
+    .limited-reward p {
+      color: #bbb;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    @keyframes goldPulse {
+      from {
+        box-shadow: 0 0 10px rgba(255,215,0,.25);
+      }
+      to {
+        box-shadow:
+          0 0 22px rgba(255,215,0,.65),
+          0 0 42px rgba(255,170,0,.25);
+      }
+    }
+
+    footer {
+      border-top: 1px solid #242834;
+      padding: 30px 15px;
+      text-align: center;
+      color: #858b98;
+      font-size: 13px;
+    }
+
+    @media (max-width: 760px) {
+      header {
+        justify-content: center;
+      }
+
+      nav {
+        justify-content: center;
+      }
+
+      .hero {
+        padding: 45px 6%;
+      }
+
+      .halloween-reward {
+        padding: 22px 16px;
+      }
+
+      .reward-actions {
+        flex-direction: column;
+      }
+
+      .reward-actions .action-btn {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
-
-<header>
+  <header>
     <div class="logo">VIDLYRA</div>
 
-    <nav aria-label="Main navigation">
-        <a href="index.html">Home</a>
-        <a href="upload.html">Upload</a>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="notifications.html">🔔 Notifications</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="upload.html">Upload</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="notifications.html">🔔 Notifications</a>
 
-        <div id="guestAuth" class="auth-area">
-            <a href="login.html">Login</a>
-            <a href="signup.html">Create Account</a>
-        </div>
+      <div id="guestAuth" class="auth-area">
+        <a href="login.html">Login</a>
+        <a href="signup.html">Create Account</a>
+      </div>
 
-        <div id="userAuth" class="auth-area" style="display:none;">
-            <span id="userName" class="auth-name">Creator</span>
-            <span id="userPhrase" class="phrase">Keep moving.</span>
-            <button id="logoutButton" class="logout-btn" type="button">
-                Logout
-            </button>
-        </div>
+      <div id="userAuth" class="auth-area" style="display:none">
+        <span id="userName" class="auth-name">Creator</span>
+        <span id="userPhrase" class="phrase">Keep creating.</span>
+        <button id="logoutButton" class="logout-btn" type="button">
+          Logout
+        </button>
+      </div>
     </nav>
-</header>
+  </header>
 
-<main>
-    <section class="hero">
-        <div class="left">
-            <h1>Creator <span>Portal</span></h1>
+  <section class="hero">
+    <div class="left">
+      <h1>Creator <span>Portal</span></h1>
 
-            <p>
-                Welcome to the official Vidlyra Creator Portal.
-                Upload your animations, artwork, podcasts, videos,
-                music, stories, and creative projects. Share your
-                imagination with the Vidlyra community.
-            </p>
+      <p>
+        Welcome to the official VIDLYRA Creator Portal.
+        Upload your animations, artwork, podcasts, videos, music,
+        stories and creative projects. Share your imagination
+        with the VIDLYRA community.
+      </p>
 
-            <div id="guestButtons" class="buttons">
-                <a href="login.html" class="btn">Login</a>
-                <a href="signup.html" class="btn btn2">Create Account</a>
-            </div>
+      <div id="guestButtons" class="buttons">
+        <a href="login.html" class="btn">Login</a>
+        <a href="signup.html" class="btn secondary">Create Account</a>
+      </div>
 
-            <div id="welcomeBox" class="welcome-box">
-                Welcome back, <strong id="welcomeUser">Creator</strong>!
-                <br>
-                <span id="welcomePhrase">Your journey continues.</span>
-            </div>
-        </div>
+      <div id="welcomeBox" class="welcome-box">
+        Welcome back, <strong id="welcomeUser">Creator</strong>!
+        <br>
+        <span id="welcomePhrase">Your journey continues.</span>
+      </div>
+    </div>
 
-        <div class="right">
-            <div class="card">
-                <h2>Portal Features</h2>
-                <ul>
-                    <li>🎬 Upload Anime Videos</li>
-                    <li>🎨 Upload Artwork</li>
-                    <li>🎵 Upload Music</li>
-                    <li>📖 Publish Stories</li>
-                    <li>👤 Official Avatar System</li>
-                    <li>⭐ Creator Dashboard</li>
-                    <li>🛡 Secure Cloud Storage</li>
-                </ul>
-            </div>
-        </div>
-    </section>
+    <div class="right">
+      <div class="card">
+        <h2>Portal Features</h2>
+        <ul>
+          <li>🎬 Upload Anime Videos</li>
+          <li>🎨 Upload Artwork</li>
+          <li>🎵 Upload Music</li>
+          <li>📖 Publish Stories</li>
+          <li>👤 Official Avatar System</li>
+          <li>⭐ Creator Dashboard</li>
+          <li>🛡 Secure Cloud Storage</li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
-    <section class="features">
-        <h2 class="title">Why Join Vidlyra?</h2>
+  <section class="features">
+    <h2 class="section-title">Why Join VIDLYRA?</h2>
 
-        <div class="grid">
-            <div class="feature-box">
-                <h3>Unlimited Creativity</h3>
-                <p>Create and publish original content for the community.</p>
-            </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>Unlimited Creativity</h3>
+        <p>Create and publish original content for the community.</p>
+      </div>
 
-            <div class="feature-box">
-                <h3>Creator Profile</h3>
-                <p>Customize your creator page with official Vidlyra avatars.</p>
-            </div>
+      <div class="feature-card">
+        <h3>Creator Profile</h3>
+        <p>Customize your creator page with official VIDLYRA avatars.</p>
+      </div>
 
-            <div class="feature-box">
-                <h3>Community</h3>
-                <p>Discover creators, collaborate, and grow together.</p>
-            </div>
+      <div class="feature-card">
+        <h3>Community</h3>
+        <p>Discover creators, collaborate and grow together.</p>
+      </div>
 
-            <div class="feature-box">
-                <h3>Secure Platform</h3>
-                <p>Protected authentication powered by Supabase.</p>
-            </div>
-        </div>
-    </section>
+      <div class="feature-card">
+        <h3>Secure Platform</h3>
+        <p>Authentication and creator data powered by Supabase.</p>
+      </div>
+    </div>
+  </section>
 
-    <!-- HALLOWEEN FEST 2026 REWARD HUB -->
-    <section class="halloween-reward" id="halloweenReward">
-        <span class="reward-kicker">VIDLYRA SPECIAL EVENT</span>
+  <!-- HALLOWEEN FEST 2026 -->
+  <section class="halloween-reward" id="halloweenReward">
+    <div class="festival-heading">
+      <h2>🎃 VIDLYRA Halloween Fest 2026</h2>
+      <p>
+        Enter the festival, complete all seven chapters and unlock
+        your exclusive Limited Edition Halloween Avatar.
+        Share the festival poster and invite your friends!
+      </p>
+    </div>
 
-        <h2>🎃 Halloween Fest 2026</h2>
+    <img
+      class="festival-poster"
+      src="assets/poster/Vidlyra%20halloween%20fest%202026.png"
+      alt="VIDLYRA Halloween Fest 2026 official poster"
+      loading="lazy"
+    >
 
-        <p>
-            Complete all seven festival chapters to unlock your special
-            VIDLYRA avatar reward. Claim your reward and invite your
-            friends to join the festival!
-        </p>
+    <div class="limited-reward locked" id="limitedRewardCard">
+      <div class="reward-lock-icon" id="rewardLockIcon">🔒</div>
+      <h3 id="limitedRewardTitle">LIMITED EDITION AVATAR</h3>
+      <p id="limitedRewardDescription">
+        Complete all seven festival chapters and claim this exclusive reward.
+        This reward is locked until it has been claimed.
+      </p>
+    </div>
 
-        <div
-            class="reward-status"
-            id="halloweenRewardStatus"
-            aria-live="polite"
-        >
-            Checking festival progress...
-        </div>
+    <div
+      class="reward-status"
+      id="halloweenRewardStatus"
+      aria-live="polite"
+    >
+      Checking festival progress...
+    </div>
 
-        <div
-            class="reward-progress-track"
-            role="progressbar"
-            aria-label="Festival chapter progress"
-            aria-valuemin="0"
-            aria-valuemax="7"
-            aria-valuenow="0"
-            id="rewardProgressTrack"
-        >
-            <div class="reward-progress-fill" id="rewardProgressFill"></div>
-        </div>
+    <div class="reward-actions">
+      <button
+        type="button"
+        id="claimHalloweenAvatar"
+        class="action-btn"
+        disabled
+      >
+        🎁 Claim Avatar
+      </button>
 
-        <div class="reward-actions">
-            <button type="button" id="claimHalloweenAvatar" disabled>
-                🎁 Claim Avatar
-            </button>
+      <button
+        type="button"
+        id="shareHalloweenFest"
+        class="action-btn secondary"
+      >
+        ↗ Share Poster + Festival
+      </button>
 
-            <button
-                type="button"
-                id="shareHalloweenFest"
-                class="reward-secondary"
-            >
-                ↗ Share Festival
-            </button>
+      <button
+        type="button"
+        id="inviteHalloweenFriends"
+        class="action-btn secondary"
+      >
+        👥 Invite Friends
+      </button>
 
-            <button
-                type="button"
-                id="inviteHalloweenFriends"
-                class="reward-secondary"
-            >
-                👥 Invite Friends
-            </button>
+      <a
+        href="https://vidlyra.github.io/Vidlyra-Halloween-Fest-2026/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="action-btn secondary"
+      >
+        🎃 Open Halloween Fest
+      </a>
+    </div>
 
-            <a
-                href="https://vidlyra.github.io/"
-                class="reward-secondary"
-            >
-                🗺 Return to VIDLYRA
-            </a>
-        </div>
+    <p
+      class="reward-message"
+      id="halloweenRewardMessage"
+      aria-live="polite"
+    ></p>
 
-        <p
-            class="reward-message"
-            id="halloweenRewardMessage"
-            aria-live="polite"
-        ></p>
-    </section>
-</main>
+    <p class="festival-link">
+      Festival link:
+      <a
+        href="https://vidlyra.github.io/Vidlyra-Halloween-Fest-2026/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >Play VIDLYRA Halloween Fest 2026</a>
+    </p>
+  </section>
 
-<footer>
-    © 2026 Vidlyra Creator Portal
-</footer>
+  <footer>
+    © 2026 VIDLYRA Creator Portal
+  </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
 
-<script>
-"use strict";
+  <script>
+    "use strict";
 
-/* =========================================
-   CHECK SUPABASE CONFIGURATION
-   js/config.js must create the existing `sb` client.
-========================================= */
+    /* =========================================
+       CONFIGURATION
+    ========================================= */
 
-const guestAuth = document.getElementById("guestAuth");
-const userAuth = document.getElementById("userAuth");
-const guestButtons = document.getElementById("guestButtons");
-const welcomeBox = document.getElementById("welcomeBox");
-const welcomeUser = document.getElementById("welcomeUser");
-const welcomePhrase = document.getElementById("welcomePhrase");
-const userName = document.getElementById("userName");
-const userPhrase = document.getElementById("userPhrase");
-const logoutButton = document.getElementById("logoutButton");
+    const HALLOWEEN_FESTIVAL_ID = "halloween_2026";
 
-const rewardStatus = document.getElementById("halloweenRewardStatus");
-const claimAvatarButton = document.getElementById("claimHalloweenAvatar");
-const shareFestivalButton = document.getElementById("shareHalloweenFest");
-const inviteFriendsButton = document.getElementById("inviteHalloweenFriends");
-const rewardMessage = document.getElementById("halloweenRewardMessage");
-const rewardProgressFill = document.getElementById("rewardProgressFill");
-const rewardProgressTrack = document.getElementById("rewardProgressTrack");
+    const HALLOWEEN_FESTIVAL_URL =
+      "https://vidlyra.github.io/Vidlyra-Halloween-Fest-2026/";
 
-const HALLOWEEN_FESTIVAL_ID = "halloween_2026";
-const HALLOWEEN_FESTIVAL_URL =
-    "https://vidlyra.github.io/Creator-Portal/";
+    const HALLOWEEN_POSTER_PATH =
+      "assets/poster/Vidlyra%20halloween%20fest%202026.png";
 
-const phrases = [
-    "Time's up. Take the pen.",
-    "Don't drop it. Keep moving.",
-    "The journey has now started.",
-    "Your story is still being written.",
-    "Keep creating. Keep moving.",
-    "One idea can change everything.",
-    "The next chapter is yours.",
-    "Never stop building your world.",
-    "Start again. Move forward.",
-    "Your journey has never ended.",
-    "Keep the dream alive.",
-    "Create something only you can create.",
-    "The next scene belongs to you.",
-    "Your imagination has no finish line."
-];
+    const HALLOWEEN_SHARE_MESSAGE =
+      "🎃 VIDLYRA HALLOWEEN FEST 2026 🎃\n\n" +
+      "Join the festival! Complete all 7 chapters, " +
+      "take on spooky challenges, and unlock the " +
+      "LIMITED EDITION AVATAR!\n\n" +
+      "Enter the festival here:\n" +
+      HALLOWEEN_FESTIVAL_URL;
 
-let halloweenRewardBusy = false;
-let rewardRequestNumber = 0;
+    /* =========================================
+       DOM ELEMENTS
+    ========================================= */
 
-/* =========================================
-   GENERAL HELPERS
-========================================= */
+    const guestAuth = document.getElementById("guestAuth");
+    const userAuth = document.getElementById("userAuth");
+    const guestButtons = document.getElementById("guestButtons");
+    const welcomeBox = document.getElementById("welcomeBox");
+    const welcomeUser = document.getElementById("welcomeUser");
+    const welcomePhrase = document.getElementById("welcomePhrase");
+    const userName = document.getElementById("userName");
+    const userPhrase = document.getElementById("userPhrase");
+    const logoutButton = document.getElementById("logoutButton");
 
-function getRandomPhrase() {
-    return phrases[Math.floor(Math.random() * phrases.length)];
-}
+    const rewardStatus = document.getElementById("halloweenRewardStatus");
+    const claimAvatarButton = document.getElementById("claimHalloweenAvatar");
+    const shareFestivalButton = document.getElementById("shareHalloweenFest");
+    const inviteFriendsButton = document.getElementById("inviteHalloweenFriends");
+    const rewardMessage = document.getElementById("halloweenRewardMessage");
 
-function setHalloweenMessage(message) {
-    rewardMessage.textContent = message;
-}
+    const limitedRewardCard = document.getElementById("limitedRewardCard");
+    const rewardLockIcon = document.getElementById("rewardLockIcon");
+    const limitedRewardTitle = document.getElementById("limitedRewardTitle");
+    const limitedRewardDescription =
+      document.getElementById("limitedRewardDescription");
 
-function setRewardProgress(count) {
-    const safeCount = Math.max(0, Math.min(7, count));
-    const percentage = (safeCount / 7) * 100;
+    let halloweenRewardBusy = false;
 
-    rewardProgressFill.style.width = percentage + "%";
-    rewardProgressTrack.setAttribute("aria-valuenow", String(safeCount));
-}
+    /* =========================================
+       VALIDATE SUPABASE CONFIG
+       js/config.js must initialize the global sb client.
+    ========================================= */
 
-function resetClaimButton() {
-    claimAvatarButton.textContent = "🎁 Claim Avatar";
-    claimAvatarButton.disabled = true;
-}
+    if (
+      typeof sb === "undefined" ||
+      !sb ||
+      !sb.auth
+    ) {
+      console.error(
+        "Supabase client not found. Check js/config.js."
+      );
 
-function showGuest() {
-    guestAuth.style.display = "flex";
-    userAuth.style.display = "none";
-    guestButtons.style.display = "flex";
-    welcomeBox.style.display = "none";
-}
+      rewardStatus.textContent =
+        "Supabase configuration could not be loaded.";
 
-async function getCreatorName(user) {
-    try {
+      rewardMessage.textContent =
+        "Check that js/config.js creates the existing Supabase client named sb.";
+
+      claimAvatarButton.disabled = true;
+    }
+
+    /* =========================================
+       RANDOM CREATOR PHRASES
+    ========================================= */
+
+    const phrases = [
+      "Time's up. Take the pen.",
+      "Don't drop it. Keep moving.",
+      "The journey has now started.",
+      "Your story is still being written.",
+      "Keep creating. Keep moving.",
+      "One idea can change everything.",
+      "The next chapter is yours.",
+      "Never stop building your world.",
+      "Start again. Move forward.",
+      "Your imagination has no finish line."
+    ];
+
+    function getRandomPhrase() {
+      return phrases[Math.floor(Math.random() * phrases.length)];
+    }
+
+    function setHalloweenMessage(message) {
+      rewardMessage.textContent = message;
+    }
+
+    /* =========================================
+       GUEST / LOGIN UI
+    ========================================= */
+
+    function showGuest() {
+      guestAuth.style.display = "flex";
+      userAuth.style.display = "none";
+      guestButtons.style.display = "flex";
+      welcomeBox.style.display = "none";
+    }
+
+    async function getCreatorName(user) {
+      try {
         const { data, error } = await sb
-            .from("profiles")
-            .select("*")
-            .eq("user_id", user.id)
-            .maybeSingle();
+          .from("profiles")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
         if (error) {
-            console.error("Profile lookup error:", error);
+          console.error("Profile lookup error:", error);
         }
 
         if (data) {
-            return (
-                data.display_name ||
-                data.username ||
-                data.full_name ||
-                data.name ||
-                user.user_metadata?.full_name ||
-                user.user_metadata?.name ||
-                "Creator"
-            );
-        }
-
-        return (
+          return (
+            data.display_name ||
+            data.username ||
+            data.full_name ||
+            data.name ||
             user.user_metadata?.full_name ||
             user.user_metadata?.name ||
             "Creator"
+          );
+        }
+
+        return (
+          user.user_metadata?.full_name ||
+          user.user_metadata?.name ||
+          "Creator"
         );
-    } catch (error) {
+      } catch (error) {
         console.error("Creator name error:", error);
         return "Creator";
+      }
     }
-}
 
-async function showLoggedIn(user) {
-    guestAuth.style.display = "none";
-    userAuth.style.display = "flex";
-    guestButtons.style.display = "none";
-    welcomeBox.style.display = "block";
+    async function showLoggedIn(user) {
+      guestAuth.style.display = "none";
+      userAuth.style.display = "flex";
+      guestButtons.style.display = "none";
+      welcomeBox.style.display = "block";
 
-    const creatorName = await getCreatorName(user);
-    const phrase = getRandomPhrase();
+      const creatorName = await getCreatorName(user);
+      const phrase = getRandomPhrase();
 
-    userName.textContent = creatorName;
-    userPhrase.textContent = "— " + phrase;
-    welcomeUser.textContent = creatorName;
-    welcomePhrase.textContent = phrase;
-}
+      userName.textContent = creatorName;
+      userPhrase.textContent = "— " + phrase;
+      welcomeUser.textContent = creatorName;
+      welcomePhrase.textContent = phrase;
+    }
 
-/* =========================================
-   LOGIN / LOGOUT
-========================================= */
-
-async function checkLogin() {
-    try {
+    async function checkLogin() {
+      try {
         const { data, error } = await sb.auth.getUser();
 
         if (error || !data?.user) {
-            showGuest();
-            return;
+          showGuest();
+          return;
         }
 
         await showLoggedIn(data.user);
-    } catch (error) {
+      } catch (error) {
         console.error("Login check failed:", error);
         showGuest();
+      }
     }
-}
 
-async function logout() {
-    logoutButton.disabled = true;
-    logoutButton.textContent = "Logging out...";
+    async function logout() {
+      logoutButton.disabled = true;
+      logoutButton.textContent = "Logging out...";
 
-    try {
+      try {
         const { error } = await sb.auth.signOut();
 
-        if (error) {
-            throw error;
-        }
+        if (error) throw error;
 
         showGuest();
         await loadHalloweenReward();
+
         window.location.href = "index.html";
-    } catch (error) {
+      } catch (error) {
         console.error("Logout error:", error);
         alert("Logout failed. Please try again.");
-    } finally {
+      } finally {
         logoutButton.disabled = false;
         logoutButton.textContent = "Logout";
+      }
     }
-}
 
-logoutButton.addEventListener("click", logout);
+    logoutButton.addEventListener("click", logout);
 
-/* =========================================
-   HALLOWEEN FEST PROGRESS
-========================================= */
+    /* =========================================
+       LIMITED EDITION LOCK DISPLAY
+    ========================================= */
 
-function countCompletedChapters(progress) {
-    const chapters = [
+    function showRewardLocked() {
+      limitedRewardCard.classList.remove("claimed");
+      limitedRewardCard.classList.add("locked");
+
+      rewardLockIcon.textContent = "🔒";
+      limitedRewardTitle.textContent = "LIMITED EDITION AVATAR";
+      limitedRewardDescription.textContent =
+        "Complete all seven festival chapters and claim this exclusive reward. " +
+        "The golden lock will remain until your claim is saved.";
+    }
+
+    function showRewardClaimed() {
+      limitedRewardCard.classList.remove("locked");
+      limitedRewardCard.classList.add("claimed");
+
+      rewardLockIcon.textContent = "🏆";
+      limitedRewardTitle.textContent = "LIMITED EDITION — CLAIMED!";
+      limitedRewardDescription.textContent =
+        "Your Halloween Fest reward has been claimed successfully. " +
+        "Your claim status is saved to your festival progress.";
+    }
+
+    function getCompletedChapterCount(progress) {
+      return [
         progress.day1,
         progress.day2,
         progress.day3,
@@ -824,335 +854,395 @@ function countCompletedChapters(progress) {
         progress.day5,
         progress.day6,
         progress.day7
-    ];
+      ].filter(value => value === true).length;
+    }
 
-    return chapters.filter(value => value === true).length;
-}
+    function areAllChaptersComplete(progress) {
+      return getCompletedChapterCount(progress) === 7;
+    }
 
-function allChaptersComplete(progress) {
-    return countCompletedChapters(progress) === 7;
-}
+    /* =========================================
+       LOAD HALLOWEEN REWARD PROGRESS
+    ========================================= */
 
-async function loadHalloweenReward() {
-    const requestId = ++rewardRequestNumber;
+    async function loadHalloweenReward() {
+      if (typeof sb === "undefined" || !sb?.auth) return;
 
-    resetClaimButton();
-    setRewardProgress(0);
-    rewardStatus.textContent = "Checking festival progress...";
+      claimAvatarButton.disabled = true;
+      claimAvatarButton.textContent = "🎁 Claim Avatar";
 
-    try {
+      showRewardLocked();
+
+      try {
         const { data: authData, error: authError } = await sb.auth.getUser();
 
-        if (requestId !== rewardRequestNumber) return;
-
         if (authError || !authData?.user) {
-            rewardStatus.textContent =
-                "Login to check your festival reward.";
-            setHalloweenMessage(
-                "Please log in to the Creator Portal using the same account you used for the festival."
-            );
-            claimAvatarButton.textContent = "🔒 Login to Claim";
-            return;
+          rewardStatus.textContent =
+            "Login to check your Halloween Fest reward.";
+
+          setHalloweenMessage(
+            "Please log in to your Creator Portal account, then refresh this page."
+          );
+          return;
         }
 
         const user = authData.user;
 
         const { data: progress, error } = await sb
-            .from("festival_progress")
-            .select(
-                "day1, day2, day3, day4, day5, day6, day7, avatar_claimed"
-            )
-            .eq("user_id", user.id)
-            .eq("festival", HALLOWEEN_FESTIVAL_ID)
-            .maybeSingle();
-
-        if (requestId !== rewardRequestNumber) return;
+          .from("festival_progress")
+          .select(
+            "day1, day2, day3, day4, day5, day6, day7, avatar_claimed"
+          )
+          .eq("user_id", user.id)
+          .eq("festival", HALLOWEEN_FESTIVAL_ID)
+          .maybeSingle();
 
         if (error) throw error;
 
         if (!progress) {
-            rewardStatus.textContent =
-                "No festival progress found for this account.";
-            setHalloweenMessage(
-                "Play the festival using the same logged-in account. Your progress row must exist in Supabase."
-            );
-            return;
+          rewardStatus.textContent =
+            "No festival progress found for this account.";
+
+          setHalloweenMessage(
+            "Play the festival using the same logged-in account. " +
+            "Your existing SQL/table setup is not changed by this page."
+          );
+          return;
         }
 
-        const completedCount = countCompletedChapters(progress);
-        setRewardProgress(completedCount);
-
-        if (!allChaptersComplete(progress)) {
-            rewardStatus.textContent =
-                `🎃 Festival progress: ${completedCount}/7 chapters completed.`;
-
-            setHalloweenMessage(
-                `Complete the remaining ${7 - completedCount} chapter(s) to unlock your avatar reward.`
-            );
-            return;
-        }
+        const completedCount = getCompletedChapterCount(progress);
 
         if (progress.avatar_claimed === true) {
-            rewardStatus.textContent =
-                "🎉 Your Halloween avatar reward has already been claimed!";
+          showRewardClaimed();
 
-            claimAvatarButton.textContent = "✓ Already Claimed";
-            claimAvatarButton.disabled = true;
+          rewardStatus.textContent =
+            "🎉 Your Limited Edition Halloween Avatar has been claimed!";
 
-            setHalloweenMessage(
-                "Your claim status is saved in festival_progress."
-            );
-            return;
+          claimAvatarButton.textContent = "✓ Already Claimed";
+          claimAvatarButton.disabled = true;
+
+          setHalloweenMessage(
+            "Your claim is saved in Supabase. Thank you for joining the festival!"
+          );
+          return;
+        }
+
+        showRewardLocked();
+
+        if (!areAllChaptersComplete(progress)) {
+          rewardStatus.textContent =
+            `Festival progress: ${completedCount}/7 chapters completed.`;
+
+          setHalloweenMessage(
+            "Complete all seven chapters to unlock the Limited Edition Avatar claim."
+          );
+          return;
         }
 
         rewardStatus.textContent =
-            "🏆 All seven chapters complete! Your reward is unlocked.";
+          "🏆 All seven chapters complete! Your reward is ready.";
 
         claimAvatarButton.textContent = "🎁 Claim Avatar";
         claimAvatarButton.disabled = false;
 
         setHalloweenMessage(
-            "Your Halloween avatar reward is ready to claim."
+          "All chapters complete. Claim your Limited Edition reward!"
         );
-    } catch (error) {
-        if (requestId !== rewardRequestNumber) return;
-
+      } catch (error) {
         console.error("Halloween reward loading failed:", error);
 
         rewardStatus.textContent =
-            "Unable to verify your festival progress.";
+          "Unable to verify your festival progress.";
 
         setHalloweenMessage(
-            "Check js/config.js, the festival_progress table columns, and Supabase Row Level Security policies."
+          "Check your Supabase connection, festival_progress fields and Row Level Security."
         );
+      }
     }
-}
 
-/* =========================================
-   CLAIM AVATAR REWARD
-========================================= */
+    /* =========================================
+       CLAIM AVATAR
+    ========================================= */
 
-claimAvatarButton.addEventListener("click", async () => {
-    if (halloweenRewardBusy) return;
+    claimAvatarButton.addEventListener("click", async () => {
+      if (halloweenRewardBusy) return;
 
-    halloweenRewardBusy = true;
-    claimAvatarButton.disabled = true;
-    claimAvatarButton.textContent = "Claiming...";
+      halloweenRewardBusy = true;
+      claimAvatarButton.disabled = true;
+      claimAvatarButton.textContent = "Claiming...";
 
-    try {
+      try {
         const { data: authData, error: authError } = await sb.auth.getUser();
 
         if (authError || !authData?.user) {
-            throw new Error("Please log in before claiming your reward.");
+          throw new Error("Please log in before claiming your reward.");
         }
 
         const user = authData.user;
 
-        // Verify progress again before updating the claim flag.
         const { data: progress, error: readError } = await sb
-            .from("festival_progress")
-            .select(
-                "day1, day2, day3, day4, day5, day6, day7, avatar_claimed"
-            )
-            .eq("user_id", user.id)
-            .eq("festival", HALLOWEEN_FESTIVAL_ID)
-            .maybeSingle();
+          .from("festival_progress")
+          .select(
+            "day1, day2, day3, day4, day5, day6, day7, avatar_claimed"
+          )
+          .eq("user_id", user.id)
+          .eq("festival", HALLOWEEN_FESTIVAL_ID)
+          .maybeSingle();
 
         if (readError) throw readError;
 
         if (!progress) {
-            throw new Error("Festival progress was not found.");
-        }
-
-        if (!allChaptersComplete(progress)) {
-            throw new Error(
-                "Complete all seven festival chapters before claiming."
-            );
+          throw new Error("Festival progress was not found.");
         }
 
         if (progress.avatar_claimed === true) {
-            rewardStatus.textContent =
-                "🎉 Your reward has already been claimed.";
+          showRewardClaimed();
 
-            claimAvatarButton.textContent = "✓ Already Claimed";
-            setHalloweenMessage("Your existing claim is saved.");
-            return;
+          rewardStatus.textContent =
+            "🎉 Your reward was already claimed.";
+
+          claimAvatarButton.textContent = "✓ Already Claimed";
+          setHalloweenMessage("Your existing claim is saved.");
+          return;
+        }
+
+        if (!areAllChaptersComplete(progress)) {
+          throw new Error(
+            "Complete all seven chapters before claiming."
+          );
         }
 
         const { data: updatedRows, error: updateError } = await sb
-            .from("festival_progress")
-            .update({ avatar_claimed: true })
-            .eq("user_id", user.id)
-            .eq("festival", HALLOWEEN_FESTIVAL_ID)
-            .eq("day1", true)
-            .eq("day2", true)
-            .eq("day3", true)
-            .eq("day4", true)
-            .eq("day5", true)
-            .eq("day6", true)
-            .eq("day7", true)
-            .eq("avatar_claimed", false)
-            .select("avatar_claimed");
+          .from("festival_progress")
+          .update({ avatar_claimed: true })
+          .eq("user_id", user.id)
+          .eq("festival", HALLOWEEN_FESTIVAL_ID)
+          .eq("day1", true)
+          .eq("day2", true)
+          .eq("day3", true)
+          .eq("day4", true)
+          .eq("day5", true)
+          .eq("day6", true)
+          .eq("day7", true)
+          .eq("avatar_claimed", false)
+          .select("avatar_claimed");
 
         if (updateError) throw updateError;
 
         if (!updatedRows || updatedRows.length === 0) {
-            // Another request might already have claimed it.
-            const { data: latest, error: latestError } = await sb
-                .from("festival_progress")
-                .select("avatar_claimed")
-                .eq("user_id", user.id)
-                .eq("festival", HALLOWEEN_FESTIVAL_ID)
-                .maybeSingle();
+          // Refresh the database state in case another request already claimed it.
+          await loadHalloweenReward();
 
-            if (latestError) throw latestError;
-
-            if (latest?.avatar_claimed === true) {
-                rewardStatus.textContent =
-                    "🎉 Your Halloween avatar reward has already been claimed!";
-                claimAvatarButton.textContent = "✓ Already Claimed";
-                setHalloweenMessage("Your claim is saved.");
-                return;
-            }
-
-            throw new Error(
-                "The claim was not saved. Check your Supabase update policy and festival progress."
-            );
+          throw new Error(
+            "The claim was not saved. Refresh your progress and check Supabase RLS policies."
+          );
         }
 
+        showRewardClaimed();
+
         rewardStatus.textContent =
-            "🎉 Halloween avatar reward claimed successfully!";
+          "🎉 Halloween Limited Edition reward claimed!";
 
         claimAvatarButton.textContent = "✓ Already Claimed";
         claimAvatarButton.disabled = true;
 
         setHalloweenMessage(
-            "Claim saved! Visit your Creator Dashboard to check your available avatar options."
+          "Claim saved! Open your Creator Dashboard to check your available avatar options."
         );
-    } catch (error) {
+      } catch (error) {
         console.error("Avatar claim failed:", error);
 
         setHalloweenMessage(
-            error.message || "Unable to claim the reward."
+          error.message || "Unable to claim the reward."
         );
 
         await loadHalloweenReward();
-    } finally {
+      } finally {
         halloweenRewardBusy = false;
-    }
-});
+      }
+    });
 
-/* =========================================
-   SHARE FESTIVAL / INVITE FRIENDS
-========================================= */
+    /* =========================================
+       SHARE POSTER + MESSAGE + FESTIVAL LINK
+    ========================================= */
 
-async function shareHalloweenFestival(invite = false) {
-    const shareData = {
-        title: "VIDLYRA Halloween Fest 2026",
-        text: invite
-            ? "Join me at VIDLYRA Halloween Fest 2026! Complete the seven chapters and unlock the festival reward. 🎃"
-            : "Explore VIDLYRA Halloween Fest 2026 — seven chapters, spooky challenges and a special reward! 🎃",
-        url: HALLOWEEN_FESTIVAL_URL
-    };
+    async function copyFestivalMessage() {
+      const textToCopy = HALLOWEEN_SHARE_MESSAGE;
 
-    try {
-        if (navigator.share) {
-            await navigator.share(shareData);
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(textToCopy);
 
-            setHalloweenMessage(
-                invite
-                    ? "Festival invitation shared."
-                    : "Festival shared successfully."
-            );
-        } else if (navigator.clipboard?.writeText) {
-            await navigator.clipboard.writeText(
-                shareData.text + "\n" + shareData.url
-            );
-
-            setHalloweenMessage(
-                "Festival link copied! Send it to your friends."
-            );
-        } else {
-            // Fallback for browsers without Web Share or Clipboard API.
-            window.prompt(
-                "Copy and share this festival link:",
-                shareData.url
-            );
+          setHalloweenMessage(
+            "Festival message and link copied! You can paste them into your chat."
+          );
+          return;
         }
-    } catch (error) {
-        if (error.name !== "AbortError") {
-            console.error("Festival sharing failed:", error);
 
-            window.prompt(
-                "Copy this festival link to share:",
-                shareData.url
-            );
-        }
-    }
-}
+        // Clipboard fallback for browsers without Clipboard API.
+        const textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
 
-shareFestivalButton.addEventListener("click", () => {
-    shareHalloweenFestival(false);
-});
+        document.body.appendChild(textArea);
+        textArea.select();
 
-inviteFriendsButton.addEventListener("click", () => {
-    shareHalloweenFestival(true);
-});
+        const copied = document.execCommand("copy");
+        textArea.remove();
 
-/* =========================================
-   AUTH STATE CHANGE
-   Keep callbacks short; run Supabase requests
-   outside the auth callback.
-========================================= */
+        if (!copied) throw new Error("Clipboard copy failed");
 
-sb.auth.onAuthStateChange((event, session) => {
-    console.log("Auth event:", event);
-
-    if (session?.user) {
-        userAuth.style.display = "flex";
-        guestAuth.style.display = "none";
-        guestButtons.style.display = "none";
-        welcomeBox.style.display = "block";
-    } else {
-        showGuest();
-    }
-
-    setTimeout(() => {
-        checkLogin();
-        loadHalloweenReward();
-    }, 0);
-});
-
-/* Refresh when the user returns to this tab. */
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-        loadHalloweenReward();
-    }
-});
-
-/* =========================================
-   INITIALIZE
-========================================= */
-
-(async function initializeCreatorPortal() {
-    if (typeof sb === "undefined" || !sb?.auth) {
-        console.error(
-            "Supabase client not found. Check js/config.js and ensure it defines `sb`."
-        );
-
-        showGuest();
-
-        rewardStatus.textContent = "Supabase is not configured.";
         setHalloweenMessage(
-            "Check that js/config.js loads correctly and initializes the Supabase client as `sb`."
+          "Festival message and link copied! Paste them into your chat."
         );
-        return;
+      } catch (error) {
+        console.error("Clipboard fallback failed:", error);
+
+        window.prompt(
+          "Copy the Halloween Fest message below:",
+          textToCopy
+        );
+
+        setHalloweenMessage(
+          "Copy the message from the box, then share the poster image separately."
+        );
+      }
     }
 
-    await checkLogin();
-    await loadHalloweenReward();
-})();
-</script>
+    async function shareHalloweenFestival(invite = false) {
+      const message = invite
+        ? "👻 Invite from a friend!\n\n" + HALLOWEEN_SHARE_MESSAGE
+        : HALLOWEEN_SHARE_MESSAGE;
 
+      try {
+        // Try to attach the real existing poster file.
+        const response = await fetch(HALLOWEEN_POSTER_PATH);
+
+        if (!response.ok) {
+          throw new Error(
+            "Poster file could not be loaded: " + response.status
+          );
+        }
+
+        const posterBlob = await response.blob();
+
+        const posterFile = new File(
+          [posterBlob],
+          "Vidlyra-Halloween-Fest-2026.png",
+          { type: posterBlob.type || "image/png" }
+        );
+
+        const fileShareData = {
+          title: "VIDLYRA Halloween Fest 2026",
+          text: message,
+          url: HALLOWEEN_FESTIVAL_URL,
+          files: [posterFile]
+        };
+
+        if (
+          navigator.share &&
+          navigator.canShare &&
+          navigator.canShare({ files: [posterFile] })
+        ) {
+          await navigator.share(fileShareData);
+
+          setHalloweenMessage(
+            "Share sheet opened with the poster and festival message. " +
+            "Choose your sharing app to send it."
+          );
+          return;
+        }
+
+        // Some browsers support text sharing but not image-file sharing.
+        if (navigator.share) {
+          await navigator.share({
+            title: "VIDLYRA Halloween Fest 2026",
+            text: message,
+            url: HALLOWEEN_FESTIVAL_URL
+          });
+
+          setHalloweenMessage(
+            "Message and festival link shared. This browser could not attach the poster automatically."
+          );
+          return;
+        }
+
+        // Desktop browsers without Web Share API.
+        await copyFestivalMessage();
+
+        window.open(
+          HALLOWEEN_POSTER_PATH,
+          "_blank",
+          "noopener,noreferrer"
+        );
+
+        setHalloweenMessage(
+          "Message and link copied. The poster opened in a new tab; " +
+          "attach it to your message before sending."
+        );
+      } catch (error) {
+        if (error.name === "AbortError") {
+          // User closed the share sheet; don't show an error.
+          return;
+        }
+
+        console.error("Festival sharing failed:", error);
+
+        await copyFestivalMessage();
+
+        setHalloweenMessage(
+          "Text and link fallback used. If the poster did not load, check its filename and path."
+        );
+      }
+    }
+
+    shareFestivalButton.addEventListener("click", () => {
+      shareHalloweenFestival(false);
+    });
+
+    inviteFriendsButton.addEventListener("click", () => {
+      shareHalloweenFestival(true);
+    });
+
+    /* =========================================
+       AUTH STATE + PAGE INITIALIZATION
+    ========================================= */
+
+    if (typeof sb !== "undefined" && sb?.auth) {
+      sb.auth.onAuthStateChange(() => {
+        // Defer Supabase calls until after the auth callback finishes.
+        setTimeout(() => {
+          checkLogin();
+          loadHalloweenReward();
+        }, 0);
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          loadHalloweenReward();
+        }
+      });
+
+      checkLogin();
+      loadHalloweenReward();
+    }
+
+    /* =========================================
+       POSTER LOAD ERROR
+    ========================================= */
+
+    document
+      .querySelector(".festival-poster")
+      .addEventListener("error", function () {
+        this.alt =
+          "Poster not found. Check the filename in assets/poster.";
+        this.style.display = "none";
+
+        setHalloweenMessage(
+          "The poster image could not load. Check the path and capitalization in assets/poster."
+        );
+      });
+  </script>
 </body>
 </html>
