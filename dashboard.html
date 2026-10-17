@@ -2,1170 +2,832 @@
 <html lang="en">
 
 <head>
-
-<meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Creator Dashboard | Vidlyra</title>
-
-<link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet"
->
-
-<style>
-
-/* ==========================================
-   GLOBAL
-========================================== */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-
-body {
-    min-height: 100vh;
-    background: #050505;
-    color: white;
-}
-
-
-/* ==========================================
-   HEADER
-========================================== */
-
-header {
-    height: 70px;
-    padding: 0 30px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    background: #111;
-    border-bottom: 1px solid #252525;
-}
-
-.logo {
-    color: #ff7a00;
-    font-size: 25px;
-    font-weight: 700;
-    letter-spacing: 1px;
-}
-
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.profile-mini {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    color: #ccc;
-    font-size: 13px;
-    text-decoration: none;
-}
-
-.profile-mini img {
-    width: 38px;
-    height: 38px;
-
-    border-radius: 50%;
-    object-fit: cover;
-
-    border: 2px solid #ff7a00;
-}
-
-.logout-btn {
-    padding: 8px 14px;
-
-    background: transparent;
-
-    border: 1px solid #333;
-    border-radius: 8px;
-
-    color: #aaa;
-    cursor: pointer;
-}
-
-.logout-btn:hover {
-    border-color: #ff5555;
-    color: #ff5555;
-}
-
-
-/* ==========================================
-   MAIN
-========================================== */
-
-.container {
-    width: 100%;
-    max-width: 1150px;
-
-    margin: 40px auto;
-    padding: 0 20px;
-}
-
-
-/* ==========================================
-   WELCOME
-========================================== */
-
-.welcome {
-    margin-bottom: 25px;
-}
-
-.welcome h1 {
-    font-size: 30px;
-}
-
-.welcome h1 span {
-    color: #ff7a00;
-}
-
-.welcome p {
-    margin-top: 6px;
-    color: #888;
-}
-
-
-/* ==========================================
-   LEVEL CARD
-========================================== */
-
-.level-card {
-    background: #111;
-
-    border: 1px solid #292929;
-    border-radius: 18px;
-
-    padding: 25px;
-    margin-bottom: 25px;
-
-    box-shadow: 0 0 30px rgba(255,122,0,.08);
-}
-
-.level-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 20px;
-}
-
-.level-title {
-    color: #777;
-    font-size: 11px;
-    letter-spacing: 1px;
-}
-
-.rank {
-    margin-top: 4px;
-
-    color: #ff7a00;
-
-    font-size: 20px;
-    font-weight: 600;
-}
-
-.level-number {
-    font-size: 20px;
-    font-weight: 700;
-}
-
-
-/* ==========================================
-   PROGRESS
-========================================== */
-
-.progress-info {
-    display: flex;
-    justify-content: space-between;
-
-    margin-top: 20px;
-
-    color: #aaa;
-    font-size: 13px;
-}
-
-.progress-bar {
-    width: 100%;
-    height: 9px;
-
-    margin-top: 8px;
-
-    background: #252525;
-
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-.progress-fill {
-    width: 0%;
-    height: 100%;
-
-    background: #ff7a00;
-
-    border-radius: 20px;
-
-    transition: width .5s ease;
-}
-
-.next-level {
-    margin-top: 8px;
-
-    color: #777;
-    font-size: 12px;
-}
-
-
-/* ==========================================
-   SECTION TITLE
-========================================== */
-
-.section-title {
-    margin-bottom: 15px;
-
-    font-size: 20px;
-}
-
-
-/* ==========================================
-   QUICK ACTIONS
-========================================== */
-
-.quick-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(4, 1fr);
-
-    gap: 15px;
-
-    margin-bottom: 30px;
-}
-
-.action-card {
-    min-height: 145px;
-
-    padding: 22px;
-
-    background: #111;
-
-    border: 1px solid #292929;
-    border-radius: 16px;
-
-    color: white;
-
-    text-decoration: none;
-
-    transition: .2s;
-
-    position: relative;
-}
-
-.action-card:hover {
-    transform: translateY(-4px);
-
-    border-color: #ff7a00;
-
-    box-shadow:
-        0 0 20px
-        rgba(255,122,0,.10);
-}
-
-.action-icon {
-    position: relative;
-
-    display: inline-block;
-
-    font-size: 30px;
-}
-
-.action-title {
-    margin-top: 13px;
-
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.action-description {
-    margin-top: 5px;
-
-    color: #777;
-
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-
-/* ==========================================
-   NOTIFICATION BADGE
-========================================== */
-
-.notification-badge {
-    position: absolute;
-
-    top: -8px;
-    right: -12px;
-
-    min-width: 20px;
-    height: 20px;
-
-    padding: 2px 6px;
-
-    background: #ff7a00;
-
-    color: white;
-
-    border-radius: 20px;
-
-    font-size: 10px;
-    font-weight: 700;
-
-    text-align: center;
-    line-height: 16px;
-
-    border: 2px solid #111;
-
-    display: none;
-}
-
-
-/* ==========================================
-   PROJECT STATS
-========================================== */
-
-.stats-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 15px;
-
-    margin-bottom: 30px;
-}
-
-.stat-card {
-    padding: 22px;
-
-    background: #111;
-
-    border: 1px solid #292929;
-
-    border-radius: 15px;
-}
-
-.stat-label {
-    color: #777;
-    font-size: 12px;
-}
-
-.stat-number {
-    margin-top: 5px;
-
-    color: #ff7a00;
-
-    font-size: 28px;
-    font-weight: 700;
-}
-
-
-/* ==========================================
-   CREATOR AREA
-========================================== */
-
-.creator-card {
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 20px;
-
-    padding: 25px;
-
-    background: #111;
-
-    border: 1px solid #292929;
-
-    border-radius: 18px;
-
-    margin-bottom: 30px;
-}
-
-.creator-info {
-    display: flex;
-
-    align-items: center;
-
-    gap: 18px;
-}
-
-.creator-avatar {
-    width: 85px;
-    height: 85px;
-
-    border-radius: 50%;
-
-    object-fit: cover;
-
-    border: 2px solid #ff7a00;
-}
-
-.creator-text h3 {
-    font-size: 18px;
-}
-
-.creator-text p {
-    margin-top: 5px;
-
-    color: #777;
-
-    font-size: 13px;
-}
-
-.creator-button {
-    padding: 11px 17px;
-
-    background: #ff7a00;
-
-    border: none;
-    border-radius: 9px;
-
-    color: white;
-
-    text-decoration: none;
-
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.creator-button:hover {
-    background: #ff9500;
-}
-
-
-/* ==========================================
-   UPLOAD GUIDE
-========================================== */
-
-.guide {
-    padding: 25px;
-
-    background: #111;
-
-    border: 1px solid #292929;
-
-    border-radius: 18px;
-}
-
-.guide-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(5, 1fr);
-
-    gap: 12px;
-}
-
-.guide-item {
-    padding: 15px;
-
-    background: #191919;
-
-    border-radius: 10px;
-
-    text-align: center;
-}
-
-.guide-icon {
-    font-size: 25px;
-}
-
-.guide-name {
-    margin-top: 7px;
-
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.guide-type {
-    margin-top: 4px;
-
-    color: #777;
-
-    font-size: 10px;
-}
-
-
-/* ==========================================
-   LOADING
-========================================== */
-
-.loading {
-    padding: 60px;
-
-    text-align: center;
-
-    color: #777;
-}
-
-
-/* ==========================================
-   ERROR
-========================================== */
-
-.error {
-    display: none;
-
-    padding: 25px;
-
-    text-align: center;
-
-    color: #ff5555;
-}
-
-
-/* ==========================================
-   MOBILE
-========================================== */
-
-@media(max-width:900px) {
-
-    .quick-grid {
-        grid-template-columns:
-            repeat(2, 1fr);
-    }
-
-    .guide-grid {
-        grid-template-columns:
-            repeat(3, 1fr);
-    }
-
-}
-
-
-@media(max-width:600px) {
-
-    header {
-        padding: 0 18px;
-    }
-
-    .profile-mini span {
-        display: none;
-    }
-
-    .container {
-        margin-top: 25px;
-    }
-
-    .welcome h1 {
-        font-size: 25px;
-    }
-
-    .quick-grid {
-        grid-template-columns:
-            1fr 1fr;
-    }
-
-    .stats-grid {
-        grid-template-columns:
-            1fr;
-    }
-
-    .guide-grid {
-        grid-template-columns:
-            repeat(2, 1fr);
-    }
-
-    .creator-card {
-        flex-direction: column;
-
-        align-items: flex-start;
-    }
-
-    .creator-button {
-        width: 100%;
-
-        text-align: center;
-    }
-
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Creator Dashboard | Vidlyra</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #050505;
+            color: #fff;
+        }
+
+        header {
+            min-height: 70px;
+            padding: 12px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            background: #111;
+            border-bottom: 1px solid #252525;
+        }
+
+        .logo {
+            color: #ff7a00;
+            font-size: 25px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ccc;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .profile-mini img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ff7a00;
+            background: #1b1b1b;
+        }
+
+        .logout-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            border-color: #ff5555;
+            color: #ff5555;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1150px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            font-size: 30px;
+        }
+
+        .welcome h1 span {
+            color: #ff7a00;
+        }
+
+        .welcome p {
+            margin-top: 6px;
+            color: #888;
+        }
+
+        .level-card {
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(255, 122, 0, .08);
+        }
+
+        .level-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .level-title {
+            color: #777;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .rank {
+            margin-top: 4px;
+            color: #ff7a00;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .level-number {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 20px;
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 9px;
+            margin-top: 8px;
+            background: #252525;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #ff7a00;
+            border-radius: 20px;
+            transition: width .5s ease;
+        }
+
+        .next-level {
+            margin-top: 8px;
+            color: #777;
+            font-size: 12px;
+        }
+
+        .section-title {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+            margin-bottom: 32px;
+        }
+
+        .action-card {
+            min-height: 155px;
+            padding: 22px;
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 16px;
+            color: white;
+            text-decoration: none;
+            transition: transform .2s, border-color .2s, box-shadow .2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card:hover {
+            transform: translateY(-4px);
+            border-color: #ff7a00;
+            box-shadow: 0 0 20px rgba(255, 122, 0, .10);
+        }
+
+        .action-icon {
+            display: inline-block;
+            font-size: 30px;
+        }
+
+        .action-title {
+            margin-top: 13px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .action-description {
+            margin-top: 5px;
+            color: #888;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* Halloween Event Avatar card */
+        .event-avatar-card {
+            border-color: rgba(255, 122, 0, .45);
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(255, 122, 0, .13),
+                    transparent 55%
+                ),
+                #111;
+        }
+
+        .event-avatar-card:hover {
+            border-color: #ff7a00;
+            box-shadow: 0 0 24px rgba(255, 122, 0, .17);
+        }
+
+        .event-tag {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 4px 9px;
+            border: 1px solid rgba(255, 138, 0, .35);
+            border-radius: 20px;
+            color: #ffad59;
+            background: rgba(255, 122, 0, .08);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .4px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            min-width: 20px;
+            height: 20px;
+            padding: 2px 6px;
+            background: #ff7a00;
+            color: white;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 16px;
+            border: 2px solid #111;
+            display: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 15px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            padding: 22px;
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 15px;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .stat-number {
+            margin-top: 5px;
+            color: #ff7a00;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .creator-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 25px;
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 18px;
+            margin-bottom: 32px;
+        }
+
+        .creator-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            min-width: 0;
+        }
+
+        .creator-avatar {
+            width: 85px;
+            height: 85px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #1b1b1b;
+            border: 2px solid #ff7a00;
+        }
+
+        .creator-text h3 {
+            font-size: 18px;
+            overflow-wrap: anywhere;
+        }
+
+        .creator-text p {
+            margin-top: 5px;
+            color: #888;
+            font-size: 13px;
+        }
+
+        .creator-button {
+            display: inline-block;
+            padding: 11px 17px;
+            background: #ff7a00;
+            border: none;
+            border-radius: 9px;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .creator-button:hover {
+            background: #ff9500;
+        }
+
+        .guide {
+            padding: 25px;
+            margin-bottom: 40px;
+            background: #111;
+            border: 1px solid #292929;
+            border-radius: 18px;
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .guide-item {
+            padding: 15px 10px;
+            background: #191919;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .guide-icon {
+            font-size: 25px;
+        }
+
+        .guide-name {
+            margin-top: 7px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .guide-type {
+            margin-top: 4px;
+            color: #888;
+            font-size: 10px;
+        }
+
+        .loading {
+            padding: 60px 20px;
+            text-align: center;
+            color: #888;
+        }
+
+        .error {
+            display: none;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            color: #ff6262;
+            background: #180d0d;
+            border: 1px solid #482020;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 900px) {
+            .quick-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .guide-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 12px 18px;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .header-right {
+                gap: 10px;
+            }
+
+            .profile-mini span {
+                display: none;
+            }
+
+            .container {
+                margin-top: 25px;
+            }
+
+            .welcome h1 {
+                font-size: 25px;
+            }
+
+            .quick-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .action-card {
+                padding: 16px;
+                min-height: 155px;
+            }
+
+            .action-title {
+                font-size: 14px;
+            }
+
+            .action-description {
+                font-size: 11px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .guide-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .creator-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .creator-button {
+                width: 100%;
+            }
+
+            .level-card {
+                padding: 19px;
+            }
+
+            .level-top {
+                align-items: flex-start;
+            }
+
+            .level-number {
+                font-size: 16px;
+            }
+        }
+    </style>
 </head>
-
 
 <body>
 
-
-<!-- ==========================================
-     HEADER
-========================================== -->
-
-<header>
-
-    <div class="logo">
-        VIDLYRA
-    </div>
-
-
-    <div class="header-right">
-
-        <a
-            href="profile.html"
-            class="profile-mini"
-        >
-
-            <img
-                id="headerAvatar"
-                src="assets/creator-avatars/creator1.png"
-                alt="Creator"
-            >
-
-            <span id="headerName">
-                Creator
-            </span>
-
-        </a>
-
-
-        <button
-            type="button"
-            class="logout-btn"
-            onclick="logout()"
-        >
-            Logout
-        </button>
-
-    </div>
-
-</header>
-
-
-<!-- ==========================================
-     MAIN
-========================================== -->
-
-<main class="container">
-
-
-    <!-- LOADING -->
-
-    <div
-        id="loading"
-        class="loading"
-    >
-        Loading creator dashboard...
-    </div>
-
-
-    <!-- ERROR -->
-
-    <div
-        id="error"
-        class="error"
-    ></div>
-
-
-    <!-- DASHBOARD -->
-
-    <div
-        id="dashboardContent"
-        style="display:none;"
-    >
-
-
-        <!-- ==================================
-             WELCOME
-        =================================== -->
-
-        <section class="welcome">
-
-            <h1>
-
-                Welcome,
-
-                <span id="welcomeName">
-                    Creator
-                </span>
-
-                👋
-
-            </h1>
-
-            <p>
-                Manage your projects and continue
-                your Vidlyra creator journey.
-            </p>
-
-        </section>
-
-
-        <!-- ==================================
-             LEVEL
-        =================================== -->
-
-        <section class="level-card">
-
-            <div class="level-top">
-
-                <div>
-
-                    <div class="level-title">
-                        CREATOR LEVEL
-                    </div>
-
-                    <div
-                        id="creatorRank"
-                        class="rank"
-                    >
-                        New Creator
-                    </div>
-
-                </div>
-
-
-                <div
-                    id="creatorLevel"
-                    class="level-number"
-                >
-                    LEVEL 1
-                </div>
-
-            </div>
-
-
-            <div class="progress-info">
-
-                <span>
-                    Approved Projects
-                </span>
-
-                <span>
-
-                    <span id="approvedProjects">
-                        0
-                    </span>
-
-                    /
-
-                    <span id="nextLevelTarget">
-                        3
-                    </span>
-
-                </span>
-
-            </div>
-
-
-            <div class="progress-bar">
-
-                <div
-                    id="levelProgress"
-                    class="progress-fill"
-                ></div>
-
-            </div>
-
-
-            <div
-                id="nextLevelText"
-                class="next-level"
-            >
-                3 approved projects needed
-                for the next level.
-            </div>
-
-        </section>
-
-
-        <!-- ==================================
-             CREATOR TOOLS
-        =================================== -->
-
-        <h2 class="section-title">
-            Creator Tools
-        </h2>
-
-
-        <section class="quick-grid">
-
-
-            <!-- UPLOAD -->
-
-            <a
-                href="upload.html"
-                class="action-card"
-            >
-
-                <div class="action-icon">
-                    ⬆️
-                </div>
-
-                <div class="action-title">
-                    Upload Project
-                </div>
-
-                <div class="action-description">
-                    Submit anime, manga, music,
-                    artwork or short films.
-                </div>
-
-            </a>
-
-
-            <!-- PROJECTS -->
-
-            <a
-                href="projects.html?mine=true"
-                class="action-card"
-            >
-
-                <div class="action-icon">
-                    📁
-                </div>
-
-                <div class="action-title">
-                    My Projects
-                </div>
-
-                <div class="action-description">
-                    View and manage your submitted
-                    projects.
-                </div>
-
-            </a>
-
-
-            <!-- CREATOR AVATARS -->
-
-            <a
-                href="creator-avatars.html"
-                class="action-card"
-            >
-
-                <div class="action-icon">
-                    🎨
-                </div>
-
-                <div class="action-title">
-                    Creator Avatars
-                </div>
-
-                <div class="action-description">
-                    Unlock special avatars as your
-                    creator level increases.
-                </div>
-
-            </a>
-
-
-            <!-- FREQUENCY AVATARS -->
-
-            <a
-                href="avatars.html"
-                class="action-card"
-            >
-
-                <div class="action-icon">
-                    ✨
-                </div>
-
-                <div class="action-title">
-                    Frequency Avatars
-                </div>
-
-                <div class="action-description">
-                    Choose your regular Vidlyra
-                    Frequency Avatar.
-                </div>
-
-            </a>
-
-
-            <!-- NOTIFICATIONS -->
-
-            <a
-                href="notifications.html"
-                class="action-card notification-action"
-            >
-
-                <div class="action-icon">
-
-                    🔔
-
-                    <span
-                        id="notificationBadge"
-                        class="notification-badge"
-                    >
-                        0
-                    </span>
-
-                </div>
-
-                <div class="action-title">
-                    Notifications
-                </div>
-
-                <div class="action-description">
-                    View your latest creator
-                    updates and announcements.
-                </div>
-
-            </a>
-
-
-        </section>
-
-
-        <!-- ==================================
-             ACTIVITY
-        =================================== -->
-
-        <h2 class="section-title">
-            Your Activity
-        </h2>
-
-
-        <section class="stats-grid">
-
-
-            <div class="stat-card">
-
-                <div class="stat-label">
-                    TOTAL PROJECTS
-                </div>
-
-                <div
-                    id="totalProjects"
-                    class="stat-number"
-                >
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <div class="stat-label">
-                    APPROVED
-                </div>
-
-                <div
-                    id="approvedCount"
-                    class="stat-number"
-                >
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <div class="stat-label">
-                    PENDING
-                </div>
-
-                <div
-                    id="pendingCount"
-                    class="stat-number"
-                >
-                    0
-                </div>
-
-            </div>
-
-
-        </section>
-
-
-        <!-- ==================================
-             CREATOR PROFILE
-        =================================== -->
-
-        <h2 class="section-title">
-            Creator Profile
-        </h2>
-
-
-        <section class="creator-card">
-
-
-            <div class="creator-info">
-
-
+    <!-- HEADER -->
+    <header>
+        <div class="logo">VIDLYRA</div>
+
+        <div class="header-right">
+            <a href="profile.html" class="profile-mini">
                 <img
-                    id="creatorAvatar"
-                    class="creator-avatar"
+                    id="headerAvatar"
                     src="assets/creator-avatars/creator1.png"
-                    alt="Creator Avatar"
+                    alt="Creator profile avatar"
                 >
 
-
-                <div class="creator-text">
-
-                    <h3 id="creatorProfileName">
-                        Creator
-                    </h3>
-
-                    <p id="creatorProfileRank">
-                        New Creator • Level 1
-                    </p>
-
-                </div>
-
-
-            </div>
-
-
-            <a
-                href="profile.html"
-                class="creator-button"
-            >
-                View Profile
+                <span id="headerName">Creator</span>
             </a>
 
+            <button
+                type="button"
+                class="logout-btn"
+                onclick="logout()"
+            >
+                Logout
+            </button>
+        </div>
+    </header>
 
-        </section>
+    <main class="container">
 
+        <!-- LOADING -->
+        <div id="loading" class="loading">
+            Loading creator dashboard...
+        </div>
 
-        <!-- ==================================
-             UPLOAD GUIDE
-        =================================== -->
+        <!-- ERROR -->
+        <div id="error" class="error"></div>
 
-        <h2 class="section-title">
-            Upload Guide
-        </h2>
+        <!-- DASHBOARD CONTENT -->
+        <div id="dashboardContent" style="display: none;">
 
+            <!-- WELCOME -->
+            <section class="welcome">
+                <h1>
+                    Welcome,
+                    <span id="welcomeName">Creator</span>
+                    👋
+                </h1>
 
-        <section class="guide">
+                <p>
+                    Manage your projects and continue your Vidlyra creator journey.
+                </p>
+            </section>
 
+            <!-- CREATOR LEVEL -->
+            <section class="level-card">
+                <div class="level-top">
+                    <div>
+                        <div class="level-title">CREATOR LEVEL</div>
 
-            <div class="guide-grid">
-
-
-                <div class="guide-item">
-
-                    <div class="guide-icon">
-                        🎬
+                        <div id="creatorRank" class="rank">
+                            New Creator
+                        </div>
                     </div>
 
-                    <div class="guide-name">
-                        Anime
+                    <div id="creatorLevel" class="level-number">
+                        LEVEL 1
+                    </div>
+                </div>
+
+                <div class="progress-info">
+                    <span>Approved Projects</span>
+
+                    <span>
+                        <span id="approvedProjects">0</span>
+                        /
+                        <span id="nextLevelTarget">3</span>
+                    </span>
+                </div>
+
+                <div class="progress-bar">
+                    <div id="levelProgress" class="progress-fill"></div>
+                </div>
+
+                <div id="nextLevelText" class="next-level">
+                    3 approved projects needed for the next level.
+                </div>
+            </section>
+
+            <!-- CREATOR TOOLS -->
+            <h2 class="section-title">Creator Tools</h2>
+
+            <section class="quick-grid">
+
+                <!-- UPLOAD PROJECT -->
+                <a href="upload.html" class="action-card">
+                    <div class="action-icon">⬆️</div>
+
+                    <div class="action-title">Upload Project</div>
+
+                    <div class="action-description">
+                        Submit anime, manga, music, artwork or short films.
+                    </div>
+                </a>
+
+                <!-- MY PROJECTS -->
+                <a href="projects.html?mine=true" class="action-card">
+                    <div class="action-icon">📁</div>
+
+                    <div class="action-title">My Projects</div>
+
+                    <div class="action-description">
+                        View and manage your submitted projects.
+                    </div>
+                </a>
+
+                <!-- CREATOR AVATARS -->
+                <a href="creator-avatars.html" class="action-card">
+                    <div class="action-icon">🎨</div>
+
+                    <div class="action-title">Creator Avatars</div>
+
+                    <div class="action-description">
+                        Unlock special avatars as your creator level increases.
+                    </div>
+                </a>
+
+                <!-- FREQUENCY AVATARS -->
+                <a href="avatars.html" class="action-card">
+                    <div class="action-icon">✨</div>
+
+                    <div class="action-title">Frequency Avatars</div>
+
+                    <div class="action-description">
+                        Choose your regular Vidlyra Frequency Avatar.
+                    </div>
+                </a>
+
+                <!-- HALLOWEEN EVENT AVATARS -->
+                <a
+                    href="event-avatars.html"
+                    class="action-card event-avatar-card"
+                >
+                    <div class="action-icon">🎃</div>
+
+                    <div class="action-title">Event Avatars</div>
+
+                    <div class="action-description">
+                        Explore your Halloween Fest 2026 Limited Edition avatar
+                        and select it as your profile avatar when eligible.
                     </div>
 
-                    <div class="guide-type">
-                        PDF
+                    <span class="event-tag">HALLOWEEN FEST 2026</span>
+                </a>
+
+                <!-- NOTIFICATIONS -->
+                <a
+                    href="notifications.html"
+                    class="action-card notification-action"
+                >
+                    <div class="action-icon">
+                        🔔
+
+                        <span
+                            id="notificationBadge"
+                            class="notification-badge"
+                        >0</span>
+                    </div>
+
+                    <div class="action-title">Notifications</div>
+
+                    <div class="action-description">
+                        View your latest creator updates and announcements.
+                    </div>
+                </a>
+
+            </section>
+
+            <!-- ACTIVITY -->
+            <h2 class="section-title">Your Activity</h2>
+
+            <section class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-label">TOTAL PROJECTS</div>
+                    <div id="totalProjects" class="stat-number">0</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">APPROVED</div>
+                    <div id="approvedCount" class="stat-number">0</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">PENDING</div>
+                    <div id="pendingCount" class="stat-number">0</div>
+                </div>
+
+            </section>
+
+            <!-- CREATOR PROFILE -->
+            <h2 class="section-title">Creator Profile</h2>
+
+            <section class="creator-card">
+                <div class="creator-info">
+                    <img
+                        id="creatorAvatar"
+                        class="creator-avatar"
+                        src="assets/creator-avatars/creator1.png"
+                        alt="Creator Avatar"
+                    >
+
+                    <div class="creator-text">
+                        <h3 id="creatorProfileName">Creator</h3>
+
+                        <p id="creatorProfileRank">
+                            New Creator • Level 1
+                        </p>
+                    </div>
+                </div>
+
+                <a href="profile.html" class="creator-button">
+                    View Profile
+                </a>
+            </section>
+
+            <!-- UPLOAD GUIDE -->
+            <h2 class="section-title">Upload Guide</h2>
+
+            <section class="guide">
+                <div class="guide-grid">
+
+                    <div class="guide-item">
+                        <div class="guide-icon">🎬</div>
+                        <div class="guide-name">Anime</div>
+                        <div class="guide-type">PDF</div>
+                    </div>
+
+                    <div class="guide-item">
+                        <div class="guide-icon">📖</div>
+                        <div class="guide-name">Manga</div>
+                        <div class="guide-type">PDF</div>
+                    </div>
+
+                    <div class="guide-item">
+                        <div class="guide-icon">🎥</div>
+                        <div class="guide-name">Short Film</div>
+                        <div class="guide-type">MP4</div>
+                    </div>
+
+                    <div class="guide-item">
+                        <div class="guide-icon">🎵</div>
+                        <div class="guide-name">Music</div>
+                        <div class="guide-type">MP3</div>
+                    </div>
+
+                    <div class="guide-item">
+                        <div class="guide-icon">🖼️</div>
+                        <div class="guide-name">Artwork</div>
+                        <div class="guide-type">PNG / JPG / WebP</div>
                     </div>
 
                 </div>
+            </section>
 
+        </div>
+    </main>
 
-                <div class="guide-item">
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-                    <div class="guide-icon">
-                        📖
-                    </div>
+    <!-- EXISTING CONFIG -->
+    <script src="js/config.js"></script>
 
-                    <div class="guide-name">
-                        Manga
-                    </div>
+    <!-- EXISTING DASHBOARD LOGIC -->
+    <script src="js/dashboard.js?v=5"></script>
 
-                    <div class="guide-type">
-                        PDF
-                    </div>
+    <!-- SELECTED PROFILE AVATAR SYNC -->
+    <script>
+        (async function syncSelectedProfileAvatar() {
+            try {
+                if (typeof sb === "undefined" || !sb) {
+                    console.warn(
+                        "Supabase client 'sb' was not found. Check js/config.js."
+                    );
+                    return;
+                }
 
-                </div>
+                const {
+                    data: { user },
+                    error: authError
+                } = await sb.auth.getUser();
 
+                if (authError || !user) {
+                    return;
+                }
 
-                <div class="guide-item">
+                const { data: profile, error: profileError } = await sb
+                    .from("profiles")
+                    .select("avatar_url")
+                    .eq("user_id", user.id)
+                    .maybeSingle();
 
-                    <div class="guide-icon">
-                        🎥
-                    </div>
+                if (profileError) {
+                    console.error(
+                        "Could not load the selected profile avatar:",
+                        profileError.message
+                    );
+                    return;
+                }
 
-                    <div class="guide-name">
-                        Short Film
-                    </div>
+                const avatarUrl = profile?.avatar_url;
 
-                    <div class="guide-type">
-                        MP4
-                    </div>
+                if (!avatarUrl) {
+                    return;
+                }
 
-                </div>
+                const avatarImages = [
+                    document.getElementById("headerAvatar"),
+                    document.getElementById("creatorAvatar")
+                ];
 
+                avatarImages.forEach((image) => {
+                    if (image) {
+                        image.onerror = function () {
+                            this.onerror = null;
+                            this.src = "assets/creator-avatars/creator1.png";
+                        };
 
-                <div class="guide-item">
+                        image.src = avatarUrl;
+                    }
+                });
 
-                    <div class="guide-icon">
-                        🎵
-                    </div>
-
-                    <div class="guide-name">
-                        Music
-                    </div>
-
-                    <div class="guide-type">
-                        MP3
-                    </div>
-
-                </div>
-
-
-                <div class="guide-item">
-
-                    <div class="guide-icon">
-                        🖼️
-                    </div>
-
-                    <div class="guide-name">
-                        Artwork
-                    </div>
-
-                    <div class="guide-type">
-                        PNG / JPG / WebP
-                    </div>
-
-                </div>
-
-
-            </div>
-
-        </section>
-
-
-    </div>
-
-</main>
-
-
-<!-- ==========================================
-     SUPABASE
-========================================== -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="js/config.js"></script>
-
-<script src="js/dashboard.js?v=4"></script>
-
+            } catch (error) {
+                console.error("Profile avatar sync failed:", error);
+            }
+        })();
+    </script>
 
 </body>
-
 </html>
