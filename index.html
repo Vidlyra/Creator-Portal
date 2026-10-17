@@ -472,7 +472,39 @@ footer {
     </div>
 
 </section>
+<section class="halloween-reward" id="halloweenReward">
+    <h2>🎃 Halloween Fest 2026</h2>
 
+    <p>
+        Complete all seven festival chapters to unlock your special
+        VIDLYRA avatar reward. Claim your reward and invite your friends
+        to join the festival!
+    </p>
+
+    <div class="reward-status" id="halloweenRewardStatus" aria-live="polite">
+        Checking festival progress...
+    </div>
+
+    <div class="reward-actions">
+        <button type="button" id="claimHalloweenAvatar" disabled>
+            🎁 Claim Avatar
+        </button>
+
+        <button type="button" id="shareHalloweenFest" class="reward-secondary">
+            ↗ Share Festival
+        </button>
+
+        <button type="button" id="inviteHalloweenFriends" class="reward-secondary">
+            👥 Invite Friends
+        </button>
+
+        <a href="https://vidlyra.github.io/" class="reward-secondary">
+            🗺 Return to VIDLYRA
+        </a>
+    </div>
+
+    <p class="reward-message" id="halloweenRewardMessage" aria-live="polite"></p>
+</section>
 
 <footer>
     © 2026 Vidlyra Creator Portal
@@ -784,7 +816,337 @@ sb.auth.onAuthStateChange(
 ========================================== */
 
 checkLogin();
+/* ===========================
+   HALLOWEEN FEST REWARD HUB
+=========================== */
 
+.halloween-reward {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 35px;
+    border: 1px solid rgba(255, 138, 0, .35);
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at top right, rgba(255,138,0,.15), transparent 45%),
+        #101010;
+    box-shadow: 0 0 35px rgba(255, 138, 0, .08);
+}
+
+.halloween-reward h2 {
+    color: #ff8a00;
+    font-size: clamp(25px, 4vw, 38px);
+    margin-bottom: 12px;
+}
+
+.halloween-reward p {
+    color: #bbb;
+    line-height: 1.8;
+}
+
+.reward-status {
+    margin: 20px 0;
+    padding: 14px 18px;
+    background: #191919;
+    border: 1px solid #303030;
+    border-radius: 12px;
+    color: #ffb347;
+}
+
+.reward-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.reward-actions button,
+.reward-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 20px;
+    border: 1px solid #ff8a00;
+    border-radius: 30px;
+    background: #ff8a00;
+    color: white;
+    font: 600 14px 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: .25s;
+}
+
+.reward-actions .reward-secondary {
+    background: transparent;
+    color: #ffb347;
+}
+
+.reward-actions button:hover,
+.reward-actions a:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.12);
+}
+
+.reward-actions button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.reward-message {
+    margin-top: 15px;
+    min-height: 24px;
+    color: #ddd;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+    .halloween-reward {
+        margin: 20px 5%;
+        padding: 23px;
+    }
+
+    .reward-actions {
+        flex-direction: column;
+    }
+
+    .reward-actions button,
+    .reward-actions a {
+        width: 100%;
+    }
+}
+/* ==========================================
+   HALLOWEEN FEST 2026 REWARD INTEGRATION
+========================================== */
+
+const HALLOWEEN_FESTIVAL_ID = "halloween_2026";
+const HALLOWEEN_FESTIVAL_URL =
+    "https://vidlyra.github.io/Creator-Portal/";
+
+const rewardStatus = document.getElementById("halloweenRewardStatus");
+const claimAvatarButton = document.getElementById("claimHalloweenAvatar");
+const shareFestivalButton = document.getElementById("shareHalloweenFest");
+const inviteFriendsButton = document.getElementById("inviteHalloweenFriends");
+const rewardMessage = document.getElementById("halloweenRewardMessage");
+
+let halloweenRewardUser = null;
+let halloweenRewardBusy = false;
+
+function setHalloweenMessage(message) {
+    rewardMessage.textContent = message;
+}
+
+async function loadHalloweenReward() {
+    claimAvatarButton.disabled = true;
+    halloweenRewardUser = null;
+
+    try {
+        const { data: authData, error: authError } = await sb.auth.getUser();
+
+        if (authError || !authData?.user) {
+            rewardStatus.textContent = "Login to check your festival reward.";
+            setHalloweenMessage("Please log in to your Creator Portal account.");
+            return;
+        }
+
+        const user = authData.user;
+        halloweenRewardUser = user;
+
+        const { data: progress, error } = await sb
+            .from("festival_progress")
+            .select("day1, day2, day3, day4, day5, day6, day7, avatar_claimed")
+            .eq("user_id", user.id)
+            .eq("festival", HALLOWEEN_FESTIVAL_ID)
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (!progress) {
+            rewardStatus.textContent = "No festival progress found for this account.";
+            setHalloweenMessage("Play the festival using the same logged-in account.");
+            return;
+        }
+
+        const complete = [
+            progress.day1,
+            progress.day2,
+            progress.day3,
+            progress.day4,
+            progress.day5,
+            progress.day6,
+            progress.day7
+        ].every(value => value === true);
+
+        if (!complete) {
+            const completedCount = [
+                progress.day1,
+                progress.day2,
+                progress.day3,
+                progress.day4,
+                progress.day5,
+                progress.day6,
+                progress.day7
+            ].filter(value => value === true).length;
+
+            rewardStatus.textContent =
+                `Festival progress: ${completedCount}/7 chapters completed.`;
+
+            setHalloweenMessage("Complete all seven chapters to unlock the avatar claim.");
+            return;
+        }
+
+        if (progress.avatar_claimed === true) {
+            rewardStatus.textContent = "🎉 Your Halloween avatar reward has been claimed!";
+            claimAvatarButton.textContent = "✓ Already Claimed";
+            setHalloweenMessage("Your claim status is saved to your festival progress.");
+            return;
+        }
+
+        rewardStatus.textContent = "🏆 All seven chapters complete! Your reward is unlocked.";
+        claimAvatarButton.textContent = "🎁 Claim Avatar";
+        claimAvatarButton.disabled = false;
+        setHalloweenMessage("Your avatar reward is ready to claim.");
+
+    } catch (error) {
+        console.error("Halloween reward loading failed:", error);
+        rewardStatus.textContent = "Unable to verify your festival progress.";
+        setHalloweenMessage("Check your Supabase connection, table fields and Row Level Security.");
+    }
+}
+
+claimAvatarButton.addEventListener("click", async () => {
+    if (halloweenRewardBusy) return;
+
+    halloweenRewardBusy = true;
+    claimAvatarButton.disabled = true;
+    claimAvatarButton.textContent = "Claiming...";
+
+    try {
+        const { data: authData, error: authError } = await sb.auth.getUser();
+
+        if (authError || !authData?.user) {
+            throw new Error("Please log in before claiming your reward.");
+        }
+
+        const user = authData.user;
+
+        // Verify completion again on the claim action.
+        const { data: progress, error: readError } = await sb
+            .from("festival_progress")
+            .select("day1, day2, day3, day4, day5, day6, day7, avatar_claimed")
+            .eq("user_id", user.id)
+            .eq("festival", HALLOWEEN_FESTIVAL_ID)
+            .maybeSingle();
+
+        if (readError) throw readError;
+        if (!progress) throw new Error("Festival progress was not found.");
+
+        const complete = [
+            progress.day1,
+            progress.day2,
+            progress.day3,
+            progress.day4,
+            progress.day5,
+            progress.day6,
+            progress.day7
+        ].every(value => value === true);
+
+        if (!complete) {
+            throw new Error("Complete all seven chapters before claiming.");
+        }
+
+        if (progress.avatar_claimed === true) {
+            rewardStatus.textContent = "🎉 Your reward was already claimed.";
+            claimAvatarButton.textContent = "✓ Already Claimed";
+            setHalloweenMessage("Your existing claim is saved.");
+            return;
+        }
+
+        const { data: updatedRows, error: updateError } = await sb
+            .from("festival_progress")
+            .update({ avatar_claimed: true })
+            .eq("user_id", user.id)
+            .eq("festival", HALLOWEEN_FESTIVAL_ID)
+            .eq("day1", true)
+            .eq("day2", true)
+            .eq("day3", true)
+            .eq("day4", true)
+            .eq("day5", true)
+            .eq("day6", true)
+            .eq("day7", true)
+            .select("avatar_claimed");
+
+        if (updateError) throw updateError;
+
+        if (!updatedRows || updatedRows.length === 0) {
+            throw new Error(
+                "The claim was not saved. Check your Supabase Row Level Security policies."
+            );
+        }
+
+        rewardStatus.textContent = "🎉 Halloween avatar reward claimed!";
+        claimAvatarButton.textContent = "✓ Already Claimed";
+        setHalloweenMessage(
+            "Claim saved! Open your Creator Dashboard to check your available avatar options."
+        );
+
+    } catch (error) {
+        console.error("Avatar claim failed:", error);
+        claimAvatarButton.textContent = "🎁 Claim Avatar";
+        setHalloweenMessage(error.message || "Unable to claim the reward.");
+        await loadHalloweenReward();
+
+    } finally {
+        halloweenRewardBusy = false;
+    }
+});
+
+async function shareHalloweenFestival(invite = false) {
+    const shareData = {
+        title: "VIDLYRA Halloween Fest 2026",
+        text: invite
+            ? "Join me at VIDLYRA Halloween Fest 2026! Complete the seven chapters and unlock the festival reward. 🎃"
+            : "Explore VIDLYRA Halloween Fest 2026 — seven chapters, spooky challenges and a special reward! 🎃",
+        url: HALLOWEEN_FESTIVAL_URL
+    };
+
+    try {
+        if (navigator.share) {
+            await navigator.share(shareData);
+            setHalloweenMessage(invite
+                ? "Invite shared successfully."
+                : "Festival shared successfully.");
+        } else {
+            await navigator.clipboard.writeText(shareData.url);
+            setHalloweenMessage("Festival link copied! Share it with your friends.");
+        }
+    } catch (error) {
+        if (error.name !== "AbortError") {
+            console.error("Festival sharing failed:", error);
+            setHalloweenMessage("Sharing is unavailable. Copy the festival link from your browser.");
+        }
+    }
+}
+
+shareFestivalButton.addEventListener("click", () => {
+    shareHalloweenFestival(false);
+});
+
+inviteFriendsButton.addEventListener("click", () => {
+    shareHalloweenFestival(true);
+});
+
+// Refresh reward information after login/logout or when returning to the tab.
+sb.auth.onAuthStateChange(() => {
+    setTimeout(loadHalloweenReward, 0);
+});
+
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+        loadHalloweenReward();
+    }
+});
+
+loadHalloweenReward();    
 </script>
 
 </body>
