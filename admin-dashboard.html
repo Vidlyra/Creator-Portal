@@ -1,339 +1,136 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Vidlyra</title>
 
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Admin Dashboard | Vidlyra</title>
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #070707;
-            color: #fff;
-        }
-
-        header {
-            padding: 20px 30px;
-            border-bottom: 1px solid #252525;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            color: #ff7a00;
-            font-size: 25px;
-            font-weight: 700;
-        }
-
-        .admin-label {
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        .container {
-            width: min(1200px, 94%);
-            margin: 30px auto;
-        }
-
-        h1 {
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            color: #888;
-            margin-bottom: 25px;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns:
-                repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 35px;
-        }
-
-        .stat {
-            background: #111;
-            border: 1px solid #292929;
-            border-radius: 14px;
-            padding: 22px;
-        }
-
-        .stat-title {
-            color: #888;
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
-
-        .stat-number {
-            font-size: 30px;
-            font-weight: 700;
-        }
-
-        .projects {
-            display: grid;
-            gap: 18px;
-        }
-
-        .project-card {
-            background: #111;
-            border: 1px solid #292929;
-            border-radius: 16px;
-            overflow: hidden;
-            display: grid;
-            grid-template-columns: 220px 1fr;
-        }
-
-        .thumbnail {
-            width: 100%;
-            height: 100%;
-            min-height: 190px;
-            object-fit: cover;
-            background: #181818;
-        }
-
-        .project-info {
-            padding: 22px;
-        }
-
-        .project-info h3 {
-            font-size: 21px;
-            margin-bottom: 10px;
-        }
-
-        .description {
-            color: #aaa;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .meta {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .badge {
-            padding: 6px 10px;
-            background: #202020;
-            border-radius: 20px;
-            color: #ccc;
-            font-size: 12px;
-        }
-
-        .pending {
-            color: #ffb15c;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .view {
-            background: #242424;
-            color: white;
-        }
-
-        .approve {
-            background: #16834b;
-            color: white;
-        }
-
-        .reject {
-            background: #9b2929;
-            color: white;
-        }
-
-        button:hover {
-            opacity: 0.85;
-        }
-
-        #loading,
-        #empty,
-        #error {
-            text-align: center;
-            padding: 40px;
-        }
-
-        #empty {
-            color: #888;
-            display: none;
-        }
-
-        #error {
-            color: #ff6464;
-            display: none;
-        }
-
-        @media (max-width: 700px) {
-
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .project-card {
-                grid-template-columns: 1fr;
-            }
-
-            .thumbnail {
-                height: 200px;
-            }
-
-        }
-
-    </style>
-
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #080808;
+      color: #eee;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      padding: 18px 5%;
+      background: #111;
+      border-bottom: 1px solid #292929;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .logo { color: #ff8a00; font-size: 23px; font-weight: bold; }
+    main { max-width: 1200px; margin: 30px auto; padding: 0 18px; }
+    h1 { margin-bottom: 8px; }
+    .muted { color: #999; }
+    .tabs { display: flex; gap: 10px; flex-wrap: wrap; margin: 24px 0; }
+    button {
+      background: #181818;
+      color: #eee;
+      border: 1px solid #393939;
+      padding: 12px 17px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover, button.active {
+      background: #ff8a00;
+      color: #111;
+      border-color: #ff8a00;
+    }
+    .panel {
+      background: #111;
+      border: 1px solid #292929;
+      border-radius: 12px;
+      padding: 20px;
+      min-height: 300px;
+    }
+    iframe {
+      width: 100%;
+      height: 850px;
+      border: 0;
+      background: #080808;
+      border-radius: 8px;
+    }
+    .hidden { display: none; }
+    .notice { color: #aaa; line-height: 1.7; }
+    @media (max-width: 600px) {
+      header { padding: 16px; }
+      .tabs button { flex: 1 1 100%; }
+      iframe { height: 1000px; }
+    }
+  </style>
 </head>
 
-
 <body>
+  <header>
+    <div class="logo">VIDLYRA ADMIN</div>
+    <a href="dashboard.html" style="color:#ff8a00">Creator Dashboard</a>
+  </header>
 
+  <main>
+    <h1>Admin Dashboard</h1>
+    <p class="muted">Manage creator projects and notifications.</p>
 
-<header>
-
-    <div class="logo">
-        VIDLYRA
+    <div class="tabs">
+      <button class="active" data-tab="overview">Overview</button>
+      <button data-tab="projects">Admin Projects</button>
+      <button data-tab="notifications">Admin Notifications</button>
     </div>
 
-    <div class="admin-label">
-        🛡️ Admin Dashboard
-    </div>
-
-</header>
-
-
-<main class="container">
-
-    <h1>
-        Project Approval
-    </h1>
-
-    <p class="subtitle">
-        Review and manage creator submissions.
-    </p>
-
-
-    <!-- STATISTICS -->
-
-    <section class="stats">
-
-        <div class="stat">
-
-            <div class="stat-title">
-                Pending
-            </div>
-
-            <div
-                class="stat-number"
-                id="pendingCount"
-            >
-                0
-            </div>
-
-        </div>
-
-
-        <div class="stat">
-
-            <div class="stat-title">
-                Approved
-            </div>
-
-            <div
-                class="stat-number"
-                id="approvedCount"
-            >
-                0
-            </div>
-
-        </div>
-
-
-        <div class="stat">
-
-            <div class="stat-title">
-                Rejected
-            </div>
-
-            <div
-                class="stat-number"
-                id="rejectedCount"
-            >
-                0
-            </div>
-
-        </div>
-
+    <section id="overview" class="panel">
+      <h2>Welcome to Vidlyra Admin</h2>
+      <p class="notice">
+        Use the tabs above to review creator submissions and send
+        notifications. Your existing overview and approval system
+        can be restored here if it contains additional functionality.
+      </p>
+      <p><a href="admin-projects.html" style="color:#ff8a00">Open Projects directly</a></p>
+      <p><a href="admin-notifications.html" style="color:#ff8a00">Open Notifications directly</a></p>
     </section>
 
+    <section id="projects" class="panel hidden">
+      <h2>Creator Projects</h2>
+      <iframe title="Admin Projects" data-src="admin-projects.html"></iframe>
+    </section>
 
-    <div id="loading">
-        Loading projects...
-    </div>
+    <section id="notifications" class="panel hidden">
+      <h2>Admin Notifications</h2>
+      <iframe title="Admin Notifications" data-src="admin-notifications.html"></iframe>
+    </section>
+  </main>
 
+  <script>
+    const tabButtons = document.querySelectorAll("[data-tab]");
+    const panels = ["overview", "projects", "notifications"];
 
-    <div id="error"></div>
+    tabButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        const selected = button.dataset.tab;
 
+        tabButtons.forEach(item => {
+          item.classList.toggle("active", item === button);
+        });
 
-    <div
-        id="empty"
-    >
-        🎉 No pending projects.
-    </div>
+        panels.forEach(id => {
+          document.getElementById(id).classList.toggle(
+            "hidden", id !== selected
+          );
+        });
 
+        const iframe = document.querySelector(
+          "#" + selected + " iframe"
+        );
 
-    <section
-        class="projects"
-        id="projects"
-    ></section>
-
-
-</main>
-
-
-<!-- SUPABASE -->
-
-<script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-></script>
-
-
-<!-- YOUR CONFIG -->
-
-<script src="js/config.js"></script>
-
-
-<!-- ADMIN DASHBOARD -->
-
-<script src="js/admin-dashboard.js"></script>
-
-
+        if (iframe && !iframe.src) {
+          iframe.src = iframe.dataset.src;
+        }
+      });
+    });
+  </script>
 </body>
-
 </html>
