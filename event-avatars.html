@@ -17,13 +17,10 @@
       --muted: #b8bec9;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      padding: 0;
       min-height: 100vh;
       background: var(--bg);
       color: #fff;
@@ -60,9 +57,7 @@
       font-size: 14px;
     }
 
-    nav a:hover {
-      color: var(--orange);
-    }
+    nav a:hover { color: var(--orange); }
 
     main {
       width: min(100% - 32px, 1000px);
@@ -123,10 +118,7 @@
       box-shadow: 0 0 25px rgba(255, 215, 0, .2);
     }
 
-    h2 {
-      margin: 12px 0;
-      font-size: 24px;
-    }
+    h2 { margin: 12px 0; font-size: 24px; }
 
     .description {
       color: var(--muted);
@@ -194,17 +186,9 @@
     }
 
     @media (max-width: 550px) {
-      header {
-        justify-content: center;
-      }
-
-      nav {
-        justify-content: center;
-      }
-
-      .avatar-card {
-        padding: 20px;
-      }
+      header { justify-content: center; }
+      nav { justify-content: center; }
+      .avatar-card { padding: 20px; }
     }
   </style>
 </head>
@@ -212,7 +196,6 @@
 <body>
   <header>
     <div class="logo">VIDLYRA</div>
-
     <nav>
       <a href="index.html">Home</a>
       <a href="dashboard.html">Dashboard</a>
@@ -237,7 +220,7 @@
       <img
         id="eventAvatarImage"
         class="avatar-image"
-        src="assets/event-avatars/Vidlyra_EventAvatar_HalloweenFest2026_LimitedEdition.png"
+        src="https://vidlyra.github.io/Creator-Portal/assets/event-avatars/Vidlyra_EventAvatar_HalloweenFest2026_LimitedEdition.png"
         alt="VIDLYRA Halloween Fest 2026 Limited Edition Avatar"
       >
 
@@ -245,8 +228,8 @@
 
       <p class="description">
         VIDLYRA Halloween Fest 2026 Limited Edition.
-        This reward is available for selection after the festival
-        reward has been claimed on your account.
+        This reward can be selected after it has been claimed
+        on your account.
       </p>
 
       <div class="status" id="avatarStatus" role="status" aria-live="polite">
@@ -258,19 +241,19 @@
           Select as Profile Avatar
         </button>
 
-        <a href="https://vidlyra.github.io/Vidlyra-Halloween-Fest-2026/"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="button secondary">
+        <a
+          href="https://vidlyra.github.io/Vidlyra-Halloween-Fest-2026/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="button secondary"
+        >
           Open Halloween Fest
         </a>
       </div>
     </section>
   </main>
 
-  <footer>
-    © 2026 VIDLYRA Creator Portal
-  </footer>
+  <footer>© 2026 VIDLYRA Creator Portal</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
@@ -280,11 +263,15 @@
 
     const FESTIVAL_ID = "halloween_2026";
 
+    const EVENT_AVATAR_ID =
+      "ff434e87-c105-451a-9d5c-dd5374bc7cb0";
+
     const EVENT_AVATAR_URL =
       "https://vidlyra.github.io/Creator-Portal/assets/event-avatars/Vidlyra_EventAvatar_HalloweenFest2026_LimitedEdition.png";
 
     const statusBox = document.getElementById("avatarStatus");
     const selectButton = document.getElementById("selectAvatarButton");
+    const avatarImage = document.getElementById("eventAvatarImage");
 
     let currentUserId = null;
     let isSaving = false;
@@ -293,92 +280,117 @@
       statusBox.textContent = message;
     }
 
+    function getClient() {
+      if (typeof sb === "undefined" || !sb?.auth || !sb?.from) {
+        throw new Error(
+          "Supabase client missing. Check js/config.js."
+        );
+      }
+      return sb;
+    }
+
+    async function verifyReward(userId) {
+      const client = getClient();
+
+      const { data: progress, error } = await client
+        .from("festival_progress")
+        .select(
+          "day1, day2, day3, day4, day5, day6, day7, avatar_claimed"
+        )
+        .eq("user_id", userId)
+        .eq("festival", FESTIVAL_ID)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!progress) {
+        return {
+          allowed: false,
+          message:
+            "No Halloween Fest progress found for this account. " +
+            "Check that you are using the correct account."
+        };
+      }
+
+      const days = [
+        progress.day1,
+        progress.day2,
+        progress.day3,
+        progress.day4,
+        progress.day5,
+        progress.day6,
+        progress.day7
+      ];
+
+      const completed = days.filter(value => value === true).length;
+
+      if (completed !== 7 || progress.avatar_claimed !== true) {
+        return {
+          allowed: false,
+          message:
+            `Reward locked: ${completed}/7 chapters completed. ` +
+            "Complete all seven chapters and claim the reward first."
+        };
+      }
+
+      return { allowed: true, message: "Reward verified." };
+    }
+
     async function checkEventAvatarAccess() {
       selectButton.disabled = true;
       currentUserId = null;
 
       try {
-        if (typeof sb === "undefined" || !sb?.auth) {
-          throw new Error(
-            "Supabase client missing. Check js/config.js."
-          );
-        }
+        const client = getClient();
+        const { data, error } = await client.auth.getUser();
 
-        const { data: authData, error: authError } =
-          await sb.auth.getUser();
+        if (error) throw error;
 
-        if (authError) throw authError;
-
-        const user = authData?.user;
+        const user = data?.user;
 
         if (!user) {
+          selectButton.textContent = "Select as Profile Avatar";
           setStatus(
-            "Please log in to your Creator Portal account before selecting an event avatar."
+            "Please log in to your Creator Portal account first."
           );
           return;
         }
 
         currentUserId = user.id;
 
-        const { data: progress, error: progressError } = await sb
-          .from("festival_progress")
-          .select(
-            "day1, day2, day3, day4, day5, day6, day7, avatar_claimed"
-          )
-          .eq("user_id", user.id)
-          .eq("festival", FESTIVAL_ID)
-          .maybeSingle();
+        const reward = await verifyReward(user.id);
 
-        if (progressError) throw progressError;
-
-        if (!progress) {
-          setStatus(
-            "No Halloween Fest progress found. Play the festival with this account first."
-          );
+        if (!reward.allowed) {
+          selectButton.textContent = "Reward Locked";
+          setStatus(reward.message);
           return;
         }
 
-        const chapters = [
-          progress.day1,
-          progress.day2,
-          progress.day3,
-          progress.day4,
-          progress.day5,
-          progress.day6,
-          progress.day7
-        ];
-
-        const completed = chapters.filter(value => value === true).length;
-
-        if (progress.avatar_claimed !== true) {
-          setStatus(
-            `Reward locked: ${completed}/7 chapters completed. ` +
-            "Complete all seven chapters and claim the reward on the homepage first."
-          );
-          return;
-        }
-
-        const { data: profile, error: profileError } = await sb
+        const { data: profile, error: profileError } = await client
           .from("profiles")
-          .select("avatar_url")
+          .select(
+            "avatar_url, selected_avatar_type, selected_event_avatar_id"
+          )
           .eq("user_id", user.id)
           .maybeSingle();
 
         if (profileError) throw profileError;
 
         if (!profile) {
-          setStatus(
-            "Your profiles row was not found. Create or repair your profile row before selecting an avatar."
+          throw new Error(
+            "Your profiles row was not found. Create or repair your profile first."
           );
-          return;
         }
 
-        const alreadySelected = profile.avatar_url === EVENT_AVATAR_URL;
+        const alreadySelected =
+          profile.selected_avatar_type === "event" &&
+          profile.selected_event_avatar_id === EVENT_AVATAR_ID &&
+          profile.avatar_url === EVENT_AVATAR_URL;
 
         setStatus(
           alreadySelected
-            ? "✓ This Limited Edition avatar is already your profile avatar."
-            : "✓ Reward verified! You can now select this avatar for your profile."
+            ? "✓ Your Halloween Fest Limited Edition avatar is already selected."
+            : "✓ Reward verified! You can select this Limited Edition avatar."
         );
 
         selectButton.textContent = alreadySelected
@@ -386,13 +398,14 @@
           : "Select as Profile Avatar";
 
         selectButton.disabled = alreadySelected;
+
       } catch (error) {
         console.error("Event avatar verification failed:", error);
-
         setStatus(
-          error.message ||
-          "Could not verify your event reward. Check your Supabase configuration and policies."
+          error?.message ||
+          "Could not verify your reward. Check Supabase configuration and policies."
         );
+        selectButton.disabled = true;
       }
     }
 
@@ -404,105 +417,87 @@
       selectButton.textContent = "Saving...";
 
       try {
-        const { data: authData, error: authError } =
-          await sb.auth.getUser();
+        const client = getClient();
+        const { data, error } = await client.auth.getUser();
 
-        if (authError) throw authError;
+        if (error) throw error;
 
-        if (!authData?.user || authData.user.id !== currentUserId) {
-          throw new Error("Your login session changed. Please try again.");
-        }
-
-        /*
-          Re-check the reward immediately before saving.
-          Do not trust only the earlier page check.
-        */
-        const { data: progress, error: progressError } = await sb
-          .from("festival_progress")
-          .select(
-            "day1, day2, day3, day4, day5, day6, day7, avatar_claimed"
-          )
-          .eq("user_id", currentUserId)
-          .eq("festival", FESTIVAL_ID)
-          .maybeSingle();
-
-        if (progressError) throw progressError;
-
-        const allComplete = progress && [
-          progress.day1,
-          progress.day2,
-          progress.day3,
-          progress.day4,
-          progress.day5,
-          progress.day6,
-          progress.day7
-        ].every(value => value === true);
-
-        if (!allComplete || progress.avatar_claimed !== true) {
+        if (!data?.user || data.user.id !== currentUserId) {
           throw new Error(
-            "Your Halloween reward is not claimed. Return to the homepage and verify your progress."
+            "Your login session changed. Please log in again."
           );
         }
 
-        /*
-          Save only the avatar URL for the authenticated user's profile.
-          The profiles table must have avatar_url and user_id columns.
-        */
-        const { data: updatedRows, error: updateError } = await sb
+        // Verify the reward again immediately before saving.
+        const reward = await verifyReward(currentUserId);
+
+        if (!reward.allowed) {
+          throw new Error(reward.message);
+        }
+
+        const { data: updatedRows, error: updateError } = await client
           .from("profiles")
-          .update({ avatar_url: EVENT_AVATAR_URL })
+          .update({
+            avatar_url: EVENT_AVATAR_URL,
+            selected_avatar_type: "event",
+            selected_event_avatar_id: EVENT_AVATAR_ID
+          })
           .eq("user_id", currentUserId)
-          .select("user_id, avatar_url");
+          .select(
+            "user_id, avatar_url, selected_avatar_type, selected_event_avatar_id"
+          );
 
         if (updateError) throw updateError;
 
         if (!updatedRows || updatedRows.length === 0) {
           throw new Error(
-            "No profile row was updated. Check that your profile exists and your Supabase UPDATE policy allows the owner to update it."
+            "No profile row was updated. Check that your profile exists " +
+            "and the Supabase UPDATE policy allows the owner to update it."
           );
         }
 
         setStatus(
-          "✓ Halloween Limited Edition avatar saved! Your profile page can now display it."
+          "✓ Halloween Fest Limited Edition avatar saved! " +
+          "Your dashboard and profile can now identify it as an event avatar."
         );
 
         selectButton.textContent = "✓ Avatar Selected";
 
-        /*
-          Update the current tab's profile image if the profile
-          avatar element exists on this page.
-        */
         const preview = document.getElementById("profileAvatar");
         if (preview) preview.src = EVENT_AVATAR_URL;
 
       } catch (error) {
         console.error("Saving event avatar failed:", error);
-
         setStatus(
-          error.message || "Could not save your selected avatar."
+          error?.message || "Could not save your selected avatar."
         );
-
         selectButton.textContent = "Select as Profile Avatar";
+
       } finally {
         isSaving = false;
         await checkEventAvatarAccess();
       }
     });
 
-    document.getElementById("eventAvatarImage").addEventListener("error", () => {
+    avatarImage.addEventListener("error", () => {
+      console.error("Event avatar image failed to load:", avatarImage.src);
       setStatus(
-        "Avatar image could not be loaded. Verify the PNG filename and GitHub Pages asset path."
+        "Avatar image could not be loaded. Check the image URL and repository filename."
       );
     });
 
-    if (typeof sb !== "undefined" && sb?.auth) {
+    try {
+      getClient();
       checkEventAvatarAccess();
 
       sb.auth.onAuthStateChange(() => {
-        setTimeout(checkEventAvatarAccess, 0);
+        Promise.resolve().then(checkEventAvatarAccess);
       });
-    } else {
-      setStatus("Supabase configuration missing. Check js/config.js.");
+
+    } catch (error) {
+      setStatus(
+        error?.message || "Supabase configuration missing. Check js/config.js."
+      );
     }
   </script>
 </body>
