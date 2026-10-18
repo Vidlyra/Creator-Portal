@@ -1,13 +1,20 @@
-// ==========================================
-// VIDLYRA CREATOR DASHBOARD
-// Complete Dashboard JavaScript
-// ==========================================
 
-console.log("Vidlyra Dashboard JS loaded");
+console.log("Vidlyra Dashboard loaded");
 
-// ==========================================
-// ELEMENTS
-// ==========================================
+// ========================================
+// CONFIGURATION
+// ========================================
+
+const DEFAULT_AVATAR = "assets/creator-avatars/creator1.png";
+
+const EVENT_AVATARS = {
+    "ff434e87-c105-451a-9d5c-dd5374bc7cb0":
+        "https://raw.githubusercontent.com/Vidlyra/Creator-Portal/main/assets/event-avatars/Vidlyra_EventAvatar_HalloweenFest2026_LimitedEdition.png"
+};
+
+// ========================================
+// DOM ELEMENTS
+// ========================================
 
 const loading = document.getElementById("loading");
 const errorBox = document.getElementById("error");
@@ -15,11 +22,14 @@ const dashboardContent = document.getElementById("dashboardContent");
 
 const headerName = document.getElementById("headerName");
 const headerAvatar = document.getElementById("headerAvatar");
-
 const welcomeName = document.getElementById("welcomeName");
 
 const creatorRank = document.getElementById("creatorRank");
 const creatorLevel = document.getElementById("creatorLevel");
+
+const creatorAvatar = document.getElementById("creatorAvatar");
+const creatorProfileName = document.getElementById("creatorProfileName");
+const creatorProfileRank = document.getElementById("creatorProfileRank");
 
 const approvedProjects = document.getElementById("approvedProjects");
 const nextLevelTarget = document.getElementById("nextLevelTarget");
@@ -30,111 +40,65 @@ const totalProjects = document.getElementById("totalProjects");
 const approvedCount = document.getElementById("approvedCount");
 const pendingCount = document.getElementById("pendingCount");
 
-const creatorAvatar = document.getElementById("creatorAvatar");
-const creatorProfileName = document.getElementById("creatorProfileName");
-const creatorProfileRank = document.getElementById("creatorProfileRank");
-
 const notificationBadge = document.getElementById("notificationBadge");
 
-// ==========================================
-// AVATAR CONSTANTS
-// ==========================================
+let currentUserId = null;
+let loadingDashboard = false;
 
-const DEFAULT_AVATAR =
-    "assets/creator-avatars/creator1.png";
-
-const EVENT_AVATAR_URL =
-    "https://vidlyra.github.io/Creator-Portal/assets/event-avatars/Vidlyra_EventAvatar_HalloweenFest2026_LimitedEdition.png";
-
-// ==========================================
-// SHOW / HIDE DASHBOARD
-// ==========================================
+// ========================================
+// LOADING AND ERROR DISPLAY
+// ========================================
 
 function showLoading() {
-    if (loading) {
-        loading.style.display = "block";
-    }
-
-    if (errorBox) {
-        errorBox.style.display = "none";
-    }
-
-    if (dashboardContent) {
-        dashboardContent.style.display = "none";
-    }
+    if (loading) loading.style.display = "block";
+    if (errorBox) errorBox.style.display = "none";
+    if (dashboardContent) dashboardContent.style.display = "none";
 }
 
 function showDashboard() {
-    if (loading) {
-        loading.style.display = "none";
-    }
-
-    if (errorBox) {
-        errorBox.style.display = "none";
-    }
-
-    if (dashboardContent) {
-        dashboardContent.style.display = "block";
-    }
+    if (loading) loading.style.display = "none";
+    if (errorBox) errorBox.style.display = "none";
+    if (dashboardContent) dashboardContent.style.display = "block";
 }
 
 function showError(message) {
     console.error("Dashboard error:", message);
 
-    if (loading) {
-        loading.style.display = "none";
-    }
-
-    if (dashboardContent) {
-        dashboardContent.style.display = "none";
-    }
+    if (loading) loading.style.display = "none";
+    if (dashboardContent) dashboardContent.style.display = "none";
 
     if (errorBox) {
-        errorBox.textContent =
-            message || "Something went wrong.";
-
+        errorBox.textContent = message;
         errorBox.style.display = "block";
     }
 }
 
-// ==========================================
-// CHECK SUPABASE CLIENT
-// ==========================================
+// ========================================
+// SUPABASE AUTHENTICATION
+// ========================================
 
 function checkSupabase() {
     if (typeof sb === "undefined" || !sb) {
         throw new Error(
-            "Supabase client is unavailable. Check js/config.js."
+            "Supabase client missing. Check your config.js file."
         );
     }
 }
 
-// ==========================================
-// GET CURRENT USER
-// ==========================================
-
 async function getCurrentUser() {
     const { data, error } = await sb.auth.getUser();
 
-    if (error) {
-        throw error;
-    }
+    if (error) throw error;
 
-    if (!data || !data.user) {
-        return null;
-    }
-
-    return data.user;
+    return data?.user || null;
 }
 
-// ==========================================
-// LOAD PROFILE
-// ==========================================
+// ========================================
+// LOAD CREATOR PROFILE
+// ========================================
 
 async function loadProfile(userId) {
-    console.log("Loading profile:", userId);
-
-    const { data: profile, error } = await sb
+    const { data, error } = await sb
         .from("profiles")
         .select(`
             user_id,
@@ -142,6 +106,8 @@ async function loadProfile(userId) {
             email,
             avatar_url,
             selected_avatar,
+            selected_avatar_type,
+            selected_event_avatar_id,
             approved_projects,
             creator_level,
             creator_rank,
@@ -151,247 +117,234 @@ async function loadProfile(userId) {
         .eq("user_id", userId)
         .maybeSingle();
 
-    if (error) {
-        throw error;
+    if (error) throw error;
+
+    if (!data) {
+        throw new Error("Creator profile not found.");
     }
 
-    if (!profile) {
-        throw new Error(
-            "Creator profile does not exist."
-        );
-    }
+    console.log("Profile avatar data:", {
+        selected_avatar_type: data.selected_avatar_type,
+        selected_avatar: data.selected_avatar,
+        creator_avatar: data.creator_avatar,
+        creator_avatar_unlocked: data.creator_avatar_unlocked,
+        selected_event_avatar_id: data.selected_event_avatar_id
+    });
 
-    console.log("Creator profile loaded:", profile);
-
-    return profile;
+    return data;
 }
 
-// ==========================================
-// GET SELECTED PROFILE AVATAR
-// ==========================================
+// ========================================
+// AVATAR URL VALIDATION
+// ========================================
+
+function isSafeAvatarUrl(value) {
+    if (typeof value !== "string" || !value.trim()) {
+        return false;
+    }
+
+    try {
+        const url = new URL(value, window.location.href);
+
+        return (
+            url.protocol === "https:" ||
+            url.origin === window.location.origin
+        );
+    } catch {
+        return false;
+    }
+}
+
+// ========================================
+// GET SELECTED AVATAR
+// ========================================
 
 function getAvatar(profile) {
-    /*
-     * Priority:
-     * 1. profiles.avatar_url
-     * 2. Creator avatar
-     * 3. Frequency avatar
-     * 4. Default avatar
-     *
-     * Event Avatars are saved in avatar_url.
-     */
+    if (!profile) return DEFAULT_AVATAR;
 
-    if (
-        profile.avatar_url &&
-        typeof profile.avatar_url === "string" &&
-        profile.avatar_url.trim() !== ""
-    ) {
-        return profile.avatar_url.trim();
+    const type = String(
+        profile.selected_avatar_type || ""
+    ).trim().toLowerCase();
+
+    // FREQUENCY AVATAR: IDs 1–48
+    if (type === "frequency") {
+        const id = Number(profile.selected_avatar);
+
+        if (Number.isInteger(id) && id >= 1 && id <= 48) {
+            return `assets/avatars/avatar${id}.png`;
+        }
+
+        return DEFAULT_AVATAR;
     }
 
-    // Creator Avatar fallback
-    if (
-        profile.creator_avatar !== null &&
-        profile.creator_avatar !== undefined &&
-        profile.creator_avatar !== "" &&
-        Number.isInteger(Number(profile.creator_avatar)) &&
-        Number(profile.creator_avatar) >= 1 &&
-        Number(profile.creator_avatar) <= 7
-    ) {
-        return (
-            "assets/creator-avatars/creator" +
-            Number(profile.creator_avatar) +
-            ".png"
-        );
+    // CREATOR AVATAR: IDs 1–7
+    if (type === "creator") {
+        const id = Number(profile.creator_avatar);
+
+        if (
+            profile.creator_avatar_unlocked === true &&
+            Number.isInteger(id) &&
+            id >= 1 &&
+            id <= 7
+        ) {
+            return `assets/creator-avatars/creator${id}.png`;
+        }
+
+        return DEFAULT_AVATAR;
     }
 
-    // Frequency Avatar fallback
-    if (
-        profile.selected_avatar !== null &&
-        profile.selected_avatar !== undefined &&
-        profile.selected_avatar !== "" &&
-        Number.isInteger(Number(profile.selected_avatar)) &&
-        Number(profile.selected_avatar) >= 1 &&
-        Number(profile.selected_avatar) <= 12
-    ) {
-        return (
-            "assets/avatars/avatar" +
-            Number(profile.selected_avatar) +
-            ".png"
+    // EVENT AVATAR
+    if (type === "event") {
+        if (isSafeAvatarUrl(profile.avatar_url)) {
+            return profile.avatar_url.trim();
+        }
+
+        const eventId = String(
+            profile.selected_event_avatar_id || ""
         );
+
+        return EVENT_AVATARS[eventId] || DEFAULT_AVATAR;
+    }
+
+    // OLD PROFILE COMPATIBILITY
+    if (!type) {
+        const creatorId = Number(profile.creator_avatar);
+
+        if (
+            profile.creator_avatar_unlocked === true &&
+            Number.isInteger(creatorId) &&
+            creatorId >= 1 &&
+            creatorId <= 7
+        ) {
+            return `assets/creator-avatars/creator${creatorId}.png`;
+        }
+
+        const frequencyId = Number(profile.selected_avatar);
+
+        if (
+            Number.isInteger(frequencyId) &&
+            frequencyId >= 1 &&
+            frequencyId <= 48
+        ) {
+            return `assets/avatars/avatar${frequencyId}.png`;
+        }
+
+        if (isSafeAvatarUrl(profile.avatar_url)) {
+            return profile.avatar_url.trim();
+        }
     }
 
     return DEFAULT_AVATAR;
 }
 
-// ==========================================
-// APPLY AVATAR TO IMAGE
-// ==========================================
+// ========================================
+// DISPLAY AVATAR IMAGE
+// ========================================
 
-function setAvatarImage(imageElement, avatarUrl) {
-    if (!imageElement) {
-        return;
-    }
+function setAvatarImage(element, imageUrl) {
+    if (!element) return;
 
-    imageElement.onerror = function () {
+    element.onerror = function () {
         this.onerror = null;
-
-        if (this.src !== new URL(
-            DEFAULT_AVATAR,
-            window.location.href
-        ).href) {
-            this.src = DEFAULT_AVATAR;
-        }
+        this.src = DEFAULT_AVATAR;
     };
 
-    imageElement.src = avatarUrl || DEFAULT_AVATAR;
+    element.src = imageUrl || DEFAULT_AVATAR;
 }
 
-// ==========================================
-// UPDATE PROFILE UI
-// ==========================================
+// ========================================
+// DISPLAY CREATOR PROFILE
+// ========================================
 
 function renderProfile(profile) {
-    const name =
-        profile.full_name ||
-        profile.email ||
-        "Creator";
+    const name = profile.full_name || profile.email || "Creator";
+    const rank = profile.creator_rank || "New Creator";
+    const level = Number(profile.creator_level) || 1;
 
-    const rank =
-        profile.creator_rank ||
-        "New Creator";
+    const avatarUrl = getAvatar(profile);
 
-    const level =
-        Number(profile.creator_level) || 1;
-
-    const avatar = getAvatar(profile);
-
-    // Header name
     if (headerName) {
         headerName.textContent = name;
     }
 
-    // Header avatar
-    setAvatarImage(headerAvatar, avatar);
-
-    // Welcome section
     if (welcomeName) {
         welcomeName.textContent = name;
     }
 
-    // Creator rank
     if (creatorRank) {
         creatorRank.textContent = rank;
     }
 
-    // Creator level
     if (creatorLevel) {
-        creatorLevel.textContent = "LEVEL " + level;
+        creatorLevel.textContent = `LEVEL ${level}`;
     }
 
-    // Creator profile card
     if (creatorProfileName) {
         creatorProfileName.textContent = name;
     }
 
     if (creatorProfileRank) {
         creatorProfileRank.textContent =
-            rank + " • Level " + level;
+            `${rank} • Level ${level}`;
     }
 
-    // Creator profile avatar
-    setAvatarImage(creatorAvatar, avatar);
+    // Both avatar displays use the same selected avatar.
+    setAvatarImage(headerAvatar, avatarUrl);
+    setAvatarImage(creatorAvatar, avatarUrl);
 
-    // Keep existing profile links working.
-    const profileLinks = document.querySelectorAll(
-        'a[href="profile.html"]'
-    );
-
-    profileLinks.forEach((link) => {
-        link.href =
-            "profile.html?user=" +
-            encodeURIComponent(profile.user_id);
-    });
+    console.log("Selected dashboard avatar:", avatarUrl);
 
     return {
         level: level,
-        approved: Number(profile.approved_projects) || 0,
-        avatar: avatar
+        approved: Number(profile.approved_projects) || 0
     };
 }
 
-// ==========================================
+// ========================================
 // LOAD PROJECT STATISTICS
-// ==========================================
+// ========================================
 
 async function loadProjectStats(userId) {
-    console.log("Loading project statistics...");
-
-    const { data: projects, error } = await sb
+    const { data, error } = await sb
         .from("projects")
         .select("id, status")
         .eq("user_id", userId);
 
-    if (error) {
-        throw error;
-    }
+    if (error) throw error;
 
-    const projectList = projects || [];
+    const projects = data || [];
 
-    const total = projectList.length;
+    const total = projects.length;
 
-    const approved = projectList.filter((project) => {
-        return (
-            String(project.status || "").toLowerCase() ===
-            "approved"
-        );
-    }).length;
+    const approved = projects.filter(project =>
+        String(project.status || "").toLowerCase() === "approved"
+    ).length;
 
-    const pending = projectList.filter((project) => {
-        return (
-            String(project.status || "").toLowerCase() ===
-            "pending"
-        );
-    }).length;
+    const pending = projects.filter(project =>
+        String(project.status || "").toLowerCase() === "pending"
+    ).length;
 
-    // Total project count
     if (totalProjects) {
         totalProjects.textContent = total;
     }
 
-    // Approved project count
     if (approvedCount) {
         approvedCount.textContent = approved;
     }
 
-    // Pending project count
     if (pendingCount) {
         pendingCount.textContent = pending;
     }
 
-    console.log("Project stats:", {
-        total,
-        approved,
-        pending
-    });
-
-    return {
-        total,
-        approved,
-        pending
-    };
+    return { total, approved, pending };
 }
 
-// ==========================================
+// ========================================
 // CREATOR LEVEL PROGRESS
-// ==========================================
+// ========================================
 
 function updateLevelProgress(profileApproved, actualApproved) {
-    // Use the actual project-table count when available.
-    const approved =
-        Number(actualApproved) ||
-        Number(profileApproved) ||
-        0;
+    const approved = Number(actualApproved ?? profileApproved) || 0;
 
     let target;
 
@@ -419,215 +372,147 @@ function updateLevelProgress(profileApproved, actualApproved) {
     );
 
     if (levelProgress) {
-        levelProgress.style.width =
-            percentage + "%";
+        levelProgress.style.width = `${percentage}%`;
     }
 
-    const remaining = Math.max(
-        0,
-        target - approved
-    );
+    const remaining = Math.max(0, target - approved);
 
     if (nextLevelText) {
-        if (remaining === 0) {
-            nextLevelText.textContent =
-                "Next creator level unlocked!";
-        } else {
-            nextLevelText.textContent =
-                remaining +
-                " approved project" +
-                (remaining === 1 ? "" : "s") +
-                " needed for the next level.";
-        }
+        nextLevelText.textContent = remaining === 0
+            ? "Next creator level unlocked!"
+            : `${remaining} approved project(s) needed for the next level.`;
     }
 }
 
-// ==========================================
-// LOGOUT
-// ==========================================
-
-async function logout() {
-    try {
-        console.log("Logging out...");
-
-        const { error } = await sb.auth.signOut();
-
-        if (error) {
-            throw error;
-        }
-
-        window.location.href = "login.html";
-    } catch (error) {
-        console.error("Logout error:", error);
-
-        showError(
-            "Unable to logout. Please try again."
-        );
-    }
-}
-
-// ==========================================
-// LOAD NOTIFICATION BADGE
-// ==========================================
+// ========================================
+// NOTIFICATION BADGE
+// ========================================
 
 async function loadNotificationBadge() {
-    if (!notificationBadge) {
-        console.warn(
-            "Notification badge element not found."
-        );
-        return;
-    }
+    if (!notificationBadge) return;
 
     try {
-        const {
-            data: userData,
-            error: userError
-        } = await sb.auth.getUser();
+        const user = await getCurrentUser();
 
-        if (userError || !userData.user) {
+        if (!user) {
             notificationBadge.style.display = "none";
             return;
         }
 
-        const userId = userData.user.id;
-
-        const {
-            count,
-            error
-        } = await sb
+        const { count, error } = await sb
             .from("notifications")
             .select("id", {
                 count: "exact",
                 head: true
             })
-            .eq("user_id", userId)
+            .eq("user_id", user.id)
             .eq("is_read", false);
 
-        if (error) {
-            console.error(
-                "Notification badge error:",
-                error
-            );
-            return;
-        }
+        if (error) throw error;
 
-        const unreadCount = count || 0;
+        const unread = count || 0;
 
-        if (unreadCount > 0) {
-            notificationBadge.textContent =
-                unreadCount > 99 ? "99+" : unreadCount;
+        notificationBadge.textContent =
+            unread > 99 ? "99+" : String(unread);
 
-            notificationBadge.style.display =
-                "inline-block";
-        } else {
-            notificationBadge.textContent = "0";
+        notificationBadge.style.display =
+            unread > 0 ? "inline-block" : "none";
 
-            notificationBadge.style.display = "none";
-        }
-
-        console.log(
-            "Unread notifications:",
-            unreadCount
-        );
     } catch (error) {
-        console.error(
-            "Notification badge error:",
-            error
-        );
+        console.error("Notification error:", error);
     }
 }
 
-// ==========================================
-// START DASHBOARD
-// ==========================================
+// ========================================
+// LOGOUT
+// ========================================
 
-async function loadDashboard() {
-    showLoading();
-
+async function logout() {
     try {
-        // Check Supabase configuration
         checkSupabase();
 
-        // Get logged-in user
+        const { error } = await sb.auth.signOut();
+
+        if (error) throw error;
+
+        window.location.href = "login.html";
+
+    } catch (error) {
+        console.error("Logout error:", error);
+        showError("Unable to logout. Please try again.");
+    }
+}
+
+window.logout = logout;
+
+// ========================================
+// LOAD DASHBOARD
+// ========================================
+
+async function loadDashboard({ quiet = false } = {}) {
+    if (loadingDashboard) return;
+
+    loadingDashboard = true;
+
+    if (!quiet) showLoading();
+
+    try {
+        checkSupabase();
+
         const user = await getCurrentUser();
 
         if (!user) {
-            console.warn("No logged-in user.");
-
             window.location.href = "login.html";
             return;
         }
 
-        console.log("Logged-in user:", user.id);
+        currentUserId = user.id;
 
-        // Load profile
         const profile = await loadProfile(user.id);
-
-        // Render profile and selected avatar
         const profileData = renderProfile(profile);
 
-        // Load project statistics
         const stats = await loadProjectStats(user.id);
 
-        // Update creator level progress
         updateLevelProgress(
             profileData.approved,
             stats.approved
         );
 
-        // Show dashboard
         showDashboard();
 
         console.log("Dashboard loaded successfully.");
-    } catch (error) {
-        console.error(
-            "Dashboard loading error:",
-            error
-        );
 
-        showError(
-            error.message ||
-            "Unable to load dashboard."
-        );
+    } catch (error) {
+        console.error("Dashboard load failed:", error);
+
+        if (!quiet) {
+            showError(error.message || "Unable to load dashboard.");
+        }
+    } finally {
+        loadingDashboard = false;
     }
 }
 
-// ==========================================
-// INITIALIZE DASHBOARD
-// ==========================================
+// ========================================
+// INITIALIZE AND REFRESH
+// ========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     loadDashboard();
     loadNotificationBadge();
 });
 
-// ==========================================
-// EVENT AVATAR RELOAD SUPPORT
-// ==========================================
+window.addEventListener("pageshow", () => {
+    if (
+        document.readyState === "complete" &&
+        currentUserId
+    ) {
+        loadDashboard({ quiet: true });
+    }
+});
 
-// Refresh dashboard avatar when returning to this page
-// after selecting an avatar on event-avatars.html.
-window.addEventListener("pageshow", async () => {
-    try {
-        if (typeof sb === "undefined" || !sb) {
-            return;
-        }
-
-        const { data, error } = await sb.auth.getUser();
-
-        if (error || !data?.user) {
-            return;
-        }
-
-        const profile = await loadProfile(data.user.id);
-        const avatar = getAvatar(profile);
-
-        setAvatarImage(headerAvatar, avatar);
-        setAvatarImage(creatorAvatar, avatar);
-    } catch (error) {
-        console.warn(
-            "Could not refresh profile avatar:",
-            error
-        );
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && currentUserId) {
+        loadDashboard({ quiet: true });
     }
 });
