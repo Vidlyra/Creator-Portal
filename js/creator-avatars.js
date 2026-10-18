@@ -1,474 +1,282 @@
-// ==========================================
-// VIDLYRA CREATOR AVATARS
-// ==========================================
 
-console.log("Creator Avatar JS loaded");
+console.log("Vidlyra Creator Avatars loaded");
 
+// ========================================
+// CONFIGURATION
+// ========================================
 
-// ==========================================
-// CREATOR AVATAR DATA
-// ==========================================
-
-const creatorAvatars = [
-
-    {
-        id: 1,
-        name: "Starter Creator",
-        level: 1,
-        image: "assets/creator-avatars/creator1.png"
-    },
-
-    {
-        id: 2,
-        name: "Rising Creator",
-        level: 2,
-        image: "assets/creator-avatars/creator2.png"
-    },
-
-    {
-        id: 3,
-        name: "Active Creator",
-        level: 3,
-        image: "assets/creator-avatars/creator3.png"
-    },
-
-    {
-        id: 4,
-        name: "Pro Creator",
-        level: 4,
-        image: "assets/creator-avatars/creator4.png"
-    },
-
-    {
-        id: 5,
-        name: "Elite Creator",
-        level: 5,
-        image: "assets/creator-avatars/creator5.png"
-    },
-
-    {
-        id: 6,
-        name: "Master Creator",
-        level: 6,
-        image: "assets/creator-avatars/creator6.png"
-    },
-
-    {
-        id: 7,
-        name: "Legendary Creator",
-        level: 7,
-        image: "assets/creator-avatars/creator7.png"
-    }
-
-];
-
-
-// ==========================================
-// CURRENT USER
-// ==========================================
+const CREATOR_AVATAR_PATH = "assets/creator-avatars/creator";
+const TOTAL_CREATOR_AVATARS = 7;
 
 let currentUser = null;
-
 let currentProfile = null;
-
 let selectedCreatorAvatar = null;
 
+// ========================================
+// DOM ELEMENTS
+// ========================================
 
-// ==========================================
-// LOAD CREATOR
-// ==========================================
+const loading = document.getElementById("loading");
+const avatarContent = document.getElementById("avatarContent");
+const currentLevelElement = document.getElementById("currentLevel");
+const avatarGrid = document.getElementById("avatarGrid");
+const message = document.getElementById("message");
+const saveButton = document.getElementById("saveButton");
 
-async function loadCreatorAvatarPage() {
+// ========================================
+// MESSAGES
+// ========================================
 
-    const loading =
-        document.getElementById("loading");
+function showMessage(text, type = "info") {
+    if (!message) return;
 
-    const content =
-        document.getElementById("avatarContent");
+    message.textContent = text;
+    message.style.display = "block";
+    message.style.color =
+        type === "error" ? "#ff5555" :
+        type === "success" ? "#35c979" : "#ff9b42";
+}
 
-    const levelDisplay =
-        document.getElementById("currentLevel");
+// ========================================
+// LOAD CURRENT USER
+// ========================================
 
+async function loadCreatorProfile() {
     try {
-
-        // --------------------------------------
-        // GET USER
-        // --------------------------------------
-
-        const {
-            data,
-            error
-        } = await sb.auth.getUser();
-
-
-        if (error || !data.user) {
-
-            window.location.href =
-                "login.html";
-
-            return;
-
+        if (typeof sb === "undefined" || !sb) {
+            throw new Error("Supabase client not found. Check config.js.");
         }
 
+        const { data: authData, error: authError } =
+            await sb.auth.getUser();
 
-        currentUser =
-            data.user;
+        if (authError) throw authError;
 
+        currentUser = authData.user;
 
-        // --------------------------------------
-        // GET PROFILE
-        // --------------------------------------
+        if (!currentUser) {
+            window.location.href = "login.html";
+            return;
+        }
 
-        const {
-            data: profile,
-            error: profileError
-        } = await sb
+        const { data: profile, error } = await sb
             .from("profiles")
             .select(`
+                user_id,
+                full_name,
                 creator_level,
                 creator_rank,
-                creator_avatar
+                creator_avatar,
+                creator_avatar_unlocked,
+                selected_avatar_type
             `)
-            .eq(
-                "user_id",
-                currentUser.id
-            )
+            .eq("user_id", currentUser.id)
             .maybeSingle();
 
+        if (error) throw error;
+        if (!profile) throw new Error("Creator profile not found.");
 
-        if (profileError) {
+        currentProfile = profile;
 
-            throw profileError;
+        const level = Number(profile.creator_level) || 1;
 
+        if (currentLevelElement) {
+            currentLevelElement.textContent =
+                `Level ${level} • ${profile.creator_rank || "New Creator"}`;
         }
-
-
-        if (!profile) {
-
-            throw new Error(
-                "Creator profile not found."
-            );
-
-        }
-
-
-        currentProfile =
-            profile;
-
-
-        const creatorLevel =
-            Number(
-                profile.creator_level || 1
-            );
-
-
-        // --------------------------------------
-        // LEVEL DISPLAY
-        // --------------------------------------
-
-        levelDisplay.textContent =
-            `Level ${creatorLevel} • ${
-                profile.creator_rank ||
-                "New Creator"
-            }`;
-
-
-        // --------------------------------------
-        // CURRENT AVATAR
-        // --------------------------------------
 
         selectedCreatorAvatar =
-            Number(
-                profile.creator_avatar || 1
-            );
+            Number(profile.creator_avatar) || null;
 
+        renderCreatorAvatars(level);
 
-        // --------------------------------------
-        // BUILD AVATARS
-        // --------------------------------------
-
-        renderCreatorAvatars(
-            creatorLevel
-        );
-
-
-        loading.style.display =
-            "none";
-
-        content.style.display =
-            "block";
-
+        if (loading) loading.style.display = "none";
+        if (avatarContent) avatarContent.style.display = "block";
 
     } catch (error) {
+        console.error("Creator avatar load error:", error);
+        showMessage(error.message || "Unable to load creator avatars.", "error");
 
-        console.error(
-            "Creator avatar error:",
-            error
-        );
+        if (loading) loading.style.display = "none";
+    }
+}
 
+// ========================================
+// AVATAR UNLOCK RULES
+// ========================================
 
-        loading.textContent =
-            "Unable to load creator avatars.";
+// Adjust these level requirements to match your actual Vidlyra rules.
+function getRequiredLevel(avatarId) {
+    if (avatarId <= 2) return 1;
+    if (avatarId <= 3) return 2;
+    if (avatarId <= 4) return 3;
+    if (avatarId <= 5) return 4;
+    if (avatarId <= 6) return 5;
+    return 6;
+}
 
+function isAvatarUnlocked(avatarId, creatorLevel) {
+    return creatorLevel >= getRequiredLevel(avatarId);
+}
+
+// ========================================
+// RENDER AVATAR GRID
+// ========================================
+
+function renderCreatorAvatars(creatorLevel) {
+    if (!avatarGrid) {
+        console.error("Missing #avatarGrid element.");
+        return;
     }
 
-}
+    avatarGrid.innerHTML = "";
 
+    for (let id = 1; id <= TOTAL_CREATOR_AVATARS; id++) {
+        const unlocked = isAvatarUnlocked(id, creatorLevel);
 
-// ==========================================
-// RENDER AVATARS
-// ==========================================
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "creator-avatar-card";
 
-function renderCreatorAvatars(
-    creatorLevel
-) {
+        card.style.cssText = `
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            border: 2px solid ${
+                selectedCreatorAvatar === id ? "#ff8c32" : "#444"
+            };
+            border-radius: 12px;
+            background: #171717;
+            color: white;
+            cursor: ${unlocked ? "pointer" : "not-allowed"};
+            opacity: ${unlocked ? "1" : "0.55"};
+        `;
 
-    const grid =
-        document.getElementById(
-            "avatarGrid"
-        );
+        const img = document.createElement("img");
+        img.src = `${CREATOR_AVATAR_PATH}${id}.png`;
+        img.alt = `Creator Avatar ${id}`;
+        img.loading = "lazy";
+        img.style.cssText = `
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+        `;
 
+        img.onerror = () => {
+            img.alt = `Creator Avatar ${id} image missing`;
+            img.style.display = "none";
+        };
 
-    grid.innerHTML = "";
+        const title = document.createElement("span");
+        title.textContent = `Creator ${id}`;
 
+        const status = document.createElement("small");
+        status.textContent = unlocked
+            ? (selectedCreatorAvatar === id ? "Selected" : "Unlocked")
+            : `Unlock at Level ${getRequiredLevel(id)}`;
 
-    creatorAvatars.forEach(
-        avatar => {
+        card.append(img, title, status);
+        card.disabled = !unlocked;
 
-            const unlocked =
-                creatorLevel >=
-                avatar.level;
-
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "avatar-card";
-
-
-            if (
-                !unlocked
-            ) {
-
-                card.classList.add(
-                    "locked"
-                );
-
-            }
-
-
-            if (
-                avatar.id ===
-                selectedCreatorAvatar
-            ) {
-
-                card.classList.add(
-                    "selected"
-                );
-
-            }
-
-
-            // ----------------------------------
-            // LOCK LABEL
-            // ----------------------------------
-
-            let lockHTML = "";
-
-
+        card.addEventListener("click", () => {
             if (!unlocked) {
-
-                lockHTML = `
-                    <div class="lock-label">
-                        🔒 Level ${avatar.level}
-                    </div>
-                `;
-
-            }
-
-
-            // ----------------------------------
-            // CARD HTML
-            // ----------------------------------
-
-            card.innerHTML = `
-
-                ${lockHTML}
-
-                <img
-                    class="avatar-image"
-                    src="${avatar.image}"
-                    alt="${avatar.name}"
-                    onerror="
-                        this.style.opacity='0.3';
-                    "
-                >
-
-                <div class="avatar-name">
-                    ${avatar.name}
-                </div>
-
-                <div class="required-level">
-                    Requires Level ${avatar.level}
-                </div>
-
-            `;
-
-
-            // ----------------------------------
-            // SELECT
-            // ----------------------------------
-
-            if (unlocked) {
-
-                card.addEventListener(
-                    "click",
-                    () => {
-
-                        selectCreatorAvatar(
-                            avatar.id
-                        );
-
-                    }
+                showMessage(
+                    `Reach Level ${getRequiredLevel(id)} to unlock Creator ${id}.`,
+                    "error"
                 );
-
+                return;
             }
 
+            selectedCreatorAvatar = id;
+            renderCreatorAvatars(creatorLevel);
+            showMessage(`Creator ${id} selected. Click Save to apply it.`);
+        });
 
-            grid.appendChild(
-                card
-            );
+        avatarGrid.appendChild(card);
+    }
 
-        }
-    );
-
+    if (saveButton) {
+        saveButton.disabled = !selectedCreatorAvatar;
+    }
 }
 
-
-// ==========================================
-// SELECT AVATAR
-// ==========================================
-
-function selectCreatorAvatar(
-    avatarId
-) {
-
-    selectedCreatorAvatar =
-        avatarId;
-
-
-    const creatorLevel =
-        Number(
-            currentProfile.creator_level ||
-            1
-        );
-
-
-    renderCreatorAvatars(
-        creatorLevel
-    );
-
-
-    document.getElementById(
-        "message"
-    ).textContent =
-        "Creator avatar selected.";
-
-}
-
-
-// ==========================================
-// SAVE AVATAR
-// ==========================================
+// ========================================
+// SAVE SELECTED CREATOR AVATAR
+// ========================================
 
 async function saveCreatorAvatar() {
-
-    const button =
-        document.getElementById(
-            "saveButton"
-        );
-
-    const message =
-        document.getElementById(
-            "message"
-        );
-
-
-    if (!currentUser) {
-
+    if (!currentUser || !currentProfile) {
+        showMessage("Please sign in again.", "error");
         return;
-
     }
 
+    if (!selectedCreatorAvatar) {
+        showMessage("Select an unlocked avatar first.", "error");
+        return;
+    }
 
-    button.disabled = true;
+    const level = Number(currentProfile.creator_level) || 1;
 
-    button.textContent =
-        "Saving...";
-
+    if (!isAvatarUnlocked(selectedCreatorAvatar, level)) {
+        showMessage("This avatar is not unlocked for your level.", "error");
+        return;
+    }
 
     try {
-
-        const {
-            error
-        } = await sb
-            .from("profiles")
-            .update({
-                creator_avatar:
-                    selectedCreatorAvatar
-            })
-            .eq(
-                "user_id",
-                currentUser.id
-            );
-
-
-        if (error) {
-
-            throw error;
-
+        if (saveButton) {
+            saveButton.disabled = true;
+            saveButton.textContent = "Saving...";
         }
 
+        const { data, error } = await sb
+            .from("profiles")
+            .update({
+                creator_avatar: selectedCreatorAvatar,
+                selected_avatar_type: "creator"
+            })
+            .eq("user_id", currentUser.id)
+            .select("creator_avatar, selected_avatar_type")
+            .maybeSingle();
 
-        currentProfile.creator_avatar =
-            selectedCreatorAvatar;
+        if (error) throw error;
 
+        if (!data) {
+            throw new Error(
+                "No profile was updated. Check your Supabase RLS policies."
+            );
+        }
 
-        message.textContent =
-            "✅ Creator avatar saved!";
+        currentProfile.creator_avatar = data.creator_avatar;
+        currentProfile.selected_avatar_type = data.selected_avatar_type;
 
-
-    } catch (error) {
-
-        console.error(
-            "Save avatar error:",
-            error
+        showMessage(
+            "Creator Avatar saved! Return to your dashboard to see it.",
+            "success"
         );
 
-
-        message.textContent =
-            "❌ " + error.message;
-
-
+    } catch (error) {
+        console.error("Save creator avatar error:", error);
+        showMessage(error.message || "Failed to save avatar.", "error");
     } finally {
-
-        button.disabled =
-            false;
-
-        button.textContent =
-            "Save Creator Avatar";
-
+        if (saveButton) {
+            saveButton.disabled = false;
+            saveButton.textContent = "Save Avatar";
+        }
     }
-
 }
 
+window.saveCreatorAvatar = saveCreatorAvatar;
 
-// ==========================================
-// START
-// ==========================================
+// ========================================
+// INITIALIZE
+// ========================================
 
-loadCreatorAvatarPage();
+document.addEventListener("DOMContentLoaded", () => {
+    if (saveButton) {
+        saveButton.addEventListener("click", saveCreatorAvatar);
+    }
+
+    loadCreatorProfile();
+});
