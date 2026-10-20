@@ -355,147 +355,178 @@ function setPreviewMessage(message, isError = false) {
    RENDER FILE PREVIEW
 ========================================== */
 
-async function renderFilePreview(url, fileName, extension) {
-    const content = document.getElementById("vpContent");
+
+async function previewProject(project) {
+    const modal = ensurePreviewModal();
+
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("vp-open");
+
+    const title = document.getElementById("vpTitle");
+    const subtitle = document.getElementById("vpSubtitle");
+    const fileNameElement = document.getElementById("vpFileName");
+    const downloadLink = document.getElementById("vpDownload");
     const status = document.getElementById("vpStatus");
-    if (!content) return;
 
-    content.replaceChildren();
+    title.textContent = project.title || "Untitled Project";
+    subtitle.textContent =
+        `${project.category || "Uncategorized"} · Status: ${project.status || "Pending"}`;
 
-    const ext = String(extension || "").toLowerCase();
+    fileNameElement.textContent = "Locating file...";
+    downloadLink.style.display = "none";
+    downloadLink.removeAttribute("href");
+    setPreviewMessage("Checking Supabase storage...");
 
-    const imageTypes = [
-        "jpg", "jpeg", "png", "gif", "webp", "bmp", "svg", "avif"
-    ];
-
-    const videoTypes = ["mp4", "webm", "ogv", "mov", "m4v"];
-    const audioTypes = [
-        "mp3", "wav", "ogg", "oga", "m4a", "aac", "flac"
-    ];
-
-    if (imageTypes.includes(ext)) {
-        const wrap = document.createElement("div");
-        wrap.className = "vp-image-wrap";
-
-        const image = document.createElement("img");
-        image.className = "vp-image";
-        image.alt = fileName;
-        image.src = url;
-
-        image.onerror = () => {
-            setPreviewMessage(
-                "This image could not be displayed. Try Open / Download.",
-                true
-            );
-        };
-
-        wrap.appendChild(image);
-        content.appendChild(wrap);
-
-        if (status) status.textContent = "Image preview";
-        return;
-    }
-
-    if (ext === "pdf") {
-        const frame = document.createElement("iframe");
-        frame.className = "vp-frame";
-        frame.title = "PDF document preview";
-        frame.src = url + "#toolbar=1&navpanes=1";
-
-        content.appendChild(frame);
-        if (status) status.textContent = "PDF preview";
-        return;
-    }
-
-    if (videoTypes.includes(ext)) {
-        const video = document.createElement("video");
-        video.className = "vp-video";
-        video.controls = true;
-        video.playsInline = true;
-        video.preload = "metadata";
-
-        const source = document.createElement("source");
-        source.src = url;
-
-        video.appendChild(source);
-        content.appendChild(video);
-
-        if (status) status.textContent = "Video preview";
-        return;
-    }
-
-    if (audioTypes.includes(ext)) {
-        const box = document.createElement("div");
-        box.className = "vp-message";
-
-        const heading = document.createElement("h3");
-        heading.textContent = fileName;
-
-        const audio = document.createElement("audio");
-        audio.className = "vp-audio";
-        audio.controls = true;
-        audio.preload = "metadata";
-
-        const source = document.createElement("source");
-        source.src = url;
-
-        audio.appendChild(source);
-        box.append(heading, audio);
-        content.appendChild(box);
-
-        if (status) status.textContent = "Audio preview";
-        return;
-    }
-
-    const textTypes = [
-        "txt", "md", "csv", "json", "xml", "log",
-        "js", "ts", "css", "py", "java", "c", "cpp"
-    ];
-
-    if (textTypes.includes(ext)) {
-        setPreviewMessage("Loading text file...");
-
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error("Unable to fetch this text file.");
-            }
-
-            const text = await response.text();
-
-            const pre = document.createElement("pre");
-            pre.className = "vp-text";
-            pre.textContent = text;
-
-            content.replaceChildren(pre);
-
-            if (status) status.textContent = "Text / code preview";
-        } catch (error) {
-            setPreviewMessage(
-                "The browser could not read this file. Use Open / Download instead.",
-                true
-            );
-            if (status) status.textContent = "Download required";
+    try {
+        if (typeof sb === "undefined" || !sb) {
+            throw new Error("Supabase client is unavailable.");
         }
 
-        return;
+        if (!project.file_path) {
+            throw new Error("The project database record has no file_path.");
+        }
+
+        let path = String(project.file_path).trim();
+        let bucket = getProjectBucket(project.category);
+
+        // If file_path is a full Supabase Storage URL,
+        // extract its bucket and object path.
+        if (/^https?:\/\//i.test(path)) {
+            const parsedUrl = new URL(path);
+            const parts = parsedUrl.pathname.split("/").filter(Boolean);
+            const objectIndex = parts.indexOf("object");
+
+            if (objectIndex !== -1) {
+                const accessType = parts[objectIndex + 1];
+
+                if (["public", "sign", "authenticated"].includes(accessType)) {
+                    bucket = parts[objectIndex + 2];
+                    path = parts.slice(objectIndex + 3).join("/");
+                    path = decodeURIComponent(path);
+                } else {
+                    throw new Error(
+                        "Unrecognized Supabase Storage URL format."
+                    );
+                }
+            } else {
+                // A non-Supabase URL can be previewed directly.
+                const externalName = getFileName(parsedUrl.pathname);
+                fileNameElement.textContent = externalName;
+                downloadLink.href = path;
+                downloadLink.style.display = "inline-flex";
+
+                await renderFilePreview(
+                    path,
+                    externalName,
+                    getExtension(externalName)
+                );
+                return;
+            }
+        } else {
+            path = path.replace(/^\/+/, "");
+
+            const knownBuckets = [
+                "stories", "shortfilms", "music", "artwork", "manga"
+            ];
+
+            const firstSegment = path.split("/")[0];
+
+            if (
+                knownBuckets.includes(firstSegment.toLowerCase())
+            ) {
+                bucket = firstSegment;
+                path = path.split("/").slice(1).join("/");
+            }
+        }
+
+        if (!path || !bucket) {
+            throw new Error("Could not determine the storage bucket and file path.");
+        }
+
+        const fileName = getFileName(path);
+        fileNameElement.textContent = fileName;
+
+        // Try the expected bucket first, then the other configured buckets.
+        const bucketCandidates = [
+            ...new Set([
+                bucket,
+                "stories",
+                "shortfilms",
+                "music",
+                "artwork",
+                "manga"
+            ])
+        ];
+
+        let signedUrl = null;
+        let lastError = null;
+        let matchedBucket = null;
+
+        for (const candidate of bucketCandidates) {
+            const result = await sb.storage
+                .from(candidate)
+                .createSignedUrl(path, 3600);
+
+            if (!result.error && result.data?.signedUrl) {
+                signedUrl = result.data.signedUrl;
+                matchedBucket = candidate;
+                break;
+            }
+
+            lastError = result.error;
+            console.warn(
+                `File not found in bucket "${candidate}"`,
+                result.error?.message
+            );
+        }
+
+        if (!signedUrl) {
+            console.error("Storage lookup failed", {
+                projectId: project.id,
+                originalFilePath: project.file_path,
+                attemptedPath: path,
+                attemptedBuckets: bucketCandidates,
+                lastError
+            });
+
+            throw new Error(
+                "Object not found in the configured buckets. " +
+                "Check the exact file path and bucket in Supabase Storage."
+            );
+        }
+
+        console.log("Project file located:", {
+            projectId: project.id,
+            bucket: matchedBucket,
+            path: path
+        });
+
+        downloadLink.href = signedUrl;
+        downloadLink.style.display = "inline-flex";
+        downloadLink.setAttribute("download", fileName);
+
+        if (status) {
+            status.textContent = `Preview · ${matchedBucket}`;
+        }
+
+        await renderFilePreview(
+            signedUrl,
+            fileName,
+            getExtension(fileName)
+        );
+
+    } catch (error) {
+        console.error("Project preview error:", error);
+
+        setPreviewMessage(
+            "Unable to preview this file. " +
+            (error.message || "Check the bucket and file path."),
+            true
+        );
+
+        if (status) status.textContent = "Preview failed";
     }
-
-    const message = document.createElement("div");
-    message.className = "vp-message";
-
-    const heading = document.createElement("h3");
-    heading.textContent = fileName;
-
-    const description = document.createElement("p");
-    description.textContent =
-        "This file type cannot be previewed directly in the browser. " +
-        "Use Open / Download to inspect the original file.";
-
-    message.append(heading, description);
-    content.appendChild(message);
-
-    if (status) status.textContent = "Download required";
 }
 
 /* ==========================================
