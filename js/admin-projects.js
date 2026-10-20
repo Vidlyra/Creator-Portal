@@ -351,6 +351,63 @@ function setPreviewMessage(message, isError = false) {
     content.appendChild(box);
 }
 
+function renderFilePreview(url, fileName, container) {
+    if (!container) {
+        console.error("Preview container not found.");
+        return;
+    }
+
+    const extension = (fileName.split(".").pop() || "").toLowerCase();
+    const safeUrl = url;
+
+    container.innerHTML = "";
+
+    if (["png", "jpg", "jpeg", "gif", "webp", "svg", "avif"].includes(extension)) {
+        const img = document.createElement("img");
+        img.src = safeUrl;
+        img.alt = fileName;
+        img.style.cssText = "max-width:100%;max-height:70vh;object-fit:contain;";
+        container.appendChild(img);
+
+    } else if (extension === "pdf") {
+        const frame = document.createElement("iframe");
+        frame.src = safeUrl;
+        frame.title = fileName;
+        frame.style.cssText = "width:100%;height:70vh;border:0;";
+        container.appendChild(frame);
+
+    } else if (["mp4", "webm", "mov", "ogv"].includes(extension)) {
+        const video = document.createElement("video");
+        video.src = safeUrl;
+        video.controls = true;
+        video.style.cssText = "width:100%;max-height:70vh;";
+        container.appendChild(video);
+
+    } else if (["mp3", "wav", "ogg", "m4a"].includes(extension)) {
+        const audio = document.createElement("audio");
+        audio.src = safeUrl;
+        audio.controls = true;
+        audio.style.width = "100%";
+        container.appendChild(audio);
+
+    } else if (["txt", "html", "css", "js", "json", "md"].includes(extension)) {
+        const link = document.createElement("a");
+        link.href = safeUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Open or download " + fileName;
+        container.appendChild(link);
+
+    } else {
+        const link = document.createElement("a");
+        link.href = safeUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Download / open " + fileName;
+        container.appendChild(link);
+    }
+}
+
 /* ==========================================
    RENDER FILE PREVIEW
 ========================================== */
